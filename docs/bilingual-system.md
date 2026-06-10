@@ -193,6 +193,8 @@ See [BilingualText](#bilingualtext) above for layout variants.
 
 The API always returns **both** fields. The frontend resolves display with shared utilities.
 
+**Geo reference data** (divisions, districts, upazilas, unions) follows the same camelCase API pattern (`nameEn`, `nameBn`). See [`api-geo.md`](api-geo.md).
+
 Reference: [`apps/backend/api/app_metadata.py`](../apps/backend/api/app_metadata.py)
 
 Backend helpers:

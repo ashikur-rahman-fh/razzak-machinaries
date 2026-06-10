@@ -16,7 +16,7 @@
     "python:format": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" ruff format apps/backend",
     "python:format:check": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" ruff format apps/backend --check",
     "python:check": "pnpm python:format:check && pnpm python:lint",
-    "python:migrations:check": "cd apps/backend && DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py check && python manage.py makemigrations --check --dry-run"
+    "python:migrations:check": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" bash -c 'cd apps/backend && DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py check && python manage.py makemigrations --check --dry-run'"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.59.3",

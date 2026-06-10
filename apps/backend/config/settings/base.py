@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "axes",
     "api",
+    "geo",
 ]
 
 MIDDLEWARE = [

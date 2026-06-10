@@ -7,9 +7,9 @@ Razzak Machinaries is a **multi-container** system orchestrated by Docker Compos
 ### Backend (`apps/backend`)
 
 - **Framework**: Django + Django REST Framework
-- **Public API** (custom): `GET /api/health/`, `GET /api/hello/`, `GET /api/public/meta/`
+- **Public API** (custom): `GET /api/health/`, `GET /api/hello/`, `GET /api/public/meta/`, `GET /api/public/geo/*` (divisions, districts, upazilas, unions — see [`api-geo.md`](api-geo.md))
 - **API errors**: JSON envelope with `success: false` and `error.code`, `error.message`, `error.details` (safe messages only; no stack traces)
-- **Admin API** (session auth): `GET /api/admin/auth/csrf/`, `POST /api/admin/auth/login/`, `POST /api/admin/auth/logout/`, `GET /api/admin/auth/me/` — active **superusers** only
+- **Admin API** (session auth): `GET /api/admin/auth/csrf/`, `POST /api/admin/auth/login/`, `POST /api/admin/auth/logout/`, `GET /api/admin/auth/me/`, `PATCH /api/admin/auth/me/`, `POST /api/admin/auth/change-password/`, `GET|POST|PATCH|PUT|DELETE /api/admin/geo/*` — active **superusers** only (see [`api-geo.md`](api-geo.md))
 - **Django admin UI**: built-in HTML admin at `/admin/` (separate from the Next admin app)
 - **Data**: PostgreSQL via `DATABASES`
 - **Cache**: Redis via `django-redis` (`CACHES`)
@@ -64,6 +64,8 @@ packages/shared/src/api/
     create-api-client.ts
     errors.ts, csrf.ts, env.ts, interceptors.ts, ...
   hello.ts              # public endpoint wrappers
+  geo.ts                # getDivisions, getDistricts, getUpazilas, getUnions
+  admin-geo.ts          # adminGeoApi CRUD for geo reference data
   admin-auth.ts         # adminAuthApi (login, logout, getCurrentUser, ensureAdminCsrf)
 ```
 

@@ -67,6 +67,10 @@ export const ERROR_CODE_MESSAGES: Record<string, Record<Language, string>> = {
     en: 'Please choose a stronger password.',
     bn: 'অনুগ্রহ করে আরও শক্তিশালী পাসওয়ার্ড বেছে নিন।',
   },
+  GEO_HAS_CHILDREN: {
+    en: 'This area cannot be deleted because it has child records linked to it.',
+    bn: 'এই অঞ্চল মুছে ফেলা যাবে না কারণ এর সাথে সন্তান রেকর্ড সংযুক্ত আছে।',
+  },
 };
 
 export function getLocalizedUserMessage(key: UserMessageKey, language: Language): string {

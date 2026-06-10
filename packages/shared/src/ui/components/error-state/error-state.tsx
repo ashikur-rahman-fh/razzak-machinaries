@@ -1,9 +1,10 @@
 import { AlertCircle } from 'lucide-react';
+import * as React from 'react';
 
 import { cn } from '../../utils/cn';
 
 export type ErrorStateProps = {
-  message: string;
+  message: React.ReactNode;
   className?: string;
 };
 
@@ -17,7 +18,7 @@ export function ErrorState({ message, className }: ErrorStateProps) {
       )}
     >
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" aria-hidden />
-      <p className="text-foreground">{message}</p>
+      <div className="text-foreground">{message}</div>
     </div>
   );
 }

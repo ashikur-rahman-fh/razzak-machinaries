@@ -4,8 +4,8 @@ import * as React from 'react';
 import { cn } from '../../utils/cn';
 
 export type EmptyStateProps = {
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   action?: React.ReactNode;
   className?: string;
 };

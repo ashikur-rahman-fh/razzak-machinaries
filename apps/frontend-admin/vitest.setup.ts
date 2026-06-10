@@ -43,6 +43,7 @@ export const server = setupServer(
     );
   }),
   http.post('*/api/admin/auth/logout/', () => HttpResponse.json({ success: true })),
+  // Geo handlers are added per-suite in bangladesh-address.test.tsx via server.use
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));

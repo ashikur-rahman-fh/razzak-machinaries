@@ -1,0 +1,256 @@
+'use client';
+
+import { isApiError } from '@razzak-machinaries/shared/api';
+import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  PageShell,
+  SuccessAlert,
+  TranslatedText,
+} from '@razzak-machinaries/shared/ui';
+import Link from 'next/link';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { AdminNavbar } from '@/components/AdminNavbar';
+import { useAdminAuth } from '@/auth/AdminAuthProvider';
+import { RequireAdminAuth } from '@/auth/guards';
+import { BangladeshAddressDetailHeader } from '@/bangladesh-address/components/BangladeshAddressDetailHeader';
+import { BangladeshAddressDetailSkeleton } from '@/bangladesh-address/components/BangladeshAddressDetailSkeleton';
+import { BangladeshAddressNameEditor } from '@/bangladesh-address/components/BangladeshAddressNameEditor';
+import { BangladeshAddressReadOnlyDetails } from '@/bangladesh-address/components/BangladeshAddressReadOnlyDetails';
+import { ConfirmDeleteModal } from '@/bangladesh-address/components/ConfirmDeleteModal';
+import { getGeoConfig } from '@/bangladesh-address/config';
+import { getGeoDeleteErrorMessage } from '@/bangladesh-address/errors';
+import { useAsyncData } from '@/bangladesh-address/hooks';
+import { loadParentLookup } from '@/bangladesh-address/parent-lookup';
+import { buildEditUrl, getBackListUrl } from '@/bangladesh-address/routes';
+import { isGeoResourceType } from '@/bangladesh-address/types';
+
+const FEEDBACK_DISMISS_MS = 5000;
+
+export function BangladeshAddressDetailPage() {
+  const params = useParams<{ geoType: string; id: string }>();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { language } = useLanguagePreference();
+  const { logout, isLoggingOut } = useAdminAuth();
+
+  const geoTypeParam = params.geoType;
+  const recordId = Number(params.id);
+  const fromQuery = searchParams.get('from');
+  const success = searchParams.get('success');
+  const backHref = getBackListUrl(fromQuery);
+
+  const [showDelete, setShowDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [inlineSuccessFeedback, setInlineSuccessFeedback] = useState(false);
+  const [dismissedRedirectSuccess, setDismissedRedirectSuccess] = useState(false);
+  const showSuccessFeedback =
+    (success === 'updated' && !dismissedRedirectSuccess) || inlineSuccessFeedback;
+
+  const isValidType = isGeoResourceType(geoTypeParam);
+  const geoType = isValidType ? geoTypeParam : 'divisions';
+  const config = isValidType ? getGeoConfig(geoType) : null;
+
+  const { state: recordState, reload: reloadRecord } = useAsyncData(async () => {
+    if (!config || !recordId) throw new Error('Invalid');
+    return config.get(recordId);
+  }, [geoTypeParam, recordId]);
+
+  const parentResource = config?.parentResource;
+  const { state: parentLookupState } = useAsyncData(
+    () => loadParentLookup(parentResource),
+    [parentResource],
+  );
+
+  useEffect(() => {
+    if (!showSuccessFeedback) return;
+    const timer = window.setTimeout(() => {
+      setInlineSuccessFeedback(false);
+      setDismissedRedirectSuccess(true);
+    }, FEEDBACK_DISMISS_MS);
+    return () => window.clearTimeout(timer);
+  }, [showSuccessFeedback]);
+
+  async function handleDelete() {
+    if (!config || recordState.status !== 'success' || isDeleting) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await config.delete(recordState.data.id);
+      router.push(`${backHref}${backHref.includes('?') ? '&' : '?'}success=deleted`);
+    } catch (err) {
+      setDeleteError(getGeoDeleteErrorMessage(err, language));
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  if (!isValidType) {
+    return (
+      <RequireAdminAuth>
+        <PageShell header={<AdminNavbar activeRoute="bangladesh-address" />}>
+          <ErrorState
+            message={<TranslatedText translationKey="geo.invalidType" as="span" layout="inline" />}
+          />
+        </PageShell>
+      </RequireAdminAuth>
+    );
+  }
+
+  const record = recordState.status === 'success' ? recordState.data : null;
+  const parentLookup = parentLookupState.status === 'success' ? parentLookupState.data : new Map();
+  const isInitialLoading = recordState.status === 'loading' || recordState.status === 'idle';
+  const isNotFound =
+    recordState.status === 'error' && isApiError(recordState.error) && recordState.error.isNotFound;
+  const isLoadError = recordState.status === 'error' && !isNotFound;
+
+  const headerActions = record ? (
+    <>
+      <Button type="button" variant="outline" size="sm" asChild>
+        <Link href={buildEditUrl(geoType, record.id)}>
+          <TranslatedText translationKey="geo.actions.edit" as="span" compact />
+        </Link>
+      </Button>
+      <Button
+        type="button"
+        variant="destructive"
+        size="sm"
+        onClick={() => {
+          setDeleteError(null);
+          setShowDelete(true);
+        }}
+      >
+        <TranslatedText translationKey="geo.actions.delete" as="span" compact />
+      </Button>
+    </>
+  ) : null;
+
+  return (
+    <RequireAdminAuth>
+      <PageShell
+        data-testid="geo-detail-page"
+        header={
+          <AdminNavbar
+            activeRoute="bangladesh-address"
+            onLogout={() => void logout()}
+            isLoggingOut={isLoggingOut}
+          />
+        }
+      >
+        <div className="relative mx-auto flex w-full max-w-2xl flex-col gap-6">
+          {showSuccessFeedback ? (
+            <div className="fixed inset-x-4 top-20 z-50 mx-auto max-w-2xl" role="status">
+              <SuccessAlert
+                title={
+                  <TranslatedText
+                    translationKey="geo.update.nameSuccess"
+                    as="span"
+                    layout="inline"
+                  />
+                }
+              />
+            </div>
+          ) : null}
+
+          {isInitialLoading ? <BangladeshAddressDetailSkeleton /> : null}
+
+          {isNotFound ? (
+            <EmptyState
+              title={
+                <TranslatedText translationKey="geo.detail.notFound" as="span" layout="inline" />
+              }
+              action={
+                <Button type="button" variant="outline" size="sm" asChild>
+                  <Link href={backHref}>
+                    <TranslatedText
+                      translationKey="geo.actions.backToBangladeshAddressList"
+                      as="span"
+                      compact
+                    />
+                  </Link>
+                </Button>
+              }
+            />
+          ) : null}
+
+          {isLoadError ? (
+            <div className="space-y-4">
+              <ErrorState
+                message={
+                  <TranslatedText translationKey="geo.detail.loadError" as="span" layout="inline" />
+                }
+              />
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void reloadRecord()}
+                >
+                  <TranslatedText translationKey="geo.list.retry" as="span" compact />
+                </Button>
+                <Button type="button" variant="outline" size="sm" asChild>
+                  <Link href={backHref}>
+                    <TranslatedText
+                      translationKey="geo.actions.backToBangladeshAddressList"
+                      as="span"
+                      compact
+                    />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {record ? (
+            <>
+              <BangladeshAddressDetailHeader
+                geoType={geoType}
+                nameEn={record.nameEn}
+                sourceId={record.id}
+                backHref={backHref}
+                actions={headerActions}
+              />
+              <BangladeshAddressNameEditor
+                key={`${record.id}-${record.nameEn}-${record.nameBn}`}
+                record={record}
+                onSubmit={async (payload) => {
+                  if (!config) return;
+                  await config.update(record.id, payload);
+                  await reloadRecord();
+                }}
+                onSuccess={() => setInlineSuccessFeedback(true)}
+              />
+              <BangladeshAddressReadOnlyDetails
+                geoType={geoType}
+                record={record}
+                parentLookup={parentLookup}
+              />
+            </>
+          ) : null}
+        </div>
+
+        {record ? (
+          <ConfirmDeleteModal
+            open={showDelete}
+            onOpenChange={(open) => {
+              if (!isDeleting) {
+                setShowDelete(open);
+                if (!open) setDeleteError(null);
+              }
+            }}
+            recordName={record.nameEn}
+            onConfirm={handleDelete}
+            isLoading={isDeleting}
+            errorMessage={deleteError}
+          />
+        ) : null}
+      </PageShell>
+    </RequireAdminAuth>
+  );
+}

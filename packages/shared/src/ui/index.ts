@@ -31,6 +31,62 @@ export { ErrorState, type ErrorStateProps } from './components/error-state';
 export { Badge, badgeVariants, type BadgeProps } from './components/badge';
 export { Input, type InputProps } from './components/input';
 export { PasswordInput, type PasswordInputProps } from './components/password-input/password-input';
+export { DataTable, type DataTableProps } from './components/data-table';
+export { PaginationControls, type PaginationControlsProps } from './components/pagination-controls';
+export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dialog';
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './primitives/shadcn/table';
+export { Skeleton } from './primitives/shadcn/skeleton';
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './primitives/shadcn/dialog';
+export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './primitives/shadcn/alert-dialog';
+export { Tabs, TabsContent, TabsList, TabsTrigger } from './primitives/shadcn/tabs';
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from './primitives/shadcn/select';
+export {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './primitives/shadcn/dropdown-menu';
 export {
   ThemeProvider,
   getThemeHtmlClass,

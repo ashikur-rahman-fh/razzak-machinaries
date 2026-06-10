@@ -1,4 +1,5 @@
 export { adminAuthApi, ensureAdminCsrf } from './admin-auth';
+export { adminGeoApi } from './admin-geo';
 export {
   backendAdminApi,
   backendMainApi,
@@ -29,9 +30,19 @@ export type {
   RetryConfig,
 } from './core/types';
 export { getHello } from './hello';
+export { getDistricts, getDivisions, getUnions, getUpazilas } from './geo';
 export type {
   AdminCsrfResponse,
   AdminLoginRequest,
   AdminLogoutResponse,
   AdminUser,
 } from '../types/admin-auth';
+export type { GeoArea, GeoDistrict, GeoDivision, GeoUnion, GeoUpazila } from '../types/geo';
+export type {
+  GeoDistrictWrite,
+  GeoDivisionWrite,
+  GeoListParams,
+  GeoUnionWrite,
+  GeoUpazilaWrite,
+  Paginated,
+} from '../types/geo';

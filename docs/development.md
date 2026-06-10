@@ -183,6 +183,22 @@ The temporary password is printed once. Instruct the user to sign in and change 
 
 Use the same credentials to sign in to the **Next admin app** at `http://localhost:3001/login` (not only Django HTML admin at `http://localhost:8080/admin/`). Only **active superusers** can access the Next admin app.
 
+## Bangladesh geo reference data
+
+Administrative hierarchy (division → district → upazila → union) for location selects. Full API reference: [`docs/api-geo.md`](api-geo.md).
+
+After the first migrate (or when JSON source files change), sync manually — **not** on every `dev-up`:
+
+```bash
+make backend-sync-geo
+```
+
+Production:
+
+```bash
+make prod-sync-geo
+```
+
 ## Next admin app authentication
 
 | Route | Purpose |

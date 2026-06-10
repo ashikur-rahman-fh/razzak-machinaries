@@ -1,5 +1,7 @@
 from rest_framework.permissions import BasePermission
 
+from api.admin.exceptions import AdminForbidden, AdminUnauthenticated
+
 
 def is_authorized_admin_user(user) -> bool:
     return bool(user and user.is_authenticated and user.is_active and user.is_superuser)
@@ -11,4 +13,8 @@ class IsActiveSuperuser(BasePermission):
     message = "You do not have permission to access the admin area."
 
     def has_permission(self, request, view):
-        return is_authorized_admin_user(request.user)
+        if not request.user or not request.user.is_authenticated:
+            raise AdminUnauthenticated()
+        if not is_authorized_admin_user(request.user):
+            raise AdminForbidden()
+        return True

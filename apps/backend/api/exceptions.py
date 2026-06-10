@@ -27,6 +27,12 @@ from api.admin.exceptions import (
     AdminUnauthenticated,
     InvalidAdminCredentials,
 )
+from geo.exceptions import (
+    GEO_HAS_CHILDREN_CODE,
+    GEO_HAS_CHILDREN_MESSAGE,
+    GEO_ID_CONFLICT_CODE,
+    GEO_ID_CONFLICT_MESSAGE,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +47,8 @@ SAFE_MESSAGES = {
     "UNAUTHORIZED": "You need to sign in to continue.",
     INVALID_CURRENT_PASSWORD_CODE: INVALID_CURRENT_PASSWORD_MESSAGE,
     WEAK_PASSWORD_CODE: WEAK_PASSWORD_MESSAGE,
+    GEO_HAS_CHILDREN_CODE: GEO_HAS_CHILDREN_MESSAGE,
+    GEO_ID_CONFLICT_CODE: GEO_ID_CONFLICT_MESSAGE,
 }
 
 
@@ -88,8 +96,11 @@ def custom_exception_handler(exc, context):
 
     if isinstance(exc, APIException):
         code, message = _code_and_message(exc, status_code)
-        details = response.data if isinstance(exc, ValidationError) else {}
-        if not isinstance(details, dict):
+        if isinstance(exc, ValidationError):
+            details = response.data if isinstance(response.data, dict) else {}
+        elif isinstance(response.data, dict):
+            details = response.data
+        else:
             details = {}
     else:
         code = "INTERNAL_SERVER_ERROR"

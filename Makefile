@@ -1,7 +1,7 @@
 .PHONY: dev-up dev-down dev-build dev-logs dev-restart dev-install-js debug-install-js \
 	debug-up debug-down debug-build debug-logs debug-restart \
 	backend-shell backend-migrate backend-makemigrations backend-check-migrations backend-createsuperuser \
-	backend-sync-superusers backend-reset-user-password prod-sync-superusers prod-reset-user-password \
+	backend-sync-superusers backend-sync-geo backend-reset-user-password prod-sync-superusers prod-sync-geo prod-reset-user-password \
 	test-sync-superusers test-reset-user-password \
 	editor-happy build check-code-quality fix-code-quality test test-all test-smoke-admin test-backend test-frontend-main test-frontend-admin test-shared test-integration \
 	prod-up prod-down prod-build prod-logs prod-restart prod-migrate prod-collectstatic prod-nginx-config \
@@ -62,6 +62,9 @@ backend-createsuperuser:
 
 backend-sync-superusers:
 	bash infra/scripts/dev/sync-superusers.sh
+
+backend-sync-geo:
+	bash infra/scripts/dev/sync-geo.sh
 
 backend-reset-user-password:
 	bash infra/scripts/dev/reset-user-password.sh
@@ -137,6 +140,9 @@ prod-collectstatic:
 
 prod-sync-superusers:
 	bash infra/scripts/prod/sync-superusers.sh
+
+prod-sync-geo:
+	bash infra/scripts/prod/sync-geo.sh
 
 prod-reset-user-password:
 	bash infra/scripts/prod/reset-user-password.sh
