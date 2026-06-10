@@ -106,7 +106,7 @@ export function BangladeshAddressEditPage() {
               {recordState.status === 'loading' || recordState.status === 'idle' ? (
                 <LoadingState
                   label={
-                    <TranslatedText translationKey="geo.edit.title" as="span" layout="inline" />
+                    <TranslatedText translationKey="common.loading" as="span" layout="inline" />
                   }
                 />
               ) : null}

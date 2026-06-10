@@ -130,4 +130,24 @@
   [data-content-display='both'] .font-display.leading-none {
     line-height: 1.375;
   }
+
+  @keyframes gear-spin-cw {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes gear-spin-ccw {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  .animate-gear-cw {
+    animation: gear-spin-cw 2.4s linear infinite;
+  }
+
+  .animate-gear-ccw {
+    animation: gear-spin-ccw 1.8s linear infinite;
+  }
 }

@@ -7,15 +7,7 @@ import { ADMIN_AUTH_COPY } from './messages';
 import { useAdminAuth } from './AdminAuthProvider';
 
 function AuthLoadingShell({ label = ADMIN_AUTH_COPY.checkingSession }: { label?: string }) {
-  return (
-    <div
-      className="flex min-h-[50vh] items-center justify-center"
-      data-testid="admin-auth-loading"
-      aria-busy="true"
-    >
-      <LoadingState label={label} />
-    </div>
-  );
+  return <LoadingState layout="fullscreen" label={label} data-testid="admin-auth-loading" />;
 }
 
 export function RequireAdminAuth({ children }: { children: ReactNode }) {

@@ -25,7 +25,17 @@ export {
   CardHeader,
   CardTitle,
 } from './components/card';
-export { LoadingState, type LoadingStateProps } from './components/loading-state';
+export {
+  LoadingState,
+  type LoadingStateLayout,
+  type LoadingStateProps,
+} from './components/loading-state';
+export {
+  GearLoader,
+  gearLoaderVariants,
+  type GearLoaderProps,
+  type GearLoaderSize,
+} from './components/gear-loader';
 export { EmptyState, type EmptyStateProps } from './components/empty-state';
 export { ErrorState, type ErrorStateProps } from './components/error-state';
 export { Badge, badgeVariants, type BadgeProps } from './components/badge';
