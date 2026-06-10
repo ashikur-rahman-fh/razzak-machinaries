@@ -18,6 +18,8 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-disabled: hsl(var(--primary-disabled));
+  --color-primary-disabled-foreground: hsl(var(--primary-disabled-foreground));
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-muted: hsl(var(--muted));
@@ -63,6 +65,8 @@
 
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
+  --font-bangla: 'Noto Sans Bengali', 'Hind Siliguri', system-ui, sans-serif;
+
   /**
    * Radius
    * Clean and sturdy. Not too round, not too sharp.
@@ -107,6 +111,8 @@
    */
   --primary: 132 36% 23%;
   --primary-foreground: 42 40% 98%;
+  --primary-disabled: 132 18% 78%;
+  --primary-disabled-foreground: 215 16% 38%;
 
   /**
    * Secondary
@@ -177,6 +183,8 @@
 
   --primary: 118 32% 72%;
   --primary-foreground: 140 26% 8%;
+  --primary-disabled: 140 10% 28%;
+  --primary-disabled-foreground: 42 14% 58%;
 
   --secondary: 140 10% 18%;
   --secondary-foreground: 42 34% 96%;

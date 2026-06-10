@@ -6,6 +6,7 @@ import {
   ThemeProvider,
 } from '@razzak-machinaries/shared/ui';
 import '@razzak-machinaries/shared/ui/styles/globals.css';
+import { AppProviders } from '@/i18n/AppProviders';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -24,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={getThemeHtmlClass(themeMode)}>
       <body>
-        <ThemeProvider {...themeProviderModeConfig}>{children}</ThemeProvider>
+        <ThemeProvider {...themeProviderModeConfig}>
+          <AppProviders>{children}</AppProviders>
+        </ThemeProvider>
       </body>
     </html>
   );

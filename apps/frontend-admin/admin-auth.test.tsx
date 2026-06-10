@@ -1,3 +1,9 @@
+import {
+  DISPLAY_MODE_STORAGE_KEY,
+  LANGUAGE_STORAGE_KEY,
+  LanguageProvider,
+  type LanguagePreference,
+} from '@razzak-machinaries/shared/i18n';
 import { render, screen, waitFor } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import userEvent from '@testing-library/user-event';
@@ -8,6 +14,7 @@ import { AdminProfilePage } from './src/app/AdminProfilePage';
 import { LoginPage } from './src/app/login/LoginPage';
 import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
 import { ADMIN_AUTH_COPY } from './src/auth/messages';
+import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
 import { adminUser, server } from './vitest.setup';
 
 const replaceMock = vi.fn();
@@ -19,8 +26,21 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-function renderWithAuth(ui: ReactElement) {
-  return render(<AdminAuthProvider>{ui}</AdminAuthProvider>);
+function setLanguagePreference(preference: LanguagePreference) {
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, preference.language);
+  localStorage.setItem(DISPLAY_MODE_STORAGE_KEY, preference.displayMode);
+}
+
+function renderWithAuth(
+  ui: ReactElement,
+  preference: LanguagePreference = { language: 'en', displayMode: 'en' },
+) {
+  setLanguagePreference(preference);
+  return render(
+    <LanguageProvider catalogs={{ en: adminTranslationsEn, bn: adminTranslationsBn }}>
+      <AdminAuthProvider>{ui}</AdminAuthProvider>
+    </LanguageProvider>,
+  );
 }
 
 describe('LoginPage', () => {
@@ -34,6 +54,12 @@ describe('LoginPage', () => {
     expect(screen.getByLabelText(ADMIN_AUTH_COPY.usernameOrEmailLabel)).toBeInTheDocument();
     expect(screen.getByLabelText(ADMIN_AUTH_COPY.passwordLabel)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ADMIN_AUTH_COPY.signIn })).toBeInTheDocument();
+  });
+
+  it('does not render language switcher on login', async () => {
+    renderWithAuth(<LoginPage />);
+    await screen.findByTestId('admin-login-page');
+    expect(screen.queryByRole('button', { name: 'Both' })).not.toBeInTheDocument();
   });
 
   it('disables submit when required fields are empty', async () => {
@@ -137,12 +163,54 @@ describe('Admin profile and route guards', () => {
     expect(await screen.findByTestId('admin-profile-name')).toHaveTextContent(adminUser.name);
     expect(screen.getByTestId('admin-profile-username')).toHaveTextContent(adminUser.username);
     expect(screen.getByTestId('admin-profile-email')).toHaveTextContent(adminUser.email);
-    expect(
-      screen.getByText(`${ADMIN_AUTH_COPY.staffStatus}: ${ADMIN_AUTH_COPY.yes}`),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(`${ADMIN_AUTH_COPY.superuserStatus}: ${ADMIN_AUTH_COPY.yes}`),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('admin-profile-staff-badge')).toHaveTextContent(
+      adminTranslationsEn['profile.staffYes'],
+    );
+    expect(screen.getByTestId('admin-profile-superuser-badge')).toHaveTextContent(
+      adminTranslationsEn['profile.superuserYes'],
+    );
+  });
+
+  it('shows inactive staff badge when user is not staff', async () => {
+    server.use(
+      http.get('*/api/admin/auth/me/', () =>
+        HttpResponse.json({ ...adminUser, isStaff: false, isSuperuser: true }),
+      ),
+    );
+
+    renderWithAuth(<AdminProfilePage />);
+    await screen.findByTestId('admin-profile-name');
+
+    expect(screen.getByTestId('admin-profile-staff-badge')).toHaveTextContent(
+      adminTranslationsEn['profile.staffNo'],
+    );
+    expect(screen.getByTestId('admin-profile-superuser-badge')).toHaveTextContent(
+      adminTranslationsEn['profile.superuserYes'],
+    );
+  });
+
+  it('shows both languages on profile when display mode is both', async () => {
+    server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)));
+
+    const user = userEvent.setup();
+    renderWithAuth(<AdminProfilePage />, { language: 'en', displayMode: 'both' });
+    await screen.findByTestId('admin-profile-name');
+
+    await user.click(screen.getByRole('button', { name: 'Both' }));
+
+    expect(await screen.findByText(adminTranslationsEn['profile.title'])).toHaveAttribute(
+      'lang',
+      'en',
+    );
+    expect(screen.getByText(adminTranslationsBn['profile.title'])).toHaveAttribute('lang', 'bn');
+    expect(screen.getByTestId('admin-profile-staff-badge')).toHaveTextContent(
+      adminTranslationsEn['profile.staffYes'],
+    );
+    expect(screen.getByText(adminTranslationsBn['profile.staffYes'])).toHaveAttribute('lang', 'bn');
+    expect(screen.getByText(adminTranslationsBn['profile.superuserYes'])).toHaveAttribute(
+      'lang',
+      'bn',
+    );
   });
 
   it('redirects authenticated users away from login page', async () => {
@@ -162,11 +230,28 @@ describe('Admin profile and route guards', () => {
     renderWithAuth(<AdminProfilePage />);
     await screen.findByTestId('admin-profile-name');
 
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.logout }));
+    await user.click(
+      screen.getByRole('button', { name: new RegExp(adminTranslationsEn['profile.logout']) }),
+    );
 
     await waitFor(() => {
       expect(replaceMock).toHaveBeenCalledWith('/login');
     });
+  });
+
+  it('shows both languages on link buttons when display mode is both', async () => {
+    server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)));
+
+    renderWithAuth(<AdminProfilePage />, { language: 'en', displayMode: 'both' });
+    await screen.findByTestId('admin-profile-name');
+
+    const changePasswordLink = screen.getByRole('link', {
+      name: new RegExp(adminTranslationsEn['password.changePassword']),
+    });
+    expect(changePasswordLink).toHaveAttribute('data-slot', 'button');
+    expect(
+      screen.getByText(adminTranslationsBn['password.changePassword']),
+    ).toHaveAttribute('lang', 'bn');
   });
 
   it('shows permission message when me returns forbidden', async () => {
@@ -218,16 +303,25 @@ describe('Admin profile and route guards', () => {
     renderWithAuth(<AdminProfilePage />);
     await screen.findByTestId('admin-profile-name');
 
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.editProfile }));
-    expect(screen.getByLabelText('First name')).toHaveValue(adminUser.firstName);
-    expect(screen.getByLabelText('Email')).toHaveValue(adminUser.email);
+    await user.click(
+      screen.getByRole('button', { name: adminTranslationsEn['profile.editProfile'] }),
+    );
+    expect(screen.getByLabelText(adminTranslationsEn['profile.firstName'])).toHaveValue(
+      adminUser.firstName,
+    );
+    expect(screen.getByLabelText(adminTranslationsEn['profile.email'])).toHaveValue(adminUser.email);
 
-    await user.clear(screen.getByLabelText('Email'));
-    await user.type(screen.getByLabelText('Email'), 'updated@example.com');
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.saveProfile }));
+    await user.clear(screen.getByLabelText(adminTranslationsEn['profile.email']));
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['profile.email']),
+      'updated@example.com',
+    );
+    await user.click(
+      screen.getByRole('button', { name: adminTranslationsEn['profile.saveProfile'] }),
+    );
 
     expect(await screen.findByTestId('admin-profile-success')).toHaveTextContent(
-      ADMIN_AUTH_COPY.profileSaved,
+      adminTranslationsEn['profile.saved'],
     );
     expect(screen.getByTestId('admin-profile-email')).toHaveTextContent('updated@example.com');
   });
@@ -253,8 +347,12 @@ describe('Admin profile and route guards', () => {
     const user = userEvent.setup();
     renderWithAuth(<AdminProfilePage />);
     await screen.findByTestId('admin-profile-name');
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.editProfile }));
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.saveProfile }));
+    await user.click(
+      screen.getByRole('button', { name: adminTranslationsEn['profile.editProfile'] }),
+    );
+    await user.click(
+      screen.getByRole('button', { name: adminTranslationsEn['profile.saveProfile'] }),
+    );
 
     expect(await screen.findByTestId('admin-profile-error')).toBeInTheDocument();
     expect(screen.queryByText(/VALIDATION_ERROR/i)).not.toBeInTheDocument();
@@ -271,12 +369,20 @@ describe('ChangePasswordPage', () => {
     renderWithAuth(<ChangePasswordPage />);
     await screen.findByTestId('admin-change-password-page');
 
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.currentPasswordLabel), 'current');
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.newPasswordLabel), 'NewPass123!');
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.confirmPasswordLabel), 'OtherPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
+      'current',
+    );
+    await user.type(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']), 'NewPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.confirmPasswordLabel']),
+      'OtherPass123!',
+    );
 
-    expect(screen.getByText(ADMIN_AUTH_COPY.passwordMismatch)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: ADMIN_AUTH_COPY.updatePassword })).toBeDisabled();
+    expect(screen.getByText(adminTranslationsEn['password.mismatch'])).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: adminTranslationsEn['password.updatePassword'] }),
+    ).toBeDisabled();
   });
 
   it('shows success and clears fields after password change', async () => {
@@ -288,16 +394,26 @@ describe('ChangePasswordPage', () => {
     renderWithAuth(<ChangePasswordPage />);
     await screen.findByTestId('admin-change-password-page');
 
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.currentPasswordLabel), 'current');
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.newPasswordLabel), 'NewPass123!');
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.confirmPasswordLabel), 'NewPass123!');
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.updatePassword }));
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
+      'current',
+    );
+    await user.type(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']), 'NewPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.confirmPasswordLabel']),
+      'NewPass123!',
+    );
+    await user.click(
+      screen.getByRole('button', { name: adminTranslationsEn['password.updatePassword'] }),
+    );
 
     expect(await screen.findByTestId('admin-change-password-success')).toHaveTextContent(
-      ADMIN_AUTH_COPY.passwordUpdated,
+      adminTranslationsEn['password.updated'],
     );
-    expect(screen.getByLabelText(ADMIN_AUTH_COPY.currentPasswordLabel)).toHaveValue('');
-    expect(screen.getByLabelText(ADMIN_AUTH_COPY.newPasswordLabel)).toHaveValue('');
+    expect(
+      screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
+    ).toHaveValue('');
+    expect(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel'])).toHaveValue('');
   });
 
   it('shows friendly error for wrong current password', async () => {
@@ -308,7 +424,7 @@ describe('ChangePasswordPage', () => {
             success: false,
             error: {
               code: 'INVALID_CURRENT_PASSWORD',
-              message: ADMIN_AUTH_COPY.currentPasswordWrong,
+              message: adminTranslationsEn['password.currentPasswordWrong'],
             },
           },
           { status: 400 },
@@ -320,14 +436,36 @@ describe('ChangePasswordPage', () => {
     renderWithAuth(<ChangePasswordPage />);
     await screen.findByTestId('admin-change-password-page');
 
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.currentPasswordLabel), 'wrong');
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.newPasswordLabel), 'NewPass123!');
-    await user.type(screen.getByLabelText(ADMIN_AUTH_COPY.confirmPasswordLabel), 'NewPass123!');
-    await user.click(screen.getByRole('button', { name: ADMIN_AUTH_COPY.updatePassword }));
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
+      'wrong',
+    );
+    await user.type(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']), 'NewPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.confirmPasswordLabel']),
+      'NewPass123!',
+    );
+    await user.click(
+      screen.getByRole('button', { name: adminTranslationsEn['password.updatePassword'] }),
+    );
 
     expect(await screen.findByTestId('admin-change-password-error')).toHaveTextContent(
-      ADMIN_AUTH_COPY.currentPasswordWrong,
+      adminTranslationsEn['password.currentPasswordWrong'],
     );
     expect(screen.queryByText(/INVALID_CURRENT_PASSWORD/i)).not.toBeInTheDocument();
+  });
+
+  it('shows both languages on change password when display mode is both', async () => {
+    const user = userEvent.setup();
+    renderWithAuth(<ChangePasswordPage />, { language: 'en', displayMode: 'both' });
+    await screen.findByTestId('admin-change-password-page');
+
+    await user.click(screen.getByRole('button', { name: 'Both' }));
+
+    expect(await screen.findByText(adminTranslationsEn['password.title'])).toHaveAttribute(
+      'lang',
+      'en',
+    );
+    expect(screen.getByText(adminTranslationsBn['password.title'])).toHaveAttribute('lang', 'bn');
   });
 });

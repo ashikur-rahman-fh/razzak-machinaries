@@ -22,4 +22,4 @@ export {
   type SemanticColorToken,
   type RadiusToken,
 } from './tokens';
-export { fontFamilyDisplay, fontFamilyMono, fontFamilySans } from './fonts';
+export { fontFamilyBangla, fontFamilyDisplay, fontFamilyMono, fontFamilySans } from './fonts';

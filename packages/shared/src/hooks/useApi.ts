@@ -1,11 +1,10 @@
-import { getUserFacingMessage } from '../api/core/errors';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type AsyncState<T> =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success'; data: T }
-  | { status: 'error'; error: string };
+  | { status: 'error'; error: unknown };
 
 export function useApi<T>(loader: () => Promise<T>) {
   const loaderRef = useRef(loader);
@@ -38,7 +37,7 @@ export function useApi<T>(loader: () => Promise<T>) {
       if (!mountedRef.current || requestId !== requestIdRef.current) {
         return;
       }
-      setState({ status: 'error', error: getUserFacingMessage(error) });
+      setState({ status: 'error', error });
     }
   }, []);
 

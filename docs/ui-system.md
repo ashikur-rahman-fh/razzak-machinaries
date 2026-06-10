@@ -28,7 +28,9 @@ A **warm, trustworthy, practical** look for a farming machinery marketplace — 
 | Headings / nav brand | Plus Jakarta Sans, Inter, Noto Sans, … (`font-display`) |
 | Code / metadata | JetBrains Mono, SFMono-Regular, Consolas, monospace |
 
-Inter is the primary UI font for sharp, eye-soothing body copy; Noto Sans provides multilingual fallback. Plus Jakarta Sans is used for headings, card titles, and navbar brand via the `font-display` utility. Fonts load from Google Fonts in `globals.css`. Use `font-mono` or `<code>` only for technical copy (API paths, env labels, version strings).
+Inter is the primary UI font for sharp, eye-soothing body copy; Noto Sans provides multilingual fallback. **Noto Sans Bengali** (`--font-bangla`, `.lang-bn`) is used for Bangla script. Plus Jakarta Sans is used for headings, card titles, and navbar brand via the `font-display` utility. Fonts load from Google Fonts in `globals.css`. Use `font-mono` or `<code>` only for technical copy (API paths, env labels, version strings).
+
+For bilingual content, use `BilingualText` from `@razzak-machinaries/shared/ui` and see [`bilingual-system.md`](bilingual-system.md).
 
 ### Theme tokens
 

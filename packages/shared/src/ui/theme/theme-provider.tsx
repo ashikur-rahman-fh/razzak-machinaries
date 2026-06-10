@@ -4,9 +4,20 @@ import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from 'ne
 
 import { defaultThemeConfig } from './theme-config';
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children, scriptProps, ...props }: ThemeProviderProps) {
+  // next-themes injects an inline script to prevent theme flash. React 19 warns when
+  // script tags render in client components; application/json avoids the false positive.
+  const resolvedScriptProps =
+    typeof window === 'undefined'
+      ? scriptProps
+      : { type: 'application/json' as const, ...scriptProps };
+
   return (
-    <NextThemesProvider {...defaultThemeConfig} {...props}>
+    <NextThemesProvider
+      {...defaultThemeConfig}
+      {...props}
+      scriptProps={resolvedScriptProps}
+    >
       {children}
     </NextThemesProvider>
   );

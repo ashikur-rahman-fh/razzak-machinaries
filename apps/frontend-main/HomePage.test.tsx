@@ -1,87 +1,68 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { LanguageProvider } from '@razzak-machinaries/shared/i18n';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { USER_MESSAGES } from '@razzak-machinaries/shared/api/errors';
-import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { HomePage } from './src/app/HomePage';
-import { server } from './vitest.setup';
+import { mainTranslationsBn, mainTranslationsEn } from './src/i18n/translations';
+
+function renderHomePage() {
+  return render(
+    <LanguageProvider catalogs={{ en: mainTranslationsEn, bn: mainTranslationsBn }}>
+      <HomePage />
+    </LanguageProvider>,
+  );
+}
 
 describe('HomePage', () => {
-  it('renders title', () => {
-    render(<HomePage />);
-    expect(screen.getByText('Backend connection')).toBeInTheDocument();
-  });
-
-  it('shows backend hello response', async () => {
-    render(<HomePage />);
-    expect(await screen.findByTestId('hello-message')).toHaveTextContent(
-      'Hello from Django backend',
+  it('renders marketplace hero and search', () => {
+    renderHomePage();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      mainTranslationsEn['home.heroTitle'],
+    );
+    expect(screen.getByTestId('home-search-input')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: mainTranslationsEn['home.browseListings'] })).toHaveAttribute(
+      'href',
+      '/products',
+    );
+    expect(screen.getByRole('link', { name: mainTranslationsEn['home.sellMachine'] })).toHaveAttribute(
+      'href',
+      '/sell',
     );
   });
 
-  it('shared Button triggers reload', async () => {
+  it('renders category links', () => {
+    renderHomePage();
+    expect(screen.getByRole('link', { name: mainTranslationsEn['home.categoryTractors'] })).toHaveAttribute(
+      'href',
+      '/products?category=tractors',
+    );
+    expect(screen.getByRole('link', { name: mainTranslationsEn['home.categoryHarvesters'] })).toBeInTheDocument();
+  });
+
+  it('renders featured listings section', () => {
+    renderHomePage();
+    expect(screen.getByRole('heading', { level: 2, name: mainTranslationsEn['home.featuredTitle'] })).toBeInTheDocument();
+    expect(screen.getByText(mainTranslationsEn['home.listing1Name'])).toBeInTheDocument();
+    expect(screen.getByText(mainTranslationsEn['home.listing2Name'])).toBeInTheDocument();
+    expect(screen.getByText(mainTranslationsEn['home.listing3Name'])).toBeInTheDocument();
+  });
+
+  it('renders trust strip', () => {
+    renderHomePage();
+    expect(screen.getByText(mainTranslationsEn['home.trustTitle'])).toBeInTheDocument();
+    expect(screen.getByText(mainTranslationsEn['home.trustVerified'])).toBeInTheDocument();
+  });
+
+  it('shows both languages on sell CTA when display mode is both', async () => {
     const user = userEvent.setup();
-    let requestCount = 0;
-    server.use(
-      http.get('*/api/hello/', () => {
-        requestCount += 1;
-        return HttpResponse.json({ message: 'Hello from Django backend' });
-      }),
-    );
+    localStorage.setItem('rm_display_mode', 'both');
+    localStorage.setItem('rm_language', 'en');
 
-    render(<HomePage />);
-    await screen.findByTestId('hello-message');
-    const countAfterMount = requestCount;
+    renderHomePage();
 
-    await user.click(screen.getByRole('button', { name: /reload hello/i }));
-    await waitFor(() => {
-      expect(requestCount).toBeGreaterThan(countAfterMount);
-    });
-  });
+    await user.click(screen.getByRole('button', { name: 'Both' }));
 
-  it('shows a safe error message when the API fails', async () => {
-    server.use(
-      http.get('*/api/hello/', () =>
-        HttpResponse.json(
-          {
-            success: false,
-            error: {
-              code: 'INTERNAL_SERVER_ERROR',
-              message: USER_MESSAGES.serverError,
-              details: {},
-            },
-          },
-          { status: 500 },
-        ),
-      ),
-    );
-
-    render(<HomePage />);
-
-    expect(await screen.findByText(USER_MESSAGES.serverError)).toBeInTheDocument();
-  });
-
-  it('disables reload while loading', async () => {
-    let resolveResponse!: () => void;
-    const pending = new Promise<void>((resolve) => {
-      resolveResponse = resolve;
-    });
-    server.use(
-      http.get('*/api/hello/', async () => {
-        await pending;
-        return HttpResponse.json({ message: 'Hello from Django backend' });
-      }),
-    );
-
-    render(<HomePage />);
-
-    const button = await screen.findByRole('button', { name: /loading hello/i });
-    expect(button).toBeDisabled();
-    expect(button).toHaveAttribute('aria-busy', 'true');
-
-    resolveResponse();
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /reload hello/i })).toBeEnabled();
-    });
+    expect(await screen.findByText(mainTranslationsEn['home.sellMachine'])).toHaveAttribute('lang', 'en');
+    expect(screen.getByText(mainTranslationsBn['home.sellMachine'])).toHaveAttribute('lang', 'bn');
   });
 });

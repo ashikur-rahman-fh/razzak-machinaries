@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
 
 @import 'tailwindcss';
 @plugin 'tailwindcss-animate';
@@ -68,5 +68,66 @@
 
   .shadow-card {
     box-shadow: var(--shadow-card);
+  }
+
+  .lang-en {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  .lang-bn {
+    font-family: var(--font-bangla);
+    line-height: 1.75;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  :lang(bn) {
+    font-family: var(--font-bangla);
+    line-height: 1.75;
+    letter-spacing: 0;
+  }
+
+  .bilingual-secondary {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.925em;
+    opacity: 0.82;
+  }
+
+  .bilingual-text .bilingual-secondary {
+    margin-top: 0;
+  }
+
+  [data-content-display='both'] [data-slot='button']:not([aria-pressed]) {
+    height: auto;
+    min-height: 2rem;
+    white-space: normal;
+    padding-block: 0.375rem;
+  }
+
+  [data-content-display='both'] [data-slot='button']:not([aria-pressed]).h-9,
+  [data-content-display='both'] [data-slot='button']:not([aria-pressed]).h-10 {
+    min-height: 2.25rem;
+  }
+
+  [data-content-display='both'] [data-slot='button']:not([aria-pressed]).h-8 {
+    min-height: 2rem;
+  }
+
+  [data-content-display='both'] [data-slot='badge'] {
+    height: auto;
+    min-height: 1.25rem;
+    padding-block: 0.25rem;
+    white-space: normal;
+  }
+
+  [data-slot='badge'] .bilingual-text {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  [data-content-display='both'] .font-display.leading-none {
+    line-height: 1.375;
   }
 }

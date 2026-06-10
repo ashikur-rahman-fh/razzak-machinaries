@@ -179,6 +179,33 @@ describe('createApiClient HTTP errors', () => {
     });
   }
 
+  it('marks Django VALIDATION_ERROR envelope as validation error', async () => {
+    const client = createApiClient({
+      serviceName: 'test',
+      baseURL: BASE,
+      adapter: createMockAdapter((config) =>
+        mockJsonResponse(config, {
+          status: 400,
+          data: {
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: USER_MESSAGES.validation,
+              details: { email: ['Enter a valid email address.'] },
+            },
+          },
+        }),
+      ),
+    });
+
+    await expect(client.get('/api/hello/')).rejects.toMatchObject({
+      message: USER_MESSAGES.validation,
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      isValidationError: true,
+    });
+  });
+
   it('uses backend error envelope message when present', async () => {
     const client = createApiClient({
       serviceName: 'test',

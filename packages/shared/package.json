@@ -21,6 +21,7 @@
     "./components/ErrorState": "./src/ui/components/error-state/index.ts",
     "./types/api": "./src/types/api.ts",
     "./constants/routes": "./src/constants/routes.ts",
+    "./i18n": "./src/i18n/index.ts",
     "./security/headers": "./src/security/headers.mjs"
   },
   "peerDependencies": {

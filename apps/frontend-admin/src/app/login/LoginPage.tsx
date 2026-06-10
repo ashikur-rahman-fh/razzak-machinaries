@@ -61,7 +61,7 @@ export function LoginPage() {
               {error ? (
                 <ErrorAlert
                   id={errorId}
-                  title="Sign in failed"
+                  title={ADMIN_AUTH_COPY.signInFailed}
                   description={error}
                   role="alert"
                   aria-live="polite"

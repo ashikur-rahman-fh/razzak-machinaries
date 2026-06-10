@@ -29,11 +29,11 @@ const iconMap = {
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
 
-export type AlertProps = React.HTMLAttributes<HTMLDivElement> &
+export type AlertProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> &
   VariantProps<typeof alertVariants> & {
     variant?: AlertVariant;
-    title?: string;
-    description?: string;
+    title?: React.ReactNode;
+    description?: React.ReactNode;
   };
 
 export function Alert({

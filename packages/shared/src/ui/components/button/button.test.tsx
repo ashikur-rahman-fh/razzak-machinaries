@@ -30,6 +30,14 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
+  it('uses dedicated disabled colors for primary variant', () => {
+    render(<Button disabled>Disabled</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('disabled:bg-primary-disabled');
+    expect(button).toHaveClass('disabled:text-primary-disabled-foreground');
+    expect(button).not.toHaveClass('disabled:opacity-50');
+  });
+
   it('supports custom className', () => {
     render(<Button className="custom-class">Styled</Button>);
     expect(screen.getByRole('button')).toHaveClass('custom-class');
@@ -41,5 +49,22 @@ describe('Button', () => {
     render(<Button onClick={onClick}>Click</Button>);
     await user.click(screen.getByRole('button', { name: 'Click' }));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets data-slot="button" on native button elements', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button', { name: 'Click me' })).toHaveAttribute('data-slot', 'button');
+  });
+
+  it('sets data-slot="button" when rendered asChild with an anchor', () => {
+    render(
+      <Button asChild>
+        <a href="/change-password">Change password</a>
+      </Button>,
+    );
+    expect(screen.getByRole('link', { name: 'Change password' })).toHaveAttribute(
+      'data-slot',
+      'button',
+    );
   });
 });

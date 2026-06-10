@@ -1,6 +1,7 @@
 'use client';
 
 import { adminAuthApi, getUserFacingMessage, isApiError } from '@razzak-machinaries/shared/api';
+import { useLanguagePreference, useTranslation } from '@razzak-machinaries/shared/i18n';
 import {
   Badge,
   Button,
@@ -10,27 +11,51 @@ import {
   CardHeader,
   CardTitle,
   ErrorAlert,
+  SuccessAlert,
   Input,
-  Navbar,
   PageShell,
+  TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
-import { ADMIN_AUTH_COPY } from '@/auth/messages';
+import { AdminNavbar } from '@/components/AdminNavbar';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 
-function StatusBadge({ label, active }: { label: string; active: boolean }) {
+function StatusBadge({
+  labelKey,
+  active,
+  testId,
+}: {
+  labelKey: 'profile.staffStatus' | 'profile.superuserStatus';
+  active: boolean;
+  testId: string;
+}) {
+  const translationKey =
+    labelKey === 'profile.staffStatus'
+      ? active
+        ? 'profile.staffYes'
+        : 'profile.staffNo'
+      : active
+        ? 'profile.superuserYes'
+        : 'profile.superuserNo';
+
   return (
-    <Badge variant={active ? 'default' : 'outline'}>
-      {label}: {active ? ADMIN_AUTH_COPY.yes : ADMIN_AUTH_COPY.no}
+    <Badge
+      variant={active ? 'success' : 'outline'}
+      className="items-start gap-0 px-2.5 py-1"
+      data-testid={testId}
+    >
+      <TranslatedText translationKey={translationKey} as="span" layout="inline" />
     </Badge>
   );
 }
 
 export function AdminProfilePage() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const { language } = useLanguagePreference();
   const { user, logout, isLoggingOut, refreshUser } = useAdminAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -38,7 +63,7 @@ export function AdminProfilePage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [successKey, setSuccessKey] = useState<string | null>(null);
 
   const firstNameId = useId();
   const lastNameId = useId();
@@ -54,7 +79,7 @@ export function AdminProfilePage() {
     setLastName(user.lastName);
     setEmail(user.email);
     setError(null);
-    setSuccess(null);
+    setSuccessKey(null);
     setIsEditing(true);
   }
 
@@ -75,7 +100,7 @@ export function AdminProfilePage() {
     }
     setIsSaving(true);
     setError(null);
-    setSuccess(null);
+    setSuccessKey(null);
     try {
       await adminAuthApi.updateProfile({
         firstName: firstName.trim(),
@@ -84,12 +109,12 @@ export function AdminProfilePage() {
       });
       await refreshUser();
       setIsEditing(false);
-      setSuccess(ADMIN_AUTH_COPY.profileSaved);
+      setSuccessKey('profile.saved');
     } catch (err) {
       if (isApiError(err) && err.isValidationError) {
-        setError(ADMIN_AUTH_COPY.profileValidation);
+        setError(t('profile.validation'));
       } else {
-        setError(getUserFacingMessage(err));
+        setError(getUserFacingMessage(err, language));
       }
     } finally {
       setIsSaving(false);
@@ -103,21 +128,10 @@ export function AdminProfilePage() {
       <PageShell
         data-testid="admin-profile-page"
         header={
-          <Navbar
-            appName="Razzak Machinaries Admin"
-            items={[{ label: 'Profile', href: '/', active: true }]}
-            actions={
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => void handleLogout()}
-                disabled={isLoggingOut}
-                aria-busy={isLoggingOut}
-              >
-                {isLoggingOut ? ADMIN_AUTH_COPY.loggingOut : ADMIN_AUTH_COPY.logout}
-              </Button>
-            }
+          <AdminNavbar
+            activeRoute="profile"
+            onLogout={() => void handleLogout()}
+            isLoggingOut={isLoggingOut}
           />
         }
       >
@@ -126,31 +140,35 @@ export function AdminProfilePage() {
             <Card>
               <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4">
                 <div className="space-y-1">
-                  <CardTitle>{ADMIN_AUTH_COPY.profileTitle}</CardTitle>
-                  <CardDescription>{ADMIN_AUTH_COPY.profileSubtitle}</CardDescription>
+                  <CardTitle>
+                    <TranslatedText translationKey="profile.title" as="span" />
+                  </CardTitle>
+                  <CardDescription>
+                    <TranslatedText translationKey="profile.subtitle" as="span" />
+                  </CardDescription>
                 </div>
                 {!isEditing ? (
                   <div className="flex flex-wrap gap-2">
                     <Button type="button" variant="outline" size="sm" onClick={startEditing}>
-                      {ADMIN_AUTH_COPY.editProfile}
+                      <TranslatedText translationKey="profile.editProfile" as="span" compact />
                     </Button>
                     <Button type="button" variant="outline" size="sm" asChild>
-                      <Link href="/change-password">{ADMIN_AUTH_COPY.changePassword}</Link>
+                      <Link href="/change-password">
+                        <TranslatedText translationKey="password.changePassword" as="span" compact />
+                      </Link>
                     </Button>
                   </div>
                 ) : null}
               </CardHeader>
               <CardContent className="space-y-4">
-                {success ? (
-                  <p
+                {successKey ? (
+                  <SuccessAlert
                     id={successId}
-                    className="text-sm text-green-700 dark:text-green-400"
+                    title={<TranslatedText translationKey={successKey} as="span" />}
                     role="status"
                     aria-live="polite"
                     data-testid="admin-profile-success"
-                  >
-                    {success}
-                  </p>
+                  />
                 ) : null}
 
                 {isEditing ? (
@@ -162,7 +180,7 @@ export function AdminProfilePage() {
                     {error ? (
                       <ErrorAlert
                         id={errorId}
-                        title="Could not save profile"
+                        title={t('profile.saveFailed')}
                         description={error}
                         role="alert"
                         aria-live="polite"
@@ -171,7 +189,7 @@ export function AdminProfilePage() {
                     ) : null}
                     <div className="space-y-2">
                       <label htmlFor={firstNameId} className="text-sm font-medium text-foreground">
-                        First name
+                        {t('profile.firstName')}
                       </label>
                       <Input
                         id={firstNameId}
@@ -183,7 +201,7 @@ export function AdminProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <label htmlFor={lastNameId} className="text-sm font-medium text-foreground">
-                        Last name
+                        {t('profile.lastName')}
                       </label>
                       <Input
                         id={lastNameId}
@@ -195,7 +213,7 @@ export function AdminProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <label htmlFor={emailId} className="text-sm font-medium text-foreground">
-                        Email
+                        {t('profile.email')}
                       </label>
                       <Input
                         id={emailId}
@@ -209,7 +227,11 @@ export function AdminProfilePage() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button type="submit" disabled={!canSave} aria-busy={isSaving}>
-                        {isSaving ? ADMIN_AUTH_COPY.savingProfile : ADMIN_AUTH_COPY.saveProfile}
+                        {isSaving ? (
+                          <TranslatedText translationKey="profile.savingProfile" as="span" compact />
+                        ) : (
+                          <TranslatedText translationKey="profile.saveProfile" as="span" compact />
+                        )}
                       </Button>
                       <Button
                         type="button"
@@ -217,7 +239,7 @@ export function AdminProfilePage() {
                         onClick={cancelEditing}
                         disabled={isSaving}
                       >
-                        {ADMIN_AUTH_COPY.cancelEdit}
+                        <TranslatedText translationKey="profile.cancelEdit" as="span" compact />
                       </Button>
                     </div>
                   </form>
@@ -225,23 +247,28 @@ export function AdminProfilePage() {
                   <>
                     <dl className="grid gap-3 text-sm">
                       <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">Name</dt>
+                        <dt className="font-medium text-muted-foreground">{t('profile.name')}</dt>
                         <dd data-testid="admin-profile-name">{user.name}</dd>
                       </div>
                       <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">Username</dt>
+                        <dt className="font-medium text-muted-foreground">{t('profile.username')}</dt>
                         <dd data-testid="admin-profile-username">{user.username}</dd>
                       </div>
                       <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">Email</dt>
+                        <dt className="font-medium text-muted-foreground">{t('profile.email')}</dt>
                         <dd data-testid="admin-profile-email">{user.email}</dd>
                       </div>
                     </dl>
                     <div className="flex flex-wrap gap-2">
-                      <StatusBadge label={ADMIN_AUTH_COPY.staffStatus} active={user.isStaff} />
                       <StatusBadge
-                        label={ADMIN_AUTH_COPY.superuserStatus}
+                        labelKey="profile.staffStatus"
+                        active={user.isStaff}
+                        testId="admin-profile-staff-badge"
+                      />
+                      <StatusBadge
+                        labelKey="profile.superuserStatus"
                         active={user.isSuperuser}
+                        testId="admin-profile-superuser-badge"
                       />
                     </div>
                   </>

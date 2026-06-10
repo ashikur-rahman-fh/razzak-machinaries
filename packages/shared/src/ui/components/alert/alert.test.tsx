@@ -35,4 +35,15 @@ describe('Alert', () => {
     render(<Alert className="my-alert" title="Custom" />);
     expect(screen.getByRole('alert')).toHaveClass('my-alert');
   });
+
+  it('accepts ReactNode title and description', () => {
+    render(
+      <Alert
+        title={<span data-testid="alert-title">Localized title</span>}
+        description={<span data-testid="alert-description">Localized description</span>}
+      />,
+    );
+    expect(screen.getByTestId('alert-title')).toBeInTheDocument();
+    expect(screen.getByTestId('alert-description')).toBeInTheDocument();
+  });
 });

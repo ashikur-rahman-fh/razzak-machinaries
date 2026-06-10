@@ -7,6 +7,7 @@ import {
 } from '@razzak-machinaries/shared/ui';
 import '@razzak-machinaries/shared/ui/styles/globals.css';
 import { AdminAuthProvider } from '@/auth/AdminAuthProvider';
+import { AppProviders } from '@/i18n/AppProviders';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,7 +27,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={getThemeHtmlClass(themeMode)}>
       <body>
         <ThemeProvider {...themeProviderModeConfig}>
-          <AdminAuthProvider>{children}</AdminAuthProvider>
+          <AppProviders>
+            <AdminAuthProvider>{children}</AdminAuthProvider>
+          </AppProviders>
         </ThemeProvider>
       </body>
     </html>

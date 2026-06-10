@@ -9,6 +9,13 @@ export {
   type AlertVariant,
 } from './components/alert';
 export { Navbar, type NavbarItem, type NavbarProps } from './components/navbar';
+export { BilingualText, type BilingualTextProps } from './components/bilingual-text';
+export { TranslatedText, type TranslatedTextProps } from './components/translated-text';
+export {
+  LanguageSwitcher,
+  type LanguageSwitcherLabels,
+  type LanguageSwitcherProps,
+} from './components/language-switcher';
 export { PageShell, type PageShellProps } from './components/page-shell';
 export {
   Card,
@@ -41,6 +48,7 @@ export {
   fontFamilySans,
   fontFamilyDisplay,
   fontFamilyMono,
+  fontFamilyBangla,
   type ThemeMode,
   type ThemeProviderModeConfig,
 } from './theme';

@@ -303,7 +303,7 @@ try {
   const health = await backendMainApi.get<HealthResponse>('/api/health/');
 } catch (error) {
   if (isApiError(error)) {
-    // error.message is safe for UI; error.isUnauthorized for future redirect
+    // Use getUserFacingMessage(error, language) for UI copy; use flags like isUnauthorized for control flow.
   }
 }
 ```

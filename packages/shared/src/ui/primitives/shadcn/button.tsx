@@ -10,18 +10,23 @@ const buttonVariants = cva(
     'cursor-pointer select-none',
     'transition-colors duration-150 ease-out',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-    'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+    'disabled:pointer-events-none disabled:cursor-not-allowed',
     '[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   ].join(' '),
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input bg-card text-foreground hover:bg-muted hover:text-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'text-foreground hover:bg-muted',
-        link: 'text-primary underline-offset-4 hover:underline',
+        default:
+          'bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary-disabled disabled:text-primary-disabled-foreground disabled:hover:bg-primary-disabled disabled:shadow-none',
+        destructive:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:bg-muted disabled:text-muted-foreground disabled:hover:bg-muted',
+        outline:
+          'border border-input bg-card text-foreground hover:bg-muted hover:text-foreground disabled:bg-muted disabled:text-muted-foreground disabled:border-border disabled:hover:bg-muted',
+        secondary:
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:bg-muted disabled:text-muted-foreground disabled:hover:bg-muted',
+        ghost:
+          'text-foreground hover:bg-muted disabled:text-muted-foreground disabled:hover:bg-transparent',
+        link: 'text-primary underline-offset-4 hover:underline disabled:text-muted-foreground disabled:no-underline',
       },
       size: {
         default: 'h-9 px-4 py-2',
@@ -46,7 +51,12 @@ const ShadcnButton = React.forwardRef<HTMLButtonElement, ShadcnButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <Comp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
     );
   },
 );

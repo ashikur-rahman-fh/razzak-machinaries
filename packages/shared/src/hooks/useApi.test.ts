@@ -67,31 +67,31 @@ describe('useApi', () => {
     consoleError.mockRestore();
   });
 
-  it('surfaces safe user-facing messages from ApiError', async () => {
-    const loader = vi
-      .fn()
-      .mockRejectedValue(new ApiError({ message: USER_MESSAGES.notFound, status: 404 }));
+  it('surfaces ApiError instances for localized rendering', async () => {
+    const apiError = new ApiError({ message: USER_MESSAGES.notFound, status: 404 });
+    const loader = vi.fn().mockRejectedValue(apiError);
 
     const { result } = renderHook(() => useApi(loader));
 
     await waitFor(() => {
-      expect(result.current.state).toEqual({
-        status: 'error',
-        error: USER_MESSAGES.notFound,
-      });
+      expect(result.current.state.status).toBe('error');
+      if (result.current.state.status === 'error') {
+        expect(result.current.state.error).toBe(apiError);
+      }
     });
   });
 
-  it('surfaces generic message for unexpected errors', async () => {
-    const loader = vi.fn().mockRejectedValue(new Error('Request failed with status 500'));
+  it('surfaces unexpected errors for localized rendering', async () => {
+    const unexpected = new Error('Request failed with status 500');
+    const loader = vi.fn().mockRejectedValue(unexpected);
 
     const { result } = renderHook(() => useApi(loader));
 
     await waitFor(() => {
-      expect(result.current.state).toEqual({
-        status: 'error',
-        error: USER_MESSAGES.unknown,
-      });
+      expect(result.current.state.status).toBe('error');
+      if (result.current.state.status === 'error') {
+        expect(result.current.state.error).toBe(unexpected);
+      }
     });
   });
 });

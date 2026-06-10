@@ -12,8 +12,10 @@ const buttonVariants = cva('', {
       outline: '',
       ghost: '',
       destructive: '',
-      warning: 'bg-warning text-warning-foreground hover:bg-warning/90',
-      success: 'bg-success text-success-foreground hover:bg-success/90',
+      warning:
+        'bg-warning text-warning-foreground hover:bg-warning/90 disabled:bg-muted disabled:text-muted-foreground disabled:hover:bg-muted',
+      success:
+        'bg-success text-success-foreground hover:bg-success/90 disabled:bg-muted disabled:text-muted-foreground disabled:hover:bg-muted',
     },
     size: {
       sm: '',

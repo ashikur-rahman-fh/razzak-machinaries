@@ -1,30 +1,33 @@
 'use client';
 
 import { adminAuthApi, isApiError } from '@razzak-machinaries/shared/api';
+import { useTranslation } from '@razzak-machinaries/shared/i18n';
 import {
   ErrorAlert,
+  SuccessAlert,
   Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Navbar,
   PageShell,
   PasswordInput,
+  TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 import { useId, useState, type FormEvent } from 'react';
-import { ADMIN_AUTH_COPY } from '@/auth/messages';
+import { AdminNavbar } from '@/components/AdminNavbar';
 import { RequireAdminAuth } from '@/auth/guards';
 
 export function ChangePasswordPage() {
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [successKey, setSuccessKey] = useState<string | null>(null);
 
   const currentId = useId();
   const newId = useId();
@@ -45,13 +48,13 @@ export function ChangePasswordPage() {
     event.preventDefault();
     if (!canSubmit) {
       if (trimmedMismatch) {
-        setError(ADMIN_AUTH_COPY.passwordMismatch);
+        setError(t('password.mismatch'));
       }
       return;
     }
     setIsSaving(true);
     setError(null);
-    setSuccess(null);
+    setSuccessKey(null);
     try {
       await adminAuthApi.changePassword({
         currentPassword,
@@ -61,20 +64,20 @@ export function ChangePasswordPage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      setSuccess(ADMIN_AUTH_COPY.passwordUpdated);
+      setSuccessKey('password.updated');
     } catch (err) {
       if (isApiError(err)) {
         if (err.code === 'INVALID_CURRENT_PASSWORD') {
-          setError(ADMIN_AUTH_COPY.currentPasswordWrong);
+          setError(t('password.currentPasswordWrong'));
         } else if (err.code === 'WEAK_PASSWORD') {
-          setError(ADMIN_AUTH_COPY.weakPassword);
+          setError(t('password.weakPassword'));
         } else if (err.isValidationError) {
-          setError(ADMIN_AUTH_COPY.passwordValidation);
+          setError(t('password.validation'));
         } else {
-          setError(ADMIN_AUTH_COPY.passwordValidation);
+          setError(t('password.validation'));
         }
       } else {
-        setError(ADMIN_AUTH_COPY.passwordValidation);
+        setError(t('password.validation'));
       }
     } finally {
       setIsSaving(false);
@@ -85,96 +88,94 @@ export function ChangePasswordPage() {
     <RequireAdminAuth>
       <PageShell
         data-testid="admin-change-password-page"
-        header={
-          <Navbar
-            appName="Razzak Machinaries Admin"
-            items={[
-              { label: 'Profile', href: '/' },
-              { label: ADMIN_AUTH_COPY.changePassword, href: '/change-password', active: true },
-            ]}
-          />
-        }
+        header={<AdminNavbar activeRoute="change-password" />}
         contentClassName="flex flex-1 items-center justify-center px-4 py-12"
       >
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-2">
-            <CardTitle>{ADMIN_AUTH_COPY.changePasswordTitle}</CardTitle>
-            <CardDescription>{ADMIN_AUTH_COPY.changePasswordSubtitle}</CardDescription>
+            <CardTitle>
+              <TranslatedText translationKey="password.title" as="span" />
+            </CardTitle>
+            <CardDescription>
+              <TranslatedText translationKey="password.subtitle" as="span" />
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)} noValidate>
               {error ? (
                 <ErrorAlert
                   id={errorId}
-                  title="Could not update password"
+                  title={t('password.updateFailed')}
                   description={error}
                   role="alert"
                   aria-live="polite"
                   data-testid="admin-change-password-error"
                 />
               ) : null}
-              {success ? (
-                <p
-                  className="text-sm text-green-700 dark:text-green-400"
+              {successKey ? (
+                <SuccessAlert
+                  title={<TranslatedText translationKey={successKey} as="span" />}
                   role="status"
                   aria-live="polite"
                   data-testid="admin-change-password-success"
-                >
-                  {success}
-                </p>
+                />
               ) : null}
 
               <PasswordInput
                 id={currentId}
                 name="currentPassword"
-                label={ADMIN_AUTH_COPY.currentPasswordLabel}
+                label={t('password.currentPasswordLabel')}
                 value={currentPassword}
                 onChange={(event) => setCurrentPassword(event.target.value)}
                 autoComplete="current-password"
                 disabled={isSaving}
                 required
-                showPasswordLabel={ADMIN_AUTH_COPY.showPassword}
-                hidePasswordLabel={ADMIN_AUTH_COPY.hidePassword}
+                showPasswordLabel={t('profile.showPassword')}
+                hidePasswordLabel={t('profile.hidePassword')}
               />
 
               <PasswordInput
                 id={newId}
                 name="newPassword"
-                label={ADMIN_AUTH_COPY.newPasswordLabel}
+                label={t('password.newPasswordLabel')}
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
                 autoComplete="new-password"
                 disabled={isSaving}
                 required
-                showPasswordLabel={ADMIN_AUTH_COPY.showPassword}
-                hidePasswordLabel={ADMIN_AUTH_COPY.hidePassword}
+                showPasswordLabel={t('profile.showPassword')}
+                hidePasswordLabel={t('profile.hidePassword')}
               />
 
               <PasswordInput
                 id={confirmId}
                 name="confirmPassword"
-                label={ADMIN_AUTH_COPY.confirmPasswordLabel}
+                label={t('password.confirmPasswordLabel')}
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 autoComplete="new-password"
                 disabled={isSaving}
                 required
-                showPasswordLabel={ADMIN_AUTH_COPY.showPassword}
-                hidePasswordLabel={ADMIN_AUTH_COPY.hidePassword}
+                showPasswordLabel={t('profile.showPassword')}
+                hidePasswordLabel={t('profile.hidePassword')}
               />
 
               {trimmedMismatch ? (
-                <p className="text-sm text-destructive" role="alert">
-                  {ADMIN_AUTH_COPY.passwordMismatch}
-                </p>
+                <ErrorAlert title={t('password.mismatch')} role="alert" aria-live="polite" />
               ) : null}
 
               <div className="flex flex-col gap-2">
                 <Button type="submit" disabled={!canSubmit} aria-busy={isSaving}>
-                  {isSaving ? ADMIN_AUTH_COPY.updatingPassword : ADMIN_AUTH_COPY.updatePassword}
+                  {isSaving ? (
+                    <TranslatedText translationKey="password.updatingPassword" as="span" compact />
+                  ) : (
+                    <TranslatedText translationKey="password.updatePassword" as="span" compact />
+                  )}
                 </Button>
                 <Button type="button" variant="ghost" asChild>
-                  <Link href="/">{ADMIN_AUTH_COPY.backToProfile}</Link>
+                  <Link href="/">
+                    <TranslatedText translationKey="password.backToProfile" as="span" compact />
+                  </Link>
                 </Button>
               </div>
             </form>

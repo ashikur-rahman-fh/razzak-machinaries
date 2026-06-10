@@ -33,6 +33,7 @@ Workspace package `@razzak-machinaries/shared` provides:
 - Preconfigured clients: `backendMainApi` (stateless public API), `backendAdminApi` (session + CSRF for admin auth)
 - Thin endpoint helpers (`getHello`, `adminAuthApi`)
 - **Shared UI** (`packages/shared/src/ui/`) — **AgriSteel Marketplace** theme (field-green primary, warm agricultural neutrals, Noto Sans + Inter + JetBrains Mono, light/dark). Tailwind v4, shadcn primitives, Basecoat CSS. Import via `@razzak-machinaries/shared/ui`. See [`ui-system.md`](ui-system.md).
+- **Internationalization** (`packages/shared/src/i18n/`) — bilingual types, localization utilities, static translation dictionaries, `LanguageProvider`, `BilingualText`, and `LanguageSwitcher`. Client-side preference via `localStorage`. See [`bilingual-system.md`](bilingual-system.md).
 - Hooks (`useApi`)
 - Types and route constants
 - CSP / security headers for Next.js
@@ -68,7 +69,7 @@ packages/shared/src/api/
 
 - **Single Axios dependency** lives in `@razzak-machinaries/shared`; both frontends consume clients from here.
 - **Multiple backends**: add `api/clients/backend-secondary.ts` with `createApiClient({ serviceName, baseURL: env.backendSecondaryApiUrl, ... })` and export from `api/index.ts`.
-- **Errors**: Axios failures are normalized to `ApiError` with safe `message` and flags (`isUnauthorized`, `isNetworkError`, etc.). UI code uses `isApiError()` and `getUserFacingMessage()` — never raw `AxiosError`.
+- **Errors**: Axios failures are normalized to `ApiError` with safe `message` and flags (`isUnauthorized`, `isNetworkError`, etc.). Backend envelopes use sanitized messages, but **frontend UI must render errors via `getUserFacingMessage(error, language)`** (or the approved localized path)—never raw `error.message` or `AxiosError`.
 - **CSRF / cookies**: `backendMainApi` stays stateless (`withCredentials: false`). `backendAdminApi` uses `withCredentials: true` and a CSRF bootstrap (`GET /api/admin/auth/csrf/`) because production sets `CSRF_COOKIE_HTTPONLY=True`.
 - **Env**: `NEXT_PUBLIC_BACKEND_MAIN_API_URL` (see [`environment-variables.md`](environment-variables.md)).
 

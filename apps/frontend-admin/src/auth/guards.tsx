@@ -3,9 +3,10 @@
 import { LoadingState } from '@razzak-machinaries/shared/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
+import { ADMIN_AUTH_COPY } from './messages';
 import { useAdminAuth } from './AdminAuthProvider';
 
-function AuthLoadingShell({ label = 'Loading…' }: { label?: string }) {
+function AuthLoadingShell({ label = ADMIN_AUTH_COPY.checkingSession }: { label?: string }) {
   return (
     <div
       className="flex min-h-[50vh] items-center justify-center"
@@ -28,11 +29,11 @@ export function RequireAdminAuth({ children }: { children: ReactNode }) {
   }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
-    return <AuthLoadingShell label="Checking your session…" />;
+    return <AuthLoadingShell label={ADMIN_AUTH_COPY.checkingSession} />;
   }
 
   if (!isAuthenticated) {
-    return <AuthLoadingShell label="Redirecting to sign in…" />;
+    return <AuthLoadingShell label={ADMIN_AUTH_COPY.redirectingToSignIn} />;
   }
 
   return <>{children}</>;
@@ -49,7 +50,7 @@ export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   }, [isAuthenticated, isLoading, router]);
 
   if (!isLoading && isAuthenticated) {
-    return <AuthLoadingShell label="Redirecting…" />;
+    return <AuthLoadingShell label={ADMIN_AUTH_COPY.redirecting} />;
   }
 
   return <>{children}</>;

@@ -36,9 +36,18 @@ describe('isApiErrorBody', () => {
 });
 
 describe('getUserFacingMessage', () => {
-  it('returns ApiError message', () => {
-    const error = new ApiError({ message: USER_MESSAGES.notFound, status: 404 });
+  it('returns ApiError message in English by default', () => {
+    const error = new ApiError({ message: USER_MESSAGES.notFound, status: 404, code: 'NOT_FOUND' });
     expect(getUserFacingMessage(error)).toBe(USER_MESSAGES.notFound);
+  });
+
+  it('returns localized message when language is bn', () => {
+    const error = new ApiError({
+      message: USER_MESSAGES.notFound,
+      status: 404,
+      code: 'NOT_FOUND',
+    });
+    expect(getUserFacingMessage(error, 'bn')).toBe('অনুরোধ করা তথ্য খুঁজে পাওয়া যায়নি।');
   });
 
   it('returns generic message for unknown errors', () => {
@@ -47,12 +56,56 @@ describe('getUserFacingMessage', () => {
     );
     expect(getUserFacingMessage('oops')).toBe(USER_MESSAGES.unknown);
   });
+
+  it('does not return raw backend message for unknown API error codes', () => {
+    const error = new ApiError({
+      message: 'Internal stack trace at /secret/path',
+      status: 400,
+      code: 'UNKNOWN_CODE',
+    });
+    expect(getUserFacingMessage(error)).toBe(USER_MESSAGES.unknown);
+    expect(getUserFacingMessage(error)).not.toContain('/secret/path');
+  });
 });
 
 describe('isApiError', () => {
   it('identifies ApiError instances', () => {
     expect(isApiError(new ApiError({ message: 'x' }))).toBe(true);
     expect(isApiError(new Error('x'))).toBe(false);
+  });
+});
+
+describe('normalizeAxiosError validation errors', () => {
+  it('marks Django VALIDATION_ERROR responses as validation errors', () => {
+    const error = new AxiosError(
+      'Request failed',
+      'ERR_BAD_REQUEST',
+      {
+        url: '/api/admin/profile/',
+        method: 'patch',
+        headers: {} as never,
+      },
+      {},
+      {
+        status: 400,
+        statusText: 'Bad Request',
+        headers: {},
+        config: {} as never,
+        data: {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Please check your input and try again.',
+            details: { email: ['Enter a valid email address.'] },
+          },
+        },
+      },
+    );
+
+    const apiError = normalizeAxiosError(error, 'backend-admin');
+    expect(apiError.isValidationError).toBe(true);
+    expect(apiError.code).toBe('VALIDATION_ERROR');
+    expect(apiError.status).toBe(400);
   });
 });
 

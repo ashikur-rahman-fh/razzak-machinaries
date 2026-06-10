@@ -7,7 +7,8 @@ export type LoadingStateProps = {
   className?: string;
 };
 
-export function LoadingState({ label = 'Loading…', className }: LoadingStateProps) {
+export function LoadingState({ label, className }: LoadingStateProps) {
+  const displayLabel = label ?? 'Loading…';
   return (
     <div
       role="status"
@@ -18,7 +19,7 @@ export function LoadingState({ label = 'Loading…', className }: LoadingStatePr
       )}
     >
       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />
-      <span>{label}</span>
+      <span>{displayLabel}</span>
     </div>
   );
 }
