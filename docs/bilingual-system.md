@@ -11,7 +11,7 @@ Razzak Machinaries supports **English**, **Bangla**, and **dual-language display
 
 Defaults: `language = en`, `displayMode = en`.
 
-When `displayMode === 'both'`, visible UI (buttons, nav, headings, badges) shows **stacked English + Bangla**. Accessibility-only strings (aria-labels, form labels, loading status) stay in the primary `language` via `t()`.
+When `displayMode === 'both'`, visible UI (buttons, nav, headings, badges, field labels) shows **stacked English + Bangla**. Accessibility-only strings (aria-labels, show/hide toggles, loading status) stay in the primary `language` via `t()`.
 
 ## Core types
 
@@ -67,8 +67,8 @@ Fallback order: selected language → English → key string.
 |-----|---------|
 | `<TranslatedText translationKey="common.save" compact />` | Buttons, badges — centered stacked layout |
 | `<TranslatedText translationKey="nav.home" layout="inline" />` | Nav links, brand — centered stacked layout |
-| `<TranslatedText translationKey="home.title" />` | Headings, descriptions — default left-aligned layout |
-| `t('nav.openMenu')` | aria-labels, form labels, loading status, switcher meta labels |
+| `<TranslatedText translationKey="home.title" />` | Headings, descriptions, visible field labels — default left-aligned layout |
+| `t('nav.openMenu')` | aria-labels, show/hide toggles, loading status, switcher meta labels |
 
 Use `compact` inside buttons and badges. Use `layout="inline"` for nav labels and brand text. Omit both for headings and body copy (default layout).
 
@@ -224,7 +224,8 @@ Do not uppercase Bangla text.
 
 - Correct `lang` attributes on rendered text
 - Language switcher is keyboard operable with `aria-pressed`
-- Form labels and aria-labels use `t()` (primary language only)
+- Visible field labels on profile and change-password pages use `TranslatedText` (respect `displayMode`)
+- Aria-only labels (show/hide password, menu toggles) use `t()` (primary language only)
 
 ## Error messages
 

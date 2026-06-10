@@ -20,28 +20,29 @@ describe('HomePage', () => {
       mainTranslationsEn['home.heroTitle'],
     );
     expect(screen.getByTestId('home-search-input')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: mainTranslationsEn['home.browseListings'] })).toHaveAttribute(
-      'href',
-      '/products',
-    );
-    expect(screen.getByRole('link', { name: mainTranslationsEn['home.sellMachine'] })).toHaveAttribute(
-      'href',
-      '/sell',
-    );
+    expect(
+      screen.getByRole('link', { name: mainTranslationsEn['home.browseListings'] }),
+    ).toHaveAttribute('href', '/products');
+    expect(
+      screen.getByRole('link', { name: mainTranslationsEn['home.sellMachine'] }),
+    ).toHaveAttribute('href', '/sell');
   });
 
   it('renders category links', () => {
     renderHomePage();
-    expect(screen.getByRole('link', { name: mainTranslationsEn['home.categoryTractors'] })).toHaveAttribute(
-      'href',
-      '/products?category=tractors',
-    );
-    expect(screen.getByRole('link', { name: mainTranslationsEn['home.categoryHarvesters'] })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: mainTranslationsEn['home.categoryTractors'] }),
+    ).toHaveAttribute('href', '/products?category=tractors');
+    expect(
+      screen.getByRole('link', { name: mainTranslationsEn['home.categoryHarvesters'] }),
+    ).toBeInTheDocument();
   });
 
   it('renders featured listings section', () => {
     renderHomePage();
-    expect(screen.getByRole('heading', { level: 2, name: mainTranslationsEn['home.featuredTitle'] })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: mainTranslationsEn['home.featuredTitle'] }),
+    ).toBeInTheDocument();
     expect(screen.getByText(mainTranslationsEn['home.listing1Name'])).toBeInTheDocument();
     expect(screen.getByText(mainTranslationsEn['home.listing2Name'])).toBeInTheDocument();
     expect(screen.getByText(mainTranslationsEn['home.listing3Name'])).toBeInTheDocument();
@@ -62,7 +63,10 @@ describe('HomePage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Both' }));
 
-    expect(await screen.findByText(mainTranslationsEn['home.sellMachine'])).toHaveAttribute('lang', 'en');
+    expect(await screen.findByText(mainTranslationsEn['home.sellMachine'])).toHaveAttribute(
+      'lang',
+      'en',
+    );
     expect(screen.getByText(mainTranslationsBn['home.sellMachine'])).toHaveAttribute('lang', 'bn');
   });
 });

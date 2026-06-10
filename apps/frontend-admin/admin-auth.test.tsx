@@ -211,6 +211,12 @@ describe('Admin profile and route guards', () => {
       'lang',
       'bn',
     );
+    expect(screen.getByText(adminTranslationsEn['profile.name'])).toHaveAttribute('lang', 'en');
+    expect(screen.getByText(adminTranslationsBn['profile.name'])).toHaveAttribute('lang', 'bn');
+    expect(screen.getByText(adminTranslationsEn['profile.username'])).toHaveAttribute('lang', 'en');
+    expect(screen.getByText(adminTranslationsBn['profile.username'])).toHaveAttribute('lang', 'bn');
+    expect(screen.getByText(adminTranslationsEn['profile.email'])).toHaveAttribute('lang', 'en');
+    expect(screen.getByText(adminTranslationsBn['profile.email'])).toHaveAttribute('lang', 'bn');
   });
 
   it('redirects authenticated users away from login page', async () => {
@@ -249,9 +255,10 @@ describe('Admin profile and route guards', () => {
       name: new RegExp(adminTranslationsEn['password.changePassword']),
     });
     expect(changePasswordLink).toHaveAttribute('data-slot', 'button');
-    expect(
-      screen.getByText(adminTranslationsBn['password.changePassword']),
-    ).toHaveAttribute('lang', 'bn');
+    expect(screen.getByText(adminTranslationsBn['password.changePassword'])).toHaveAttribute(
+      'lang',
+      'bn',
+    );
   });
 
   it('shows permission message when me returns forbidden', async () => {
@@ -309,7 +316,9 @@ describe('Admin profile and route guards', () => {
     expect(screen.getByLabelText(adminTranslationsEn['profile.firstName'])).toHaveValue(
       adminUser.firstName,
     );
-    expect(screen.getByLabelText(adminTranslationsEn['profile.email'])).toHaveValue(adminUser.email);
+    expect(screen.getByLabelText(adminTranslationsEn['profile.email'])).toHaveValue(
+      adminUser.email,
+    );
 
     await user.clear(screen.getByLabelText(adminTranslationsEn['profile.email']));
     await user.type(
@@ -373,7 +382,10 @@ describe('ChangePasswordPage', () => {
       screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
       'current',
     );
-    await user.type(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']), 'NewPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']),
+      'NewPass123!',
+    );
     await user.type(
       screen.getByLabelText(adminTranslationsEn['password.confirmPasswordLabel']),
       'OtherPass123!',
@@ -398,7 +410,10 @@ describe('ChangePasswordPage', () => {
       screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
       'current',
     );
-    await user.type(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']), 'NewPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']),
+      'NewPass123!',
+    );
     await user.type(
       screen.getByLabelText(adminTranslationsEn['password.confirmPasswordLabel']),
       'NewPass123!',
@@ -410,9 +425,9 @@ describe('ChangePasswordPage', () => {
     expect(await screen.findByTestId('admin-change-password-success')).toHaveTextContent(
       adminTranslationsEn['password.updated'],
     );
-    expect(
-      screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
-    ).toHaveValue('');
+    expect(screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel'])).toHaveValue(
+      '',
+    );
     expect(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel'])).toHaveValue('');
   });
 
@@ -440,7 +455,10 @@ describe('ChangePasswordPage', () => {
       screen.getByLabelText(adminTranslationsEn['password.currentPasswordLabel']),
       'wrong',
     );
-    await user.type(screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']), 'NewPass123!');
+    await user.type(
+      screen.getByLabelText(adminTranslationsEn['password.newPasswordLabel']),
+      'NewPass123!',
+    );
     await user.type(
       screen.getByLabelText(adminTranslationsEn['password.confirmPasswordLabel']),
       'NewPass123!',
@@ -467,5 +485,29 @@ describe('ChangePasswordPage', () => {
       'en',
     );
     expect(screen.getByText(adminTranslationsBn['password.title'])).toHaveAttribute('lang', 'bn');
+    expect(screen.getByText(adminTranslationsEn['password.currentPasswordLabel'])).toHaveAttribute(
+      'lang',
+      'en',
+    );
+    expect(screen.getByText(adminTranslationsBn['password.currentPasswordLabel'])).toHaveAttribute(
+      'lang',
+      'bn',
+    );
+    expect(screen.getByText(adminTranslationsEn['password.newPasswordLabel'])).toHaveAttribute(
+      'lang',
+      'en',
+    );
+    expect(screen.getByText(adminTranslationsBn['password.newPasswordLabel'])).toHaveAttribute(
+      'lang',
+      'bn',
+    );
+    expect(screen.getByText(adminTranslationsEn['password.confirmPasswordLabel'])).toHaveAttribute(
+      'lang',
+      'en',
+    );
+    expect(screen.getByText(adminTranslationsBn['password.confirmPasswordLabel'])).toHaveAttribute(
+      'lang',
+      'bn',
+    );
   });
 });

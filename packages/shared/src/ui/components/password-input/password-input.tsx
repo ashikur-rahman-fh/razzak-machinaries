@@ -1,7 +1,7 @@
 'use client';
 
 import { Eye, EyeOff } from 'lucide-react';
-import { useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent, type ReactNode } from 'react';
 
 import { Button } from '../button/button';
 import { Input } from '../input/input';
@@ -9,7 +9,7 @@ import { cn } from '../../utils/cn';
 
 export type PasswordInputProps = {
   id: string;
-  label: string;
+  label: ReactNode;
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   showPasswordLabel: string;

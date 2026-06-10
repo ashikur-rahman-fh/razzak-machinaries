@@ -13,7 +13,29 @@ describe('Navbar', () => {
   it('renders app name', () => {
     render(<Navbar appName="Main App" items={items} />);
     expect(screen.getByLabelText('Main App navigation')).toBeInTheDocument();
-    expect(screen.getByText('Main App')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Main App' })).toBeInTheDocument();
+  });
+
+  it('renders app name as a home link by default', () => {
+    render(<Navbar appName="Main App" items={items} />);
+    expect(screen.getByRole('link', { name: 'Main App' })).toHaveAttribute('href', '/');
+  });
+
+  it('respects custom homeHref for the brand link', () => {
+    render(<Navbar appName="Main App" items={items} homeHref="/dashboard" />);
+    expect(screen.getByRole('link', { name: 'Main App' })).toHaveAttribute('href', '/dashboard');
+  });
+
+  it('does not render a default brand link when logo is provided', () => {
+    render(
+      <Navbar
+        appName="Main App"
+        items={items}
+        logo={<span data-testid="custom-logo">Custom logo</span>}
+      />,
+    );
+    expect(screen.getByTestId('custom-logo')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Main App' })).not.toBeInTheDocument();
   });
 
   it('renders nav items', () => {
@@ -82,11 +104,7 @@ describe('Navbar', () => {
 
   it('hides header actions on mobile viewport class', () => {
     render(
-      <Navbar
-        appName="Main App"
-        items={items}
-        actions={<button type="button">Sign in</button>}
-      />,
+      <Navbar appName="Main App" items={items} actions={<button type="button">Sign in</button>} />,
     );
     const headerActions = screen.getAllByRole('button', { name: 'Sign in' })[0].parentElement;
     expect(headerActions).toHaveClass('hidden', 'sm:flex');

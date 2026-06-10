@@ -154,7 +154,11 @@ export function AdminProfilePage() {
                     </Button>
                     <Button type="button" variant="outline" size="sm" asChild>
                       <Link href="/change-password">
-                        <TranslatedText translationKey="password.changePassword" as="span" compact />
+                        <TranslatedText
+                          translationKey="password.changePassword"
+                          as="span"
+                          compact
+                        />
                       </Link>
                     </Button>
                   </div>
@@ -189,7 +193,7 @@ export function AdminProfilePage() {
                     ) : null}
                     <div className="space-y-2">
                       <label htmlFor={firstNameId} className="text-sm font-medium text-foreground">
-                        {t('profile.firstName')}
+                        <TranslatedText translationKey="profile.firstName" as="span" />
                       </label>
                       <Input
                         id={firstNameId}
@@ -201,7 +205,7 @@ export function AdminProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <label htmlFor={lastNameId} className="text-sm font-medium text-foreground">
-                        {t('profile.lastName')}
+                        <TranslatedText translationKey="profile.lastName" as="span" />
                       </label>
                       <Input
                         id={lastNameId}
@@ -213,7 +217,7 @@ export function AdminProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <label htmlFor={emailId} className="text-sm font-medium text-foreground">
-                        {t('profile.email')}
+                        <TranslatedText translationKey="profile.email" as="span" />
                       </label>
                       <Input
                         id={emailId}
@@ -228,7 +232,11 @@ export function AdminProfilePage() {
                     <div className="flex flex-wrap gap-2">
                       <Button type="submit" disabled={!canSave} aria-busy={isSaving}>
                         {isSaving ? (
-                          <TranslatedText translationKey="profile.savingProfile" as="span" compact />
+                          <TranslatedText
+                            translationKey="profile.savingProfile"
+                            as="span"
+                            compact
+                          />
                         ) : (
                           <TranslatedText translationKey="profile.saveProfile" as="span" compact />
                         )}
@@ -247,15 +255,21 @@ export function AdminProfilePage() {
                   <>
                     <dl className="grid gap-3 text-sm">
                       <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">{t('profile.name')}</dt>
+                        <dt className="font-medium text-muted-foreground">
+                          <TranslatedText translationKey="profile.name" as="span" />
+                        </dt>
                         <dd data-testid="admin-profile-name">{user.name}</dd>
                       </div>
                       <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">{t('profile.username')}</dt>
+                        <dt className="font-medium text-muted-foreground">
+                          <TranslatedText translationKey="profile.username" as="span" />
+                        </dt>
                         <dd data-testid="admin-profile-username">{user.username}</dd>
                       </div>
                       <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">{t('profile.email')}</dt>
+                        <dt className="font-medium text-muted-foreground">
+                          <TranslatedText translationKey="profile.email" as="span" />
+                        </dt>
                         <dd data-testid="admin-profile-email">{user.email}</dd>
                       </div>
                     </dl>

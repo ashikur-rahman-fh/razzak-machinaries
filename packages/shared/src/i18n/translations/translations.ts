@@ -8,9 +8,7 @@ export type TranslationKey = string;
 export type Translator = (key: TranslationKey) => string;
 export type TranslationPairResolver = (key: TranslationKey) => BilingualTextValue;
 
-export function mergeTranslationCatalogs(
-  ...catalogs: TranslationCatalog[]
-): TranslationCatalog {
+export function mergeTranslationCatalogs(...catalogs: TranslationCatalog[]): TranslationCatalog {
   return Object.assign({}, ...catalogs) as TranslationCatalog;
 }
 

@@ -47,7 +47,9 @@ export type LanguageProviderProps = {
 };
 
 export function LanguageProvider({ children, catalogs }: LanguageProviderProps) {
-  const [preference, setPreferenceState] = useState<LanguagePreference>(getDefaultLanguagePreference);
+  const [preference, setPreferenceState] = useState<LanguagePreference>(
+    getDefaultLanguagePreference,
+  );
 
   useEffect(() => {
     const stored = readLanguagePreferenceFromStorage();
@@ -63,29 +65,23 @@ export function LanguageProvider({ children, catalogs }: LanguageProviderProps) 
     [catalogs],
   );
 
-  const setLanguage = useCallback(
-    (language: Language) => {
-      setPreferenceState((current) => {
-        const next = createLanguagePreferenceUpdate(current, { language });
-        writeLanguagePreferenceToStorage(next);
-        applyDocumentLanguagePreference(next);
-        return next;
-      });
-    },
-    [],
-  );
+  const setLanguage = useCallback((language: Language) => {
+    setPreferenceState((current) => {
+      const next = createLanguagePreferenceUpdate(current, { language });
+      writeLanguagePreferenceToStorage(next);
+      applyDocumentLanguagePreference(next);
+      return next;
+    });
+  }, []);
 
-  const setDisplayMode = useCallback(
-    (displayMode: DisplayMode) => {
-      setPreferenceState((current) => {
-        const next = createLanguagePreferenceUpdate(current, { displayMode });
-        writeLanguagePreferenceToStorage(next);
-        applyDocumentLanguagePreference(next);
-        return next;
-      });
-    },
-    [],
-  );
+  const setDisplayMode = useCallback((displayMode: DisplayMode) => {
+    setPreferenceState((current) => {
+      const next = createLanguagePreferenceUpdate(current, { displayMode });
+      writeLanguagePreferenceToStorage(next);
+      applyDocumentLanguagePreference(next);
+      return next;
+    });
+  }, []);
 
   const setPreference = useCallback((update: Partial<LanguagePreference>) => {
     setPreferenceState((current) => {
@@ -101,10 +97,7 @@ export function LanguageProvider({ children, catalogs }: LanguageProviderProps) 
     [mergedCatalogs, preference.language],
   );
 
-  const tPair = useMemo(
-    () => createTranslationPairResolver(mergedCatalogs),
-    [mergedCatalogs],
-  );
+  const tPair = useMemo(() => createTranslationPairResolver(mergedCatalogs), [mergedCatalogs]);
 
   const value = useMemo<LanguageContextValue>(
     () => ({

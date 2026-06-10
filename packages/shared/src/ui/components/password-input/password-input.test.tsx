@@ -56,4 +56,23 @@ describe('PasswordInput', () => {
     expect(screen.queryByText('Show password')).not.toBeInTheDocument();
     expect(screen.queryByText('Hide password')).not.toBeInTheDocument();
   });
+
+  it('associates React node labels with the input', () => {
+    render(
+      <PasswordInput
+        id="pwd"
+        label={
+          <span>
+            <span lang="en">Current password</span>
+            <span lang="bn">বর্তমান পাসওয়ার্ড</span>
+          </span>
+        }
+        value=""
+        onChange={vi.fn()}
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+      />,
+    );
+    expect(screen.getByLabelText(/Current password/)).toHaveAttribute('type', 'password');
+  });
 });

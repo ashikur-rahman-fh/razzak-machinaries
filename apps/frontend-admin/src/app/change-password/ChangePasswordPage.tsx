@@ -124,7 +124,7 @@ export function ChangePasswordPage() {
               <PasswordInput
                 id={currentId}
                 name="currentPassword"
-                label={t('password.currentPasswordLabel')}
+                label={<TranslatedText translationKey="password.currentPasswordLabel" as="span" />}
                 value={currentPassword}
                 onChange={(event) => setCurrentPassword(event.target.value)}
                 autoComplete="current-password"
@@ -137,7 +137,7 @@ export function ChangePasswordPage() {
               <PasswordInput
                 id={newId}
                 name="newPassword"
-                label={t('password.newPasswordLabel')}
+                label={<TranslatedText translationKey="password.newPasswordLabel" as="span" />}
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
                 autoComplete="new-password"
@@ -150,7 +150,7 @@ export function ChangePasswordPage() {
               <PasswordInput
                 id={confirmId}
                 name="confirmPassword"
-                label={t('password.confirmPasswordLabel')}
+                label={<TranslatedText translationKey="password.confirmPasswordLabel" as="span" />}
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 autoComplete="new-password"

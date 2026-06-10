@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import {
-  applyDocumentDisplayMode,
-  applyDocumentLanguagePreference,
-} from './language-preference';
+import { applyDocumentDisplayMode, applyDocumentLanguagePreference } from './language-preference';
 
 describe('applyDocumentDisplayMode', () => {
   afterEach(() => {

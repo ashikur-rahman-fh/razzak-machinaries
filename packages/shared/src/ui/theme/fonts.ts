@@ -7,5 +7,4 @@ export const fontFamilyDisplay =
 
 export const fontFamilyMono = '"JetBrains Mono", "SFMono-Regular", Consolas, monospace';
 
-export const fontFamilyBangla =
-  '"Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif';
+export const fontFamilyBangla = '"Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif';

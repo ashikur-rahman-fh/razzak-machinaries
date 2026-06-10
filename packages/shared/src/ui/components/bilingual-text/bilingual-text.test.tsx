@@ -12,9 +12,7 @@ describe('BilingualText', () => {
   });
 
   it('renders both languages in both mode', () => {
-    render(
-      <BilingualText en="Custom Printing" bn="কাস্টম প্রিন্টিং" mode="both" />,
-    );
+    render(<BilingualText en="Custom Printing" bn="কাস্টম প্রিন্টিং" mode="both" />);
     expect(screen.getByText('Custom Printing')).toHaveAttribute('lang', 'en');
     expect(screen.getByText('কাস্টম প্রিন্টিং')).toHaveAttribute('lang', 'bn');
   });
@@ -26,12 +24,7 @@ describe('BilingualText', () => {
 
   it('applies compact layout classes when secondary text is present', () => {
     const { container } = render(
-      <BilingualText
-        en="Custom Printing"
-        bn="কাস্টম প্রিন্টিং"
-        mode="both"
-        layout="compact"
-      />,
+      <BilingualText en="Custom Printing" bn="কাস্টম প্রিন্টিং" mode="both" layout="compact" />,
     );
 
     const root = container.querySelector('.bilingual-text');
@@ -41,12 +34,16 @@ describe('BilingualText', () => {
   });
 
   it('applies inline layout classes for nav-style stacking', () => {
-    const { container } = render(
-      <BilingualText en="Home" bn="হোম" mode="both" layout="inline" />,
-    );
+    const { container } = render(<BilingualText en="Home" bn="হোম" mode="both" layout="inline" />);
 
     const root = container.querySelector('.bilingual-text');
-    expect(root).toHaveClass('inline-flex', 'flex-col', 'items-center', 'text-center', 'leading-snug');
+    expect(root).toHaveClass(
+      'inline-flex',
+      'flex-col',
+      'items-center',
+      'text-center',
+      'leading-snug',
+    );
   });
 });
 
@@ -100,6 +97,9 @@ describe('LanguageSwitcher', () => {
     );
 
     expect(screen.getByRole('button', { name: 'Both' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
   });
 });

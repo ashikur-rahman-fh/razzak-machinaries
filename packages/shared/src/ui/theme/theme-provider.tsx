@@ -13,11 +13,7 @@ export function ThemeProvider({ children, scriptProps, ...props }: ThemeProvider
       : { type: 'application/json' as const, ...scriptProps };
 
   return (
-    <NextThemesProvider
-      {...defaultThemeConfig}
-      {...props}
-      scriptProps={resolvedScriptProps}
-    >
+    <NextThemesProvider {...defaultThemeConfig} {...props} scriptProps={resolvedScriptProps}>
       {children}
     </NextThemesProvider>
   );

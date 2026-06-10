@@ -52,8 +52,7 @@ export function getBilingualDisplay(
     if (!text) {
       return { primary: null, secondary: null };
     }
-    const lang: Language =
-      displayMode === 'en' ? (enText ? 'en' : 'bn') : bnText ? 'bn' : 'en';
+    const lang: Language = displayMode === 'en' ? (enText ? 'en' : 'bn') : bnText ? 'bn' : 'en';
     return { primary: { text, lang }, secondary: null };
   }
 

@@ -20,9 +20,13 @@ export type NavbarItem = {
   active?: boolean;
 };
 
+const brandClassName =
+  'font-display text-base font-medium leading-snug tracking-tight text-foreground';
+
 export type NavbarProps = {
   appName: React.ReactNode;
   logo?: React.ReactNode;
+  homeHref?: string;
   items: NavbarItem[];
   actions?: React.ReactNode;
   navigationLabel?: string;
@@ -42,7 +46,12 @@ function NavLinks({
   onNavigate?: () => void;
 }) {
   return (
-    <ul className={cn('flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-center sm:gap-1', className)}>
+    <ul
+      className={cn(
+        'flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-center sm:gap-1',
+        className,
+      )}
+    >
       {items.map((item) => (
         <li key={item.href}>
           <a
@@ -68,6 +77,7 @@ function NavLinks({
 export function Navbar({
   appName,
   logo,
+  homeHref = '/',
   items,
   actions,
   navigationLabel,
@@ -77,8 +87,7 @@ export function Navbar({
   className,
 }: NavbarProps) {
   const navAriaLabel =
-    navigationLabel ??
-    (typeof appName === 'string' ? `${appName} navigation` : 'Site navigation');
+    navigationLabel ?? (typeof appName === 'string' ? `${appName} navigation` : 'Site navigation');
   const [open, setOpen] = React.useState(false);
 
   function closeDrawer() {
@@ -95,7 +104,11 @@ export function Navbar({
       };
 
     return React.Children.map(node, (child) => {
-      if (!React.isValidElement<{ children?: React.ReactNode; onClick?: React.MouseEventHandler }>(child)) {
+      if (
+        !React.isValidElement<{ children?: React.ReactNode; onClick?: React.MouseEventHandler }>(
+          child,
+        )
+      ) {
         return child;
       }
 
@@ -118,9 +131,16 @@ export function Navbar({
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {logo ?? (
-            <span className="font-display text-base font-medium leading-snug tracking-tight text-foreground">
+            <a
+              href={homeHref}
+              className={cn(
+                brandClassName,
+                'rounded-sm transition-colors duration-150 hover:text-foreground/90',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+              )}
+            >
               {appName}
-            </span>
+            </a>
           )}
         </div>
 
@@ -131,9 +151,7 @@ export function Navbar({
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-          {actions ? (
-            <div className="hidden items-center gap-2 sm:flex">{actions}</div>
-          ) : null}
+          {actions ? <div className="hidden items-center gap-2 sm:flex">{actions}</div> : null}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="sm:hidden">
               <Button variant="outline" size="sm" aria-label={openMenuLabel}>

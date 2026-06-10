@@ -10,9 +10,9 @@ import {
 
 describe('getLocalizedText', () => {
   it('returns Bangla when language is bn and both exist', () => {
-    expect(
-      getLocalizedText({ en: 'Custom Printing', bn: 'কাস্টম প্রিন্টিং' }, 'bn'),
-    ).toBe('কাস্টম প্রিন্টিং');
+    expect(getLocalizedText({ en: 'Custom Printing', bn: 'কাস্টম প্রিন্টিং' }, 'bn')).toBe(
+      'কাস্টম প্রিন্টিং',
+    );
   });
 
   it('falls back to English when Bangla is empty', () => {
@@ -30,10 +30,7 @@ describe('getLocalizedText', () => {
 
 describe('getBilingualDisplay', () => {
   it('returns both languages when display mode is both', () => {
-    const result = getBilingualDisplay(
-      { en: 'Custom Printing', bn: 'কাস্টম প্রিন্টিং' },
-      'both',
-    );
+    const result = getBilingualDisplay({ en: 'Custom Printing', bn: 'কাস্টম প্রিন্টিং' }, 'both');
     expect(result.primary).toEqual({ text: 'Custom Printing', lang: 'en' });
     expect(result.secondary).toEqual({ text: 'কাস্টম প্রিন্টিং', lang: 'bn' });
   });
@@ -53,15 +50,15 @@ describe('getBilingualDisplay', () => {
 
 describe('getLocalizedField', () => {
   it('reads camelCase API fields', () => {
-    expect(
-      getLocalizedField({ titleEn: 'English', titleBn: 'বাংলা' }, 'title', 'bn'),
-    ).toBe('বাংলা');
+    expect(getLocalizedField({ titleEn: 'English', titleBn: 'বাংলা' }, 'title', 'bn')).toBe(
+      'বাংলা',
+    );
   });
 
   it('reads snake_case fields', () => {
-    expect(
-      getLocalizedField({ title_en: 'English', title_bn: 'বাংলা' }, 'title', 'bn'),
-    ).toBe('বাংলা');
+    expect(getLocalizedField({ title_en: 'English', title_bn: 'বাংলা' }, 'title', 'bn')).toBe(
+      'বাংলা',
+    );
   });
 
   it('ignores object-valued fields instead of stringifying them', () => {
