@@ -1,7 +1,7 @@
-/** Calm Neutral — default theme id for the Razzak Machinaries design system. */
-export const defaultThemeId = 'calm-neutral' as const;
+/** AgriSteel Marketplace — default theme id for the Razzak Machinaries design system. */
+export const defaultThemeId = 'agri-steel' as const;
 
-export const defaultThemeName = 'Calm Neutral' as const;
+export const defaultThemeName = 'AgriSteel Marketplace' as const;
 
 export const defaultThemeConfig = {
   attribute: 'class' as const,

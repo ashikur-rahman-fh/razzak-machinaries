@@ -2,31 +2,33 @@
 
 The design system lives in **`packages/shared/src/ui/`** and is consumed as **`@razzak-machinaries/shared/ui`**.
 
-## Default theme: Calm Neutral
+## Default theme: AgriSteel Marketplace
 
-**Theme id:** `calm-neutral`
+**Theme id:** `agri-steel`
 
-A **soft, light, muted** SaaS look — warm off-white backgrounds, white cards, slate text, and a **muted blue-gray primary** (not bright blue). Semantic colors are desaturated on purpose.
-
-> This theme is **intentionally generic and understated** so you can rebrand later without fighting a loud default palette.
+A **warm, trustworthy, practical** look for a farming machinery marketplace — sunlit page backgrounds, white cards, deep field-green primary, harvest-orange accent for key CTAs, and **high-readability contrast** for body and muted text.
 
 ### Visual direction
 
-- Calm, clean, professional — not flashy
-- Low saturation, no gradients, minimal shadows
-- Light: `210 20% 98%` page background, **white cards**
-- Dark: soft neutral surfaces with subtle elevation
-- Primary: **slate / blue-gray** (`215 24% 34%` light, `213 20% 74%` dark)
-- Subtle borders, soft focus rings, **moderate** corner radius (not bubbly)
+- Warm, agricultural, professional — built for listings, filters, and dashboards
+- Field-green primary, light linen secondary surfaces, harvest-orange accent for CTAs
+- Light: `40 22% 98%` sunlit page background, **white cards**, foreground `215 32% 10%`
+- Secondary chips/toolbars: `40 20% 94%` fill with slate text `215 28% 22%` (not dark forest green)
+- Dark: green-tinted "steel dashboard" surfaces (`140 14% 8%`)
+- Primary: **field green** (`132 36% 23%` light, `118 32% 72%` dark)
+- Muted text: `215 12% 40%` light, `42 18% 76%` dark
+- Soft borders (`38 16% 86%` light) and green focus rings
+- **Sturdy** corner radius (not bubbly); airy warm-neutral card shadows
 
 ### Fonts
 
 | Use | Stack |
 | --- | ----- |
-| UI (default) | Inter, ui-sans-serif, system-ui, … |
+| UI (default) | Inter, Noto Sans, ui-sans-serif, system-ui, … |
+| Headings / nav brand | Plus Jakarta Sans, Inter, Noto Sans, … (`font-display`) |
 | Code / metadata | JetBrains Mono, SFMono-Regular, Consolas, monospace |
 
-Fonts load from Google Fonts in `globals.css`. Use `font-mono` or `<code>` only for technical copy (API paths, env labels, version strings).
+Inter is the primary UI font for sharp, eye-soothing body copy; Noto Sans provides multilingual fallback. Plus Jakarta Sans is used for headings, card titles, and navbar brand via the `font-display` utility. Fonts load from Google Fonts in `globals.css`. Use `font-mono` or `<code>` only for technical copy (API paths, env labels, version strings).
 
 ### Theme tokens
 
@@ -45,9 +47,9 @@ Centralized in `theme.css` — mapped to Tailwind `rounded-*` utilities:
 | `--radius-xs` | 0.25rem | `rounded-xs` | Tiny controls, close buttons |
 | `--radius-sm` | 0.375rem | `rounded-sm` | Compact chips |
 | `--radius-md` | 0.5rem | `rounded-md` | **Buttons, inputs, badges** (default) |
-| `--radius-lg` | 0.625rem | `rounded-lg` | **Cards, alerts, panels, toasts** |
-| `--radius-xl` | 0.75rem | `rounded-xl` | Large dialogs (sparingly) |
-| `--radius` | 0.5rem | default | Same as `md` |
+| `--radius-lg` | 0.75rem | `rounded-lg` | **Cards, alerts, panels, toasts** |
+| `--radius-xl` | 1rem | `rounded-xl` | Large dialogs (sparingly) |
+| `--radius` | 0.625rem | default | Between `md` and `lg` |
 
 **Guidelines:**
 
@@ -60,7 +62,7 @@ Centralized in `theme.css` — mapped to Tailwind `rounded-*` utilities:
 
 1. Edit HSL values in `theme.css` (`:root` and `.dark`) — start with `--primary` and `--background`.
 2. Adjust `--radius-*` and `--shadow-*` if needed.
-3. Optionally update `--font-sans` / Google Fonts in `globals.css`.
+3. Optionally update `--font-sans`, `--font-display`, or Google Fonts in `globals.css`.
 4. Never hardcode colors or excessive rounding in components — use semantic tokens and `rounded-md` / `rounded-lg`.
 
 ### Light / dark mode
@@ -87,11 +89,11 @@ import '@razzak-machinaries/shared/ui/styles/globals.css';
 
 | Component | Style notes |
 | --------- | ----------- |
-| **Button** | `rounded-md`; muted primary; calm variants |
+| **Button** | `rounded-md`; field-green primary; semantic variants |
 | **Alert** | `rounded-lg`; light tinted backgrounds |
-| **Card** | `rounded-lg`; white, subtle border |
+| **Card** | `rounded-lg`; white, warm border, `shadow-card` |
 | **Navbar** | Full-width, no bar radius; links `rounded-md` |
-| **Input** | `rounded-md`; subtle focus ring |
+| **Input** | `rounded-md`; green focus ring |
 | **PasswordInput** | Password field with inline Eye / EyeOff toggle; `aria-label` for show/hide (no visible text on the button) |
 | **Badge** | `rounded-md` (not pill-shaped) |
 

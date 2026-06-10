@@ -71,7 +71,7 @@ export function Navbar({ appName, logo, items, actions, className }: NavbarProps
       >
         <div className="flex min-w-0 items-center gap-3">
           {logo ?? (
-            <span className="truncate text-base font-medium tracking-tight text-foreground">
+            <span className="truncate font-display text-base font-medium tracking-tight text-foreground">
               {appName}
             </span>
           )}
@@ -91,7 +91,7 @@ export function Navbar({ appName, logo, items, actions, className }: NavbarProps
             </SheetTrigger>
             <SheetContent side="right" className="w-[min(100%,20rem)]">
               <SheetHeader>
-                <SheetTitle>{appName}</SheetTitle>
+                <SheetTitle className="font-display">{appName}</SheetTitle>
               </SheetHeader>
               <NavLinks items={items} className="mt-6" onNavigate={() => setOpen(false)} />
             </SheetContent>

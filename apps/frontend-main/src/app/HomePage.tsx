@@ -43,8 +43,9 @@ export function HomePage() {
           <CardHeader>
             <CardTitle>Shared UI</CardTitle>
             <CardDescription>
-              Calm Neutral theme — warm, trustworthy styling for farm machinery listings. Customize
-              via <code className="font-mono text-xs text-muted-foreground">theme.css</code> tokens.
+              AgriSteel Marketplace theme — high-readability contrast, warm surfaces, and
+              Inter-first typography for farm machinery listings. Customize via{' '}
+              <code className="font-mono text-xs text-muted-foreground">theme.css</code> tokens.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

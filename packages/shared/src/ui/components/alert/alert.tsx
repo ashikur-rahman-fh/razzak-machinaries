@@ -54,7 +54,7 @@ export function Alert({
       {...props}
     >
       <Icon className="h-4 w-4" aria-hidden />
-      {title ? <AlertTitle>{title}</AlertTitle> : null}
+      {title ? <AlertTitle className="font-display">{title}</AlertTitle> : null}
       {description ? <AlertDescription>{description}</AlertDescription> : null}
       {children}
     </ShadcnAlert>

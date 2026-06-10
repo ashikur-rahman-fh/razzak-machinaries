@@ -39,6 +39,7 @@ export {
   typographyTokens,
   shadowTokens,
   fontFamilySans,
+  fontFamilyDisplay,
   fontFamilyMono,
   type ThemeMode,
   type ThemeProviderModeConfig,

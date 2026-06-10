@@ -1,13 +1,13 @@
 /**
- * Razzak Machinaries theme
- * Warm, trustworthy, practical theme for farming machinery marketplace.
- * Designed for buying/selling power tillers, tractors, spare parts, tools, and farm machines.
- *
- * Color values are HSL channels (no hsl() wrapper) for Tailwind alpha support.
+ * AgriSteel High-Readability Theme
+ * Farming machinery marketplace theme.
+ * Strong readable text, warm surfaces, deep green brand color, harvest orange CTA.
+ * Color values are HSL channels only for Tailwind alpha support.
  */
 
 @theme inline {
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --font-mono: var(--font-mono);
 
   --color-background: hsl(var(--background));
@@ -36,7 +36,6 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
-  /* Radius scale — moderate corners; avoid bubbly defaults */
   --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
@@ -49,95 +48,158 @@
 }
 
 :root {
+  /**
+   * Typography
+   * Inter = sharp and highly readable.
+   * Noto Sans = multilingual fallback.
+   */
   --font-sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    Inter, 'Noto Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+
+  --font-display:
+    'Plus Jakarta Sans', Inter, 'Noto Sans', ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
+  /**
+   * Radius
+   * Clean and sturdy. Not too round, not too sharp.
+   */
   --radius-xs: 0.25rem;
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 0.75rem;
-  --radius: 0.5rem;
-  --shadow-soft: 0 1px 2px 0 rgb(15 23 42 / 0.03);
-  --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius: 0.625rem;
 
-  --background: 210 20% 98%;
-  --foreground: 222 24% 12%;
+  /**
+   * Shadows
+   * Soft warm-neutral elevation — cards float on a sunlit page, not evening gloom.
+   */
+  --shadow-soft: 0 1px 2px 0 rgb(55 48 40 / 0.05);
+  --shadow-card: 0 1px 2px 0 rgb(55 48 40 / 0.06), 0 12px 32px -24px rgb(55 48 40 / 0.12);
 
+  /**
+   * Base
+   * Sunlit parchment page canvas — bright daylight, low saturation.
+   */
+  --background: 40 22% 98%;
+  --foreground: 215 32% 10%;
+
+  /**
+   * Cards
+   * White cards create strong contrast for product listings.
+   */
   --card: 0 0% 100%;
-  --card-foreground: 222 24% 12%;
+  --card-foreground: 215 32% 10%;
 
+  /**
+   * Popovers
+   */
   --popover: 0 0% 100%;
-  --popover-foreground: 222 24% 12%;
+  --popover-foreground: 215 32% 10%;
 
-  --primary: 215 24% 34%;
-  --primary-foreground: 210 40% 98%;
+  /**
+   * Primary
+   * Deep field green. Strong, trustworthy, agricultural.
+   */
+  --primary: 132 36% 23%;
+  --primary-foreground: 42 40% 98%;
 
-  --secondary: 210 18% 94%;
-  --secondary-foreground: 222 20% 18%;
+  /**
+   * Secondary
+   * Light linen chips and toolbars — clearly a light-mode surface.
+   */
+  --secondary: 40 20% 94%;
+  --secondary-foreground: 215 28% 22%;
 
-  --muted: 210 18% 95%;
-  --muted-foreground: 215 12% 45%;
+  /**
+   * Muted
+   * Subtle hover/active wash close to the page background.
+   */
+  --muted: 40 18% 95%;
+  --muted-foreground: 215 12% 40%;
 
-  --accent: 210 20% 94%;
-  --accent-foreground: 222 20% 18%;
+  /**
+   * Accent
+   * Harvest orange for high-value actions:
+   * Sell Machine, Contact Seller, Featured, Promote Listing.
+   */
+  --accent: 34 74% 48%;
+  --accent-foreground: 38 55% 10%;
 
-  --destructive: 0 65% 55%;
+  /**
+   * Destructive
+   */
+  --destructive: 3 68% 46%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 214 20% 90%;
-  --input: 214 20% 90%;
-  --ring: 215 24% 45%;
+  /**
+   * Borders and inputs
+   * Soft edges — less heavy framing on white cards.
+   */
+  --border: 38 16% 86%;
+  --input: 38 16% 86%;
+  --ring: 132 36% 30%;
 
-  --success: 145 45% 38%;
+  /**
+   * Status
+   */
+  --success: 132 40% 30%;
   --success-foreground: 0 0% 100%;
 
-  --warning: 38 70% 48%;
-  --warning-foreground: 40 30% 12%;
+  --warning: 38 80% 46%;
+  --warning-foreground: 40 42% 10%;
 
-  --info: 205 45% 42%;
+  --info: 205 52% 38%;
   --info-foreground: 0 0% 100%;
 }
 
 .dark {
-  --shadow-soft: 0 1px 2px 0 rgb(0 0 0 / 0.15);
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.2);
+  /**
+   * Dark mode
+   * Steel-green dashboard feel.
+   * Better for admin/operator usage than for public marketplace browsing.
+   */
+  --shadow-soft: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.24), 0 14px 34px -24px rgb(0 0 0 / 0.7);
 
-  --background: 222 22% 10%;
-  --foreground: 210 30% 96%;
+  --background: 140 14% 8%;
+  --foreground: 42 34% 96%;
 
-  --card: 222 20% 13%;
-  --card-foreground: 210 30% 96%;
+  --card: 140 12% 12%;
+  --card-foreground: 42 34% 96%;
 
-  --popover: 222 20% 13%;
-  --popover-foreground: 210 30% 96%;
+  --popover: 140 12% 12%;
+  --popover-foreground: 42 34% 96%;
 
-  --primary: 213 20% 74%;
-  --primary-foreground: 222 25% 12%;
+  --primary: 118 32% 72%;
+  --primary-foreground: 140 26% 8%;
 
-  --secondary: 222 16% 18%;
-  --secondary-foreground: 210 30% 96%;
+  --secondary: 140 10% 18%;
+  --secondary-foreground: 42 34% 96%;
 
-  --muted: 222 16% 18%;
-  --muted-foreground: 215 16% 70%;
+  --muted: 140 9% 17%;
+  --muted-foreground: 42 18% 76%;
 
-  --accent: 222 16% 20%;
-  --accent-foreground: 210 30% 96%;
+  --accent: 35 76% 58%;
+  --accent-foreground: 38 55% 9%;
 
-  --destructive: 0 55% 50%;
+  --destructive: 3 64% 56%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 222 14% 24%;
-  --input: 222 14% 24%;
-  --ring: 213 20% 70%;
+  --border: 140 8% 30%;
+  --input: 140 8% 30%;
+  --ring: 118 32% 68%;
 
-  --success: 145 35% 48%;
-  --success-foreground: 0 0% 100%;
+  --success: 132 36% 56%;
+  --success-foreground: 140 26% 8%;
 
-  --warning: 38 65% 58%;
-  --warning-foreground: 40 30% 12%;
+  --warning: 38 78% 60%;
+  --warning-foreground: 40 42% 10%;
 
-  --info: 205 35% 58%;
-  --info-foreground: 222 25% 12%;
+  --info: 205 46% 64%;
+  --info-foreground: 215 32% 10%;
 }

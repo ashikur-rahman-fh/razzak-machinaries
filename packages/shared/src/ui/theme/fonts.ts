@@ -1,5 +1,8 @@
-/** Centralized font stacks — Razzak Machinaries typography. */
+/** Centralized font stacks — high-readability AgriSteel typography. */
 export const fontFamilySans =
-  'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  'Inter, "Noto Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+export const fontFamilyDisplay =
+  '"Plus Jakarta Sans", Inter, "Noto Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
 export const fontFamilyMono = '"JetBrains Mono", "SFMono-Regular", Consolas, monospace';

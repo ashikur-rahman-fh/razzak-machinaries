@@ -55,6 +55,7 @@ export const componentRadiusGuide = {
 
 export const typographyTokens = {
   sans: '--font-sans',
+  display: '--font-display',
   mono: '--font-mono',
 } as const;
 

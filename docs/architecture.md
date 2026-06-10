@@ -32,7 +32,7 @@ Workspace package `@razzak-machinaries/shared` provides:
 - **API client layer** — Axios-based, type-safe HTTP in `packages/shared/src/api/` (never import Axios in frontend apps)
 - Preconfigured clients: `backendMainApi` (stateless public API), `backendAdminApi` (session + CSRF for admin auth)
 - Thin endpoint helpers (`getHello`, `adminAuthApi`)
-- **Shared UI** (`packages/shared/src/ui/`) — **Calm Neutral** theme (muted slate primary, soft neutrals, Inter + JetBrains Mono, light/dark). Tailwind v4, shadcn primitives, Basecoat CSS. Import via `@razzak-machinaries/shared/ui`. See [`ui-system.md`](ui-system.md).
+- **Shared UI** (`packages/shared/src/ui/`) — **AgriSteel Marketplace** theme (field-green primary, warm agricultural neutrals, Noto Sans + Inter + JetBrains Mono, light/dark). Tailwind v4, shadcn primitives, Basecoat CSS. Import via `@razzak-machinaries/shared/ui`. See [`ui-system.md`](ui-system.md).
 - Hooks (`useApi`)
 - Types and route constants
 - CSP / security headers for Next.js
