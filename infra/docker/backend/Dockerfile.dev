@@ -1,0 +1,18 @@
+FROM python:3.12-slim-bookworm
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends libpq-dev gcc \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY apps/backend/requirements.txt apps/backend/requirements-dev.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt -r /tmp/requirements-dev.txt
+
+COPY apps/backend/ /app/
+RUN mkdir -p /app/staticfiles \
+  && chmod +x /app/docker-entrypoint-debug.sh /app/docker-entrypoint-dev.sh /app/docker-entrypoint-dev-common.sh
+
+EXPOSE 8000
+
+CMD ["/app/docker-entrypoint-dev.sh"]

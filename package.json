@@ -1,0 +1,40 @@
+{
+  "name": "razzak-machinaries",
+  "private": true,
+  "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "pnpm -r --if-present lint",
+    "lint:fix": "pnpm format && pnpm -r --if-present lint:fix",
+    "fix": "pnpm format && pnpm -r --if-present lint:fix",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "build": "bash infra/scripts/build/build-frontends.sh",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm python:check && pnpm python:migrations:check",
+    "python:lint": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" ruff check apps/backend",
+    "python:lint:fix": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" ruff check apps/backend --fix",
+    "python:format": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" ruff format apps/backend",
+    "python:format:check": "PATH=\"$PWD/apps/backend/.venv/bin:$PATH\" ruff format apps/backend --check",
+    "python:check": "pnpm python:format:check && pnpm python:lint",
+    "python:migrations:check": "cd apps/backend && DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py check && python manage.py makemigrations --check --dry-run"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3.5.3",
+    "typescript": "^5.6.3"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob": ">=10.5.0",
+      "vitest": ">=3.2.6"
+    }
+  }
+}

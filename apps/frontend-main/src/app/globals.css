@@ -1,0 +1,4 @@
+/* App-specific overrides — shared design tokens and Tailwind load from layout. */
+body {
+  padding: 0;
+}

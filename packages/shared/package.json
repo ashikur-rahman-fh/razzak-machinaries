@@ -1,0 +1,75 @@
+{
+  "name": "@razzak-machinaries/shared",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#ui/*": "./src/ui/*",
+    "#components/*": "./src/ui/components/*",
+    "#hooks/*": "./src/hooks/*.ts"
+  },
+  "exports": {
+    "./api": "./src/api/index.ts",
+    "./api/errors": "./src/api/errors.ts",
+    "./api/hello": "./src/api/hello.ts",
+    "./hooks/useApi": "./src/hooks/useApi.ts",
+    "./ui": "./src/ui/index.ts",
+    "./ui/theme": "./src/ui/theme/index.ts",
+    "./ui/styles/globals.css": "./src/ui/styles/globals.css",
+    "./components/Button": "./src/ui/components/button/index.ts",
+    "./components/LoadingState": "./src/ui/components/loading-state/index.ts",
+    "./components/ErrorState": "./src/ui/components/error-state/index.ts",
+    "./types/api": "./src/types/api.ts",
+    "./constants/routes": "./src/constants/routes.ts",
+    "./security/headers": "./src/security/headers.mjs"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.9.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "^16.4.0",
+    "jsdom": "^25.0.1",
+    "msw": "^2.6.8",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.6"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@tailwindcss/postcss": "^4.3.0",
+    "axios": "^1.16.1",
+    "basecoat-css": "^0.3.11",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "next-themes": "^0.4.6",
+    "postcss": "^8.5.15",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}
