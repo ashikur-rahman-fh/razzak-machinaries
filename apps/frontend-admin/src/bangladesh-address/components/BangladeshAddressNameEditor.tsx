@@ -9,9 +9,10 @@ import {
   CardTitle,
   ErrorAlert,
   Input,
+  SuccessAlert,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
-import { useId, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 
 import { getGeoUpdateErrorMessage } from '../errors';
 import type { GeoRecord } from '../types';
@@ -26,18 +27,20 @@ import {
 } from '../validation';
 import { ConfirmUpdateModal } from './ConfirmUpdateModal';
 
+const FEEDBACK_DISMISS_MS = 5000;
+
 type BangladeshAddressNameEditorProps = {
   record: GeoRecord;
   isLoading?: boolean;
   onSubmit: (payload: GeoNameUpdatePayload) => Promise<void>;
-  onSuccess?: () => void;
+  onSaved?: () => void | Promise<void>;
 };
 
 export function BangladeshAddressNameEditor({
   record,
   isLoading = false,
   onSubmit,
-  onSuccess,
+  onSaved,
 }: BangladeshAddressNameEditorProps) {
   const { language } = useLanguagePreference();
   const { t } = useTranslation();
@@ -53,8 +56,15 @@ export function BangladeshAddressNameEditor({
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [pendingValues, setPendingValues] = useState<GeoNameFormValues | null>(null);
   const pendingValuesRef = useRef<GeoNameFormValues | null>(null);
+
+  useEffect(() => {
+    if (!showSuccess) return;
+    const timer = window.setTimeout(() => setShowSuccess(false), FEEDBACK_DISMISS_MS);
+    return () => window.clearTimeout(timer);
+  }, [showSuccess]);
 
   const nameEnId = useId();
   const nameBnId = useId();
@@ -86,6 +96,7 @@ export function BangladeshAddressNameEditor({
     }
     setFieldErrors({});
     setServerError(null);
+    setShowSuccess(false);
     pendingValuesRef.current = trimmed;
     setPendingValues(trimmed);
     setShowConfirm(true);
@@ -110,12 +121,17 @@ export function BangladeshAddressNameEditor({
 
     setIsSubmitting(true);
     setServerError(null);
+    setShowSuccess(false);
     try {
       await onSubmit(payload);
       setShowConfirm(false);
       pendingValuesRef.current = null;
       setPendingValues(null);
-      onSuccess?.();
+      setFieldErrors({});
+      setNameEn(values.nameEn);
+      setNameBn(values.nameBn);
+      setShowSuccess(true);
+      await onSaved?.();
     } catch (err) {
       setServerError(getGeoUpdateErrorMessage(err, language) || t('geo.update.nameFailed'));
     } finally {
@@ -144,6 +160,21 @@ export function BangladeshAddressNameEditor({
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSaveClick} noValidate>
+            {showSuccess ? (
+              <SuccessAlert
+                title={
+                  <TranslatedText
+                    translationKey="geo.update.nameSuccess"
+                    as="span"
+                    layout="inline"
+                  />
+                }
+                role="status"
+                aria-live="polite"
+                data-testid="geo-name-editor-success"
+              />
+            ) : null}
+
             {serverError ? (
               <ErrorAlert
                 id={errorId}

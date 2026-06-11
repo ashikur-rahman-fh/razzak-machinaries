@@ -30,6 +30,7 @@ vi.mock('next/navigation', () => ({
     replace: replaceMock,
     push: pushMock,
   }),
+  usePathname: () => `/bangladesh-address/${mockParams.geoType}/${mockParams.id}`,
   useSearchParams: () => mockSearchParams,
   useParams: () => mockParams,
 }));
@@ -334,9 +335,21 @@ describe('BangladeshAddressDetailPage', () => {
       expect(patchedBodies).toHaveLength(1);
       expect(patchedBodies[0]).toEqual({ nameEn: 'Dhaka City' });
     });
+
+    const nameEditor = screen.getByTestId('geo-name-editor');
     expect(
-      await screen.findByText(geoTranslationsEn['geo.update.nameSuccess']),
+      await within(nameEditor).findByText(geoTranslationsEn['geo.update.nameSuccess']),
     ).toBeInTheDocument();
+    expect(screen.queryByTestId('geo-detail-success')).not.toBeInTheDocument();
+  });
+
+  it('shows redirect success banner when arriving with success=updated query param', async () => {
+    mockSearchParams = new URLSearchParams('success=updated');
+    renderWithAuth(<BangladeshAddressDetailPage />);
+
+    expect(await screen.findByTestId('geo-detail-success')).toBeInTheDocument();
+    expect(screen.getByText(geoTranslationsEn['geo.update.success'])).toBeInTheDocument();
+    expect(screen.queryByTestId('geo-name-editor-success')).not.toBeInTheDocument();
   });
 
   it('does not patch when confirm update is cancelled on detail page', async () => {

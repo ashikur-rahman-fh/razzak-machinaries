@@ -11,8 +11,8 @@ import {
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 import { AdminNavbar } from '@/components/AdminNavbar';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
@@ -24,7 +24,7 @@ import { BangladeshAddressReadOnlyDetails } from '@/bangladesh-address/component
 import { ConfirmDeleteModal } from '@/bangladesh-address/components/ConfirmDeleteModal';
 import { getGeoConfig } from '@/bangladesh-address/config';
 import { getGeoDeleteErrorMessage } from '@/bangladesh-address/errors';
-import { useAsyncData } from '@/bangladesh-address/hooks';
+import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/bangladesh-address/hooks';
 import { loadParentLookup } from '@/bangladesh-address/parent-lookup';
 import { buildEditUrl, getBackListUrl } from '@/bangladesh-address/routes';
 import { isGeoResourceType } from '@/bangladesh-address/types';
@@ -34,6 +34,7 @@ const FEEDBACK_DISMISS_MS = 5000;
 export function BangladeshAddressDetailPage() {
   const params = useParams<{ geoType: string; id: string }>();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
   const { language } = useLanguagePreference();
   const { logout, isLoggingOut } = useAdminAuth();
@@ -47,10 +48,16 @@ export function BangladeshAddressDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [inlineSuccessFeedback, setInlineSuccessFeedback] = useState(false);
   const [dismissedRedirectSuccess, setDismissedRedirectSuccess] = useState(false);
-  const showSuccessFeedback =
-    (success === 'updated' && !dismissedRedirectSuccess) || inlineSuccessFeedback;
+  const showRedirectSuccess = success === 'updated' && !dismissedRedirectSuccess;
+
+  const dismissRedirectSuccess = useCallback(() => {
+    setDismissedRedirectSuccess(true);
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete('success');
+    const query = nextParams.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
 
   const isValidType = isGeoResourceType(geoTypeParam);
   const geoType = isValidType ? geoTypeParam : 'divisions';
@@ -68,13 +75,10 @@ export function BangladeshAddressDetailPage() {
   );
 
   useEffect(() => {
-    if (!showSuccessFeedback) return;
-    const timer = window.setTimeout(() => {
-      setInlineSuccessFeedback(false);
-      setDismissedRedirectSuccess(true);
-    }, FEEDBACK_DISMISS_MS);
+    if (!showRedirectSuccess) return;
+    const timer = window.setTimeout(() => dismissRedirectSuccess(), FEEDBACK_DISMISS_MS);
     return () => window.clearTimeout(timer);
-  }, [showSuccessFeedback]);
+  }, [dismissRedirectSuccess, showRedirectSuccess]);
 
   async function handleDelete() {
     if (!config || recordState.status !== 'success' || isDeleting) return;
@@ -102,9 +106,9 @@ export function BangladeshAddressDetailPage() {
     );
   }
 
-  const record = recordState.status === 'success' ? recordState.data : null;
+  const record = getAsyncData(recordState);
   const parentLookup = parentLookupState.status === 'success' ? parentLookupState.data : new Map();
-  const isInitialLoading = recordState.status === 'loading' || recordState.status === 'idle';
+  const isInitialLoading = isAsyncInitialLoad(recordState);
   const isNotFound =
     recordState.status === 'error' && isApiError(recordState.error) && recordState.error.isNotFound;
   const isLoadError = recordState.status === 'error' && !isNotFound;
@@ -143,18 +147,16 @@ export function BangladeshAddressDetailPage() {
         }
       >
         <div className="relative mx-auto flex w-full max-w-2xl flex-col gap-6">
-          {showSuccessFeedback ? (
-            <div className="fixed inset-x-4 top-20 z-50 mx-auto max-w-2xl" role="status">
-              <SuccessAlert
-                title={
-                  <TranslatedText
-                    translationKey="geo.update.nameSuccess"
-                    as="span"
-                    layout="inline"
-                  />
-                }
-              />
-            </div>
+          {showRedirectSuccess ? (
+            <SuccessAlert
+              className="animate-in fade-in slide-in-from-top-2 duration-300"
+              title={
+                <TranslatedText translationKey="geo.update.success" as="span" layout="inline" />
+              }
+              role="status"
+              aria-live="polite"
+              data-testid="geo-detail-success"
+            />
           ) : null}
 
           {isInitialLoading ? <BangladeshAddressDetailSkeleton /> : null}
@@ -217,14 +219,13 @@ export function BangladeshAddressDetailPage() {
                 actions={headerActions}
               />
               <BangladeshAddressNameEditor
-                key={`${record.id}-${record.nameEn}-${record.nameBn}`}
+                key={record.id}
                 record={record}
                 onSubmit={async (payload) => {
                   if (!config) return;
                   await config.update(record.id, payload);
-                  await reloadRecord();
                 }}
-                onSuccess={() => setInlineSuccessFeedback(true)}
+                onSaved={() => reloadRecord()}
               />
               <BangladeshAddressReadOnlyDetails
                 geoType={geoType}
