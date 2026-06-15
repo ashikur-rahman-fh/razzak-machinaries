@@ -6,6 +6,7 @@ export const API_ROUTES = {
     districts: '/api/public/geo/districts/',
     upazilas: '/api/public/geo/upazilas/',
     unions: '/api/public/geo/unions/',
+    villages: '/api/public/geo/villages/',
   },
   adminAuth: {
     csrf: '/api/admin/auth/csrf/',
@@ -19,9 +20,12 @@ export const API_ROUTES = {
     districts: '/api/admin/geo/districts/',
     upazilas: '/api/admin/geo/upazilas/',
     unions: '/api/admin/geo/unions/',
+    villages: '/api/admin/geo/villages/',
+    villagesImport: '/api/admin/geo/villages/import/',
     divisionDetail: (id: number) => `/api/admin/geo/divisions/${id}/`,
     districtDetail: (id: number) => `/api/admin/geo/districts/${id}/`,
     upazilaDetail: (id: number) => `/api/admin/geo/upazilas/${id}/`,
     unionDetail: (id: number) => `/api/admin/geo/unions/${id}/`,
+    villageDetail: (id: number) => `/api/admin/geo/villages/${id}/`,
   },
 } as const;

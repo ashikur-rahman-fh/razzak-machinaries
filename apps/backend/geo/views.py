@@ -5,8 +5,10 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 
 from geo.cache import GEO_CACHE_TTL_SECONDS, build_geo_cache_key
-from geo.models import District, Division, Union, Upazila
-from geo.serializers import serialize_geo_queryset, validate_parent_id
+from geo.filters import apply_geo_ordering, apply_geo_search
+from geo.models import District, Division, Union, Upazila, Village
+from geo.pagination import GeoPageNumberPagination
+from geo.serializers import GeoNameSerializer, serialize_geo_queryset, validate_parent_id
 
 
 class GeoApiThrottle(ScopedRateThrottle):
@@ -93,3 +95,36 @@ def public_geo_unions(request):
         queryset=queryset,
         cache_params={"upazilaId": upazila_id},
     )
+
+
+@api_view(["GET"])
+@throttle_classes([GeoApiThrottle])
+def public_geo_villages(request):
+    search = request.query_params.get("search")
+    page = request.query_params.get("page", "1")
+    page_size = request.query_params.get("pageSize")
+
+    cache_key = build_geo_cache_key(
+        "villages",
+        search=search or "",
+        page=page,
+        pageSize=page_size or "",
+    )
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return Response(cached)
+
+    queryset = Village.objects.all()
+    queryset = apply_geo_search(queryset, search)
+    queryset = apply_geo_ordering(queryset, request.query_params.get("ordering"))
+
+    paginator = GeoPageNumberPagination()
+    page_obj = paginator.paginate_queryset(queryset, request)
+    payload = {
+        "count": paginator.page.paginator.count,
+        "next": paginator.get_next_link(),
+        "previous": paginator.get_previous_link(),
+        "results": GeoNameSerializer(page_obj, many=True).data,
+    }
+    cache.set(cache_key, payload, timeout=GEO_CACHE_TTL_SECONDS)
+    return Response(payload)

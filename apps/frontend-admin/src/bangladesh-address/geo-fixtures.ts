@@ -12,6 +12,11 @@ export const geoUnion = {
   nameBn: 'আশুলিয়া',
   upazilaId: 611,
 };
+export const geoVillage = {
+  id: 1,
+  nameEn: 'Balarampur',
+  nameBn: 'বলরামপুর',
+};
 
 export function paginated<T>(results: T[], count?: number) {
   return {

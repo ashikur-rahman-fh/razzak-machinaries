@@ -9,6 +9,8 @@ import {
   type GeoUnionWrite,
   type GeoUpazila,
   type GeoUpazilaWrite,
+  type GeoVillage,
+  type GeoVillageWrite,
   type Paginated,
 } from '@razzak-machinaries/shared/api';
 
@@ -19,12 +21,12 @@ export type GeoResourceConfig = {
   pluralLabelKey: string;
   list: (
     params?: GeoListParams,
-  ) => Promise<Paginated<GeoDivision | GeoDistrict | GeoUpazila | GeoUnion>>;
-  get: (id: number) => Promise<GeoDivision | GeoDistrict | GeoUpazila | GeoUnion>;
+  ) => Promise<Paginated<GeoDivision | GeoDistrict | GeoUpazila | GeoUnion | GeoVillage>>;
+  get: (id: number) => Promise<GeoDivision | GeoDistrict | GeoUpazila | GeoUnion | GeoVillage>;
   update: (
     id: number,
-    body: GeoDivisionWrite | GeoDistrictWrite | GeoUpazilaWrite | GeoUnionWrite,
-  ) => Promise<GeoDivision | GeoDistrict | GeoUpazila | GeoUnion>;
+    body: GeoDivisionWrite | GeoDistrictWrite | GeoUpazilaWrite | GeoUnionWrite | GeoVillageWrite,
+  ) => Promise<GeoDivision | GeoDistrict | GeoUpazila | GeoUnion | GeoVillage>;
   delete: (id: number) => Promise<void>;
   parentFilterKey?: 'divisionId' | 'districtId' | 'upazilaId';
   parentResource?: GeoResourceType;
@@ -77,6 +79,15 @@ export const GEO_RESOURCE_CONFIG: Record<GeoResourceType, GeoResourceConfig> = {
     parentResource: 'upazilas',
     parentIdField: 'upazilaId',
     hasParentOnEdit: true,
+  },
+  villages: {
+    singularLabelKey: 'geo.type.village',
+    pluralLabelKey: 'geo.type.villages',
+    list: adminGeoApi.listVillages,
+    get: adminGeoApi.getVillage,
+    update: adminGeoApi.updateVillage,
+    delete: adminGeoApi.deleteVillage,
+    hasParentOnEdit: false,
   },
 };
 

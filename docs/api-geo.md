@@ -24,7 +24,11 @@ Optional flags (passed through to Django):
 make backend-sync-geo -- --clear   # wipe geo tables then reload (dev/troubleshooting)
 ```
 
-Source files live in [`apps/backend/geo/data/`](../apps/backend/geo/data/) (PHPMyAdmin JSON export format).
+Source files live in [`apps/backend/geo/data/`](../apps/backend/geo/data/) (PHPMyAdmin JSON export format):
+
+- `divisions.json`, `districts.json`, `upazilas.json`, `unions.json`, `villages.json`
+
+`make backend-sync-geo` loads all five when `villages.json` is present. Override the village file with `--villages-file /path/to/export.json`.
 
 ## Bilingual fields
 
@@ -160,20 +164,52 @@ curl -s 'http://localhost:8080/api/public/geo/unions/?upazilaId=1'
 
 ---
 
+### List villages (paginated)
+
+Standalone village reference data (not linked to unions in v1). Responses are **paginated** because village datasets can be large.
+
+```http
+GET /api/public/geo/villages/
+```
+
+| Query param | Required | Type | Description |
+|-------------|----------|------|-------------|
+| `page` | no | positive integer | Page number (default `1`) |
+| `pageSize` | no | positive integer | Items per page (default `50`, max `200`) |
+| `search` | no | string | Search `nameEn` / `nameBn` (case-insensitive) |
+| `ordering` | no | string | `nameEn`, `-nameEn`, `nameBn`, `-nameBn`, `id`, `-id` |
+
+**Response `200`:** Paginated object with `count`, `next`, `previous`, `results` (each village: `{ id, nameEn, nameBn }`).
+
+**Example:**
+
+```bash
+curl -s 'http://localhost:8080/api/public/geo/villages/?search=Balaram&pageSize=20'
+```
+
+---
+
 ## TypeScript client
 
 From `@razzak-machinaries/shared/api`:
 
 ```ts
-import { getDivisions, getDistricts, getUpazilas, getUnions } from '@razzak-machinaries/shared/api';
+import {
+  getDivisions,
+  getDistricts,
+  getUpazilas,
+  getUnions,
+  getVillages,
+} from '@razzak-machinaries/shared/api';
 
 const divisions = await getDivisions();
 const districts = await getDistricts(6);
 const upazilas = await getUpazilas(47);
 const unions = await getUnions(1);
+const villages = await getVillages({ search: 'Balaram', page: 1, pageSize: 20 });
 ```
 
-Types: `GeoDivision`, `GeoDistrict`, `GeoUpazila`, `GeoUnion` (each `{ id, nameEn, nameBn }`).
+Types: `GeoDivision`, `GeoDistrict`, `GeoUpazila`, `GeoUnion`, `GeoVillage` (each `{ id, nameEn, nameBn }` where applicable).
 
 Route constants: `API_ROUTES.publicGeo` in `@razzak-machinaries/shared/constants/routes`.
 
@@ -185,8 +221,28 @@ Route constants: `API_ROUTES.publicGeo` in `@razzak-machinaries/shared/constants
 | District | 64 | `division_id` |
 | Upazila | 494 | `district_id` |
 | Union | 4540 | `upazila_id` |
+| Village | varies | — (standalone list in v1) |
 
 Source integer IDs are preserved as primary keys for stable references.
+
+### Village import (admin)
+
+```http
+POST /api/admin/geo/villages/import/?dryRun=true
+Content-Type: multipart/form-data
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `file` | yes | PHPMyAdmin JSON export (`type: table`, `name: villages`) or plain JSON array of `{ id, name, bn_name }` |
+
+| Query param | Description |
+|-------------|-------------|
+| `dryRun=true` | Validate and return preview stats without writing to the database |
+
+**Response `200`:** `{ total, valid, invalid, wouldCreate, wouldUpdate, errors: [{ rowIndex, message }] }`
+
+Omit `dryRun` or set `dryRun=false` to commit via `update_or_create`.
 
 ## Admin CRUD API
 
@@ -202,7 +258,7 @@ Base path: `/api/admin/geo/`
 
 ### Endpoints (each resource)
 
-Resources: `divisions`, `districts`, `upazilas`, `unions`
+Resources: `divisions`, `districts`, `upazilas`, `unions`, `villages`
 
 | Method | Path | Success | Description |
 |--------|------|---------|-------------|

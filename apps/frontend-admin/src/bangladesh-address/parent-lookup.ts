@@ -37,12 +37,14 @@ export async function loadGeoStats(): Promise<{
   districts: number;
   upazilas: number;
   unions: number;
+  villages: number;
 }> {
-  const [divisions, districts, upazilas, unions] = await Promise.all([
+  const [divisions, districts, upazilas, unions, villages] = await Promise.all([
     adminGeoApi.listDivisions({ page: 1, pageSize: 1 }),
     adminGeoApi.listDistricts({ page: 1, pageSize: 1 }),
     adminGeoApi.listUpazilas({ page: 1, pageSize: 1 }),
     adminGeoApi.listUnions({ page: 1, pageSize: 1 }),
+    adminGeoApi.listVillages({ page: 1, pageSize: 1 }),
   ]);
 
   return {
@@ -50,6 +52,7 @@ export async function loadGeoStats(): Promise<{
     districts: districts.count,
     upazilas: upazilas.count,
     unions: unions.count,
+    villages: villages.count,
   };
 }
 

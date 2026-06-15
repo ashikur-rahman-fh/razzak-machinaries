@@ -9,7 +9,10 @@ import type {
   GeoUnionWrite,
   GeoUpazila,
   GeoUpazilaWrite,
+  GeoVillage,
+  GeoVillageWrite,
   Paginated,
+  VillageImportSummary,
 } from '../types/geo';
 import { ensureAdminCsrf } from './admin-auth';
 import { backendAdminApi } from './clients/backend-admin';
@@ -146,5 +149,47 @@ export const adminGeoApi = {
   async deleteUnion(id: number): Promise<void> {
     await ensureCsrfForWrite();
     await backendAdminApi.delete<void>(API_ROUTES.adminGeo.unionDetail(id));
+  },
+
+  listVillages(params?: GeoListParams): Promise<Paginated<GeoVillage>> {
+    return backendAdminApi.get<Paginated<GeoVillage>>(API_ROUTES.adminGeo.villages, {
+      params: toQueryParams(params),
+    });
+  },
+
+  async createVillage(body: GeoVillageWrite): Promise<GeoVillage> {
+    await ensureCsrfForWrite();
+    return backendAdminApi.post<GeoVillage, GeoVillageWrite>(API_ROUTES.adminGeo.villages, body);
+  },
+
+  getVillage(id: number): Promise<GeoVillage> {
+    return backendAdminApi.get<GeoVillage>(API_ROUTES.adminGeo.villageDetail(id));
+  },
+
+  async updateVillage(id: number, body: GeoVillageWrite): Promise<GeoVillage> {
+    await ensureCsrfForWrite();
+    return backendAdminApi.patch<GeoVillage, GeoVillageWrite>(
+      API_ROUTES.adminGeo.villageDetail(id),
+      body,
+    );
+  },
+
+  async deleteVillage(id: number): Promise<void> {
+    await ensureCsrfForWrite();
+    await backendAdminApi.delete<void>(API_ROUTES.adminGeo.villageDetail(id));
+  },
+
+  async importVillages(file: File, options?: { dryRun?: boolean }): Promise<VillageImportSummary> {
+    await ensureCsrfForWrite();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return backendAdminApi.post<VillageImportSummary, FormData>(
+      API_ROUTES.adminGeo.villagesImport,
+      formData,
+      {
+        params: options?.dryRun ? { dryRun: 'true' } : undefined,
+      },
+    );
   },
 };

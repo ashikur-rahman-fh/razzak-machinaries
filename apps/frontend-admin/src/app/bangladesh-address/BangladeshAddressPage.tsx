@@ -28,6 +28,7 @@ import { BangladeshAddressStatsCards } from '@/bangladesh-address/components/Ban
 import { BangladeshAddressTable } from '@/bangladesh-address/components/BangladeshAddressTable';
 import { BangladeshAddressTypeTabs } from '@/bangladesh-address/components/BangladeshAddressTypeTabs';
 import { PaginationSummary } from '@/bangladesh-address/components/PaginationSummary';
+import { VillageImportPanel } from '@/bangladesh-address/components/VillageImportPanel';
 import { getGeoConfig } from '@/bangladesh-address/config';
 import {
   getAsyncData,
@@ -180,6 +181,15 @@ export function BangladeshAddressPage() {
             error={statsState.status === 'error' ? statsState.error : null}
             onRetry={() => void reloadStats()}
           />
+
+          {effectiveState.type === 'villages' ? (
+            <VillageImportPanel
+              onImportSuccess={() => {
+                void reloadList();
+                void reloadStats();
+              }}
+            />
+          ) : null}
 
           <Card>
             <CardHeader className="space-y-4">

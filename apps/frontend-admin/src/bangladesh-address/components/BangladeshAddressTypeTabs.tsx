@@ -14,6 +14,7 @@ const TYPE_LABEL_KEYS: Record<GeoResourceType, string> = {
   districts: 'geo.type.districts',
   upazilas: 'geo.type.upazilas',
   unions: 'geo.type.unions',
+  villages: 'geo.type.villages',
 };
 
 export function BangladeshAddressTypeTabs({

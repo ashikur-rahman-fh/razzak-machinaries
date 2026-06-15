@@ -1,0 +1,1083 @@
+[
+  {
+    "type": "header",
+    "version": "4.8.5",
+    "comment": "Export to JSON plugin for PHPMyAdmin"
+  },
+  {
+    "type": "database",
+    "name": "bd_geo_code"
+  },
+  {
+    "type": "table",
+    "name": "villages",
+    "database": "bd_geo_code",
+    "data": [
+      {
+        "name": "Balarampur",
+        "bn_name": "বলরামপুর",
+        "id": "1"
+      },
+      {
+        "name": "Boro Bihanali",
+        "bn_name": "বড়বিহানালী",
+        "id": "2"
+      },
+      {
+        "name": "Dariagathi",
+        "bn_name": "দাড়িয়াগাথী",
+        "id": "3"
+      },
+      {
+        "name": "Bil Palsha",
+        "bn_name": "বিলপালশা",
+        "id": "4"
+      },
+      {
+        "name": "Bhagabanpur",
+        "bn_name": "ভগবানপুর",
+        "id": "5"
+      },
+      {
+        "name": "Haludbiyar",
+        "bn_name": "হলুদবিয়ার",
+        "id": "6"
+      },
+      {
+        "name": "Baulapara",
+        "bn_name": "বাউলাপাড়া",
+        "id": "7"
+      },
+      {
+        "name": "Lakshikola",
+        "bn_name": "লক্ষীকোলা",
+        "id": "8"
+      },
+      {
+        "name": "Baraihati",
+        "bn_name": "বারইহাটি",
+        "id": "9"
+      },
+      {
+        "name": "Sonarpara",
+        "bn_name": "সোনারপাড়া",
+        "id": "10"
+      },
+      {
+        "name": "Koya Bhabanipur",
+        "bn_name": "কয়াভবানীপুর",
+        "id": "11"
+      },
+      {
+        "name": "Kartikahar",
+        "bn_name": "কার্তিকাহার",
+        "id": "12"
+      },
+      {
+        "name": "Kashiyara",
+        "bn_name": "কাশিয়ারা",
+        "id": "13"
+      },
+      {
+        "name": "Basantapur",
+        "bn_name": "বসন্তপুর",
+        "id": "14"
+      },
+      {
+        "name": "Dighirpar",
+        "bn_name": "দিঘিরপার",
+        "id": "15"
+      },
+      {
+        "name": "Kola Palsha",
+        "bn_name": "কোলা পালশা",
+        "id": "16"
+      },
+      {
+        "name": "Malipukur",
+        "bn_name": "মালিপুকুর",
+        "id": "17"
+      },
+      {
+        "name": "Nagberi",
+        "bn_name": "নাগবেরী",
+        "id": "18"
+      },
+      {
+        "name": "Bhonpara",
+        "bn_name": "ভোঁপাড়া",
+        "id": "19"
+      },
+      {
+        "name": "Bhugipara",
+        "bn_name": "ভুগিপাড়া",
+        "id": "20"
+      },
+      {
+        "name": "Tetulia",
+        "bn_name": "তেতুলিয়া",
+        "id": "21"
+      },
+      {
+        "name": "Kolahat",
+        "bn_name": "কোলাহাট",
+        "id": "22"
+      },
+      {
+        "name": "Shaguna",
+        "bn_name": "শগুনা",
+        "id": "23"
+      },
+      {
+        "name": "Shimala",
+        "bn_name": "শিমলা",
+        "id": "24"
+      },
+      {
+        "name": "Brajapur",
+        "bn_name": "ব্রজপুর",
+        "id": "25"
+      },
+      {
+        "name": "Bashbaria",
+        "bn_name": "বাঁশবাড়িয়া",
+        "id": "26"
+      },
+      {
+        "name": "Attabnagara",
+        "bn_name": "আত্তাবনগর",
+        "id": "27"
+      },
+      {
+        "name": "Patisar",
+        "bn_name": "পতিসর",
+        "id": "28"
+      },
+      {
+        "name": "Maglishpur Jowanpur",
+        "bn_name": "মগলিশপুর জোয়ানপুর",
+        "id": "29"
+      },
+      {
+        "name": "Sadupur",
+        "bn_name": "সদুপুর",
+        "id": "30"
+      },
+      {
+        "name": "Radhanagara",
+        "bn_name": "রাধানগর",
+        "id": "31"
+      },
+      {
+        "name": "Raninagar",
+        "bn_name": "রানীনগর",
+        "id": "32"
+      },
+      {
+        "name": "Samsapara",
+        "bn_name": "সমসপাড়া",
+        "id": "33"
+      },
+      {
+        "name": "Jamgram",
+        "bn_name": "জামগ্রাম",
+        "id": "34"
+      },
+      {
+        "name": "Paota",
+        "bn_name": "পাওটা",
+        "id": "35"
+      },
+      {
+        "name": "Maniyari",
+        "bn_name": "মনিয়ারী",
+        "id": "36"
+      },
+      {
+        "name": "Harinmara",
+        "bn_name": "হরিনমারা",
+        "id": "37"
+      },
+      {
+        "name": "Jhargram",
+        "bn_name": "ঝারগ্রাম",
+        "id": "38"
+      },
+      {
+        "name": "Girigram",
+        "bn_name": "গিরিগ্রাম",
+        "id": "39"
+      },
+      {
+        "name": "Ghoshgram",
+        "bn_name": "ঘোষগ্রাম",
+        "id": "40"
+      },
+      {
+        "name": "Bhatakoi",
+        "bn_name": "ভাটকৈ",
+        "id": "41"
+      },
+      {
+        "name": "Naldighi",
+        "bn_name": "নলদিঘি",
+        "id": "42"
+      },
+      {
+        "name": "Hudrakuri",
+        "bn_name": "হুদ্রাকুড়ি",
+        "id": "43"
+      },
+      {
+        "name": "Goalpara",
+        "bn_name": "গোয়ালপাড়া",
+        "id": "44"
+      },
+      {
+        "name": "Raghunathpur Rayaga",
+        "bn_name": "রঘুনাথপুর রায়গা",
+        "id": "45"
+      },
+      {
+        "name": "Palsha",
+        "bn_name": "পালশা",
+        "id": "46"
+      },
+      {
+        "name": "Malson",
+        "bn_name": "মালসন",
+        "id": "47"
+      },
+      {
+        "name": "Bhebra",
+        "bn_name": "ভেবড়া",
+        "id": "48"
+      },
+      {
+        "name": "Boithakhali",
+        "bn_name": "বৈঠাখালি",
+        "id": "49"
+      },
+      {
+        "name": "Parpachupur",
+        "bn_name": "পারপাচুপুর",
+        "id": "50"
+      },
+      {
+        "name": "Islamgathi",
+        "bn_name": "ইসলামগাথী",
+        "id": "51"
+      },
+      {
+        "name": "Dudhkuri",
+        "bn_name": "দুধকুড়ি",
+        "id": "52"
+      },
+      {
+        "name": "Satardighi",
+        "bn_name": "সাতারদিঘি",
+        "id": "53"
+      },
+      {
+        "name": "Bhatara",
+        "bn_name": "ভাটরা",
+        "id": "54"
+      },
+      {
+        "name": "Gram Sharia",
+        "bn_name": "গ্রাম শরিয়া",
+        "id": "55"
+      },
+      {
+        "name": "Gona",
+        "bn_name": "গোনা",
+        "id": "56"
+      },
+      {
+        "name": "Kharerbari",
+        "bn_name": "খরেরবাড়ি",
+        "id": "57"
+      },
+      {
+        "name": "Adda",
+        "bn_name": "আড্ডা",
+        "id": "58"
+      },
+      {
+        "name": "Kajipara",
+        "bn_name": "কাজিপাড়া",
+        "id": "59"
+      },
+      {
+        "name": "Sonaidanga",
+        "bn_name": "সোনাইডাঙ্গা",
+        "id": "60"
+      },
+      {
+        "name": "Kaligram",
+        "bn_name": "কালিগ্রাম",
+        "id": "61"
+      },
+      {
+        "name": "Mirjapur",
+        "bn_name": "মিরজাপুর",
+        "id": "62"
+      },
+      {
+        "name": "Baka",
+        "bn_name": "বাকা",
+        "id": "63"
+      },
+      {
+        "name": "Ujalpur",
+        "bn_name": "উজালপুর",
+        "id": "64"
+      },
+      {
+        "name": "Shikarpur",
+        "bn_name": "শিকারপুর",
+        "id": "65"
+      },
+      {
+        "name": "Anantapur",
+        "bn_name": "অনন্তপুর",
+        "id": "66"
+      },
+      {
+        "name": "Munjia",
+        "bn_name": "মুনজিয়া",
+        "id": "67"
+      },
+      {
+        "name": "Chakmenu",
+        "bn_name": "চকমেনু",
+        "id": "68"
+      },
+      {
+        "name": "Chamta",
+        "bn_name": "চামটা",
+        "id": "69"
+      },
+      {
+        "name": "Kundna",
+        "bn_name": "কুন্দনা",
+        "id": "70"
+      },
+      {
+        "name": "Ratoal",
+        "bn_name": "রাতোয়াল",
+        "id": "71"
+      },
+      {
+        "name": "Deokuri",
+        "bn_name": "দেউকুড়ি",
+        "id": "72"
+      },
+      {
+        "name": "Panchpakhia",
+        "bn_name": "পাঁচপাখিয়া",
+        "id": "73"
+      },
+      {
+        "name": "Bhar Tentulia",
+        "bn_name": "ভর তেতুলিয়া",
+        "id": "74"
+      },
+      {
+        "name": "Chhota Madhaimuri",
+        "bn_name": "ছোট মাধাইমুড়ি",
+        "id": "75"
+      },
+      {
+        "name": "Ramnagar",
+        "bn_name": "রামনগর",
+        "id": "76"
+      },
+      {
+        "name": "Chhota Berachouki",
+        "bn_name": "ছোট বেড়াচৌকি",
+        "id": "77"
+      },
+      {
+        "name": "Balia",
+        "bn_name": "বালিয়া",
+        "id": "78"
+      },
+      {
+        "name": "Kumarpur",
+        "bn_name": "কুমারপুর",
+        "id": "79"
+      },
+      {
+        "name": "Naranbari",
+        "bn_name": "নারানবাড়ি",
+        "id": "80"
+      },
+      {
+        "name": "Jhikra",
+        "bn_name": "ঝিকরা",
+        "id": "81"
+      },
+      {
+        "name": "Bhadalia",
+        "bn_name": "ভাদালিয়া",
+        "id": "82"
+      },
+      {
+        "name": "Dubai",
+        "bn_name": "ডুবাই",
+        "id": "83"
+      },
+      {
+        "name": "Karchamaria",
+        "bn_name": "করচমারিয়া",
+        "id": "84"
+      },
+      {
+        "name": "Kolagnipur",
+        "bn_name": "কোলাগনিপুর",
+        "id": "85"
+      },
+      {
+        "name": "Piddapara",
+        "bn_name": "পিদ্দপাড়া",
+        "id": "86"
+      },
+      {
+        "name": "Kumghat",
+        "bn_name": "কুমঘাট",
+        "id": "87"
+      },
+      {
+        "name": "Bhansipara",
+        "bn_name": "ভানসিপাড়া",
+        "id": "88"
+      },
+      {
+        "name": "Katila",
+        "bn_name": "কাতিলা",
+        "id": "89"
+      },
+      {
+        "name": "Doulatpur",
+        "bn_name": "দৌলতপুর",
+        "id": "90"
+      },
+      {
+        "name": "Parkashanda",
+        "bn_name": "পারকাশন্দা",
+        "id": "91"
+      },
+      {
+        "name": "Bahla",
+        "bn_name": "বহলা",
+        "id": "92"
+      },
+      {
+        "name": "Jalkoi Raypur",
+        "bn_name": "জলকৈ রায়পুর",
+        "id": "93"
+      },
+      {
+        "name": "Khalishpur",
+        "bn_name": "খালিশপুর",
+        "id": "94"
+      },
+      {
+        "name": "Bandaikhara Paschimpara",
+        "bn_name": "বান্দাইখাড়া পশ্চিমপাড়া",
+        "id": "95"
+      },
+      {
+        "name": "Boikunthpur",
+        "bn_name": "বৈকুণ্ঠপুর",
+        "id": "96"
+      },
+      {
+        "name": "Chakrail",
+        "bn_name": "চাকরাইল",
+        "id": "97"
+      },
+      {
+        "name": "Madandanga",
+        "bn_name": "মদনডাঙ্গা",
+        "id": "98"
+      },
+      {
+        "name": "Goalbaria",
+        "bn_name": "গোয়ালবাড়িয়া",
+        "id": "99"
+      },
+      {
+        "name": "Bipra Boalia",
+        "bn_name": "বিপ্র বোয়ালিয়া",
+        "id": "100"
+      },
+      {
+        "name": "Makhna Kamalgota",
+        "bn_name": "মাখনা কমলগোটা",
+        "id": "101"
+      },
+      {
+        "name": "Naidighi",
+        "bn_name": "নৈদিঘি",
+        "id": "102"
+      },
+      {
+        "name": "Panchupur",
+        "bn_name": "পাঁচুপুর",
+        "id": "103"
+      },
+      {
+        "name": "Dippur",
+        "bn_name": "দীপপুর",
+        "id": "104"
+      },
+      {
+        "name": "Bhiti",
+        "bn_name": "ভিটি",
+        "id": "105"
+      },
+      {
+        "name": "Jhikra Koyra Bari",
+        "bn_name": "ঝিকরা কয়রা বাড়ি",
+        "id": "106"
+      },
+      {
+        "name": "Paisanta",
+        "bn_name": "পৈসান্তা",
+        "id": "107"
+      },
+      {
+        "name": "Pirla",
+        "bn_name": "পিড়লা",
+        "id": "108"
+      },
+      {
+        "name": "Naoduli Bazar",
+        "bn_name": "নওদুলী বাজার",
+        "id": "109"
+      },
+      {
+        "name": "Dakahar",
+        "bn_name": "ডাকাহার",
+        "id": "110"
+      },
+      {
+        "name": "Kachari Koalipara",
+        "bn_name": "কাচারি কোয়ালিপাড়া",
+        "id": "111"
+      },
+      {
+        "name": "Temaria",
+        "bn_name": "তেমারিয়া",
+        "id": "112"
+      },
+      {
+        "name": "Bahadurpur",
+        "bn_name": "বাহাদুরপুর",
+        "id": "113"
+      },
+      {
+        "name": "Jalkoi",
+        "bn_name": "জলকৈ",
+        "id": "114"
+      },
+      {
+        "name": "Kusumbi Kaliganj",
+        "bn_name": "কুসুম্বী কালীগঞ্জ",
+        "id": "115"
+      },
+      {
+        "name": "Telihar",
+        "bn_name": "তেলিহার",
+        "id": "116"
+      },
+      {
+        "name": "Krishnakola",
+        "bn_name": "কৃষ্ণকোলা",
+        "id": "117"
+      },
+      {
+        "name": "Shafikpur",
+        "bn_name": "শফিকপুর",
+        "id": "118"
+      },
+      {
+        "name": "Sadupara",
+        "bn_name": "সদুপাড়া",
+        "id": "119"
+      },
+      {
+        "name": "Paharpur",
+        "bn_name": "পাহারপুর",
+        "id": "120"
+      },
+      {
+        "name": "Gurnai",
+        "bn_name": "গুরনই",
+        "id": "121"
+      },
+      {
+        "name": "Kashtanangla",
+        "bn_name": "কাষ্টনাংলা",
+        "id": "122"
+      },
+      {
+        "name": "Khamargram",
+        "bn_name": "খামারগ্রাম",
+        "id": "123"
+      },
+      {
+        "name": "Bajekola",
+        "bn_name": "বাজেকোলা",
+        "id": "124"
+      },
+      {
+        "name": "Kabir Nagar",
+        "bn_name": "কবির নগর",
+        "id": "125"
+      },
+      {
+        "name": "Kanojpara",
+        "bn_name": "কানোজপাড়া",
+        "id": "126"
+      },
+      {
+        "name": "Dipganj Hat",
+        "bn_name": "দ্বীপগঞ্জ হাট",
+        "id": "127"
+      },
+      {
+        "name": "Basnai",
+        "bn_name": "বসনই",
+        "id": "128"
+      },
+      {
+        "name": "Tilokpur",
+        "bn_name": "তিলোকপুর",
+        "id": "129"
+      },
+      {
+        "name": "Haludbihar",
+        "bn_name": "হলুদবিহার",
+        "id": "130"
+      },
+      {
+        "name": "Dipnagar",
+        "bn_name": "দীপনগর",
+        "id": "131"
+      },
+      {
+        "name": "Palna",
+        "bn_name": "পালনা",
+        "id": "132"
+      },
+      {
+        "name": "Uttar Jamalpur",
+        "bn_name": "উত্তর জামালপুর",
+        "id": "133"
+      },
+      {
+        "name": "Beola Pareshnagar",
+        "bn_name": "বেওলা পরেশনগর",
+        "id": "134"
+      },
+      {
+        "name": "Atrai",
+        "bn_name": "আত্রাই",
+        "id": "135"
+      },
+      {
+        "name": "Khoradah",
+        "bn_name": "খোড়াদাহ",
+        "id": "136"
+      },
+      {
+        "name": "Sardarpara",
+        "bn_name": "সরদারপাড়া",
+        "id": "137"
+      },
+      {
+        "name": "Satsail Bazar",
+        "bn_name": "সাতসৈল বাজার",
+        "id": "138"
+      },
+      {
+        "name": "Goalbari",
+        "bn_name": "গোয়ালবাড়ি",
+        "id": "139"
+      },
+      {
+        "name": "Hazrapara",
+        "bn_name": "হাজরাপাড়া",
+        "id": "140"
+      },
+      {
+        "name": "Fultali Bazar",
+        "bn_name": "ফুলতলী বাজার",
+        "id": "141"
+      },
+      {
+        "name": "Piyada Para",
+        "bn_name": "পিয়াদা পাড়া",
+        "id": "142"
+      },
+      {
+        "name": "Bilkrishnapur",
+        "bn_name": "বিলকৃষ্ণপুর",
+        "id": "143"
+      },
+      {
+        "name": "Moskipur",
+        "bn_name": "মস্কিপুর",
+        "id": "144"
+      },
+      {
+        "name": "Patundhara",
+        "bn_name": "পাটুনধারা",
+        "id": "145"
+      },
+      {
+        "name": "Madhaimuri",
+        "bn_name": "মাধাইমুড়ি",
+        "id": "146"
+      },
+      {
+        "name": "Pathanpara",
+        "bn_name": "পাঠানপাড়া",
+        "id": "147"
+      },
+      {
+        "name": "Baust",
+        "bn_name": "বাউস্ত",
+        "id": "148"
+      },
+      {
+        "name": "Bhabra",
+        "bn_name": "ভাবড়া",
+        "id": "149"
+      },
+      {
+        "name": "Gopinath",
+        "bn_name": "গোপিনাথ",
+        "id": "150"
+      },
+      {
+        "name": "Damkuri",
+        "bn_name": "দামকুড়ি",
+        "id": "151"
+      },
+      {
+        "name": "Mahadighi",
+        "bn_name": "মহাদিঘি",
+        "id": "152"
+      },
+      {
+        "name": "Ulipur",
+        "bn_name": "উলিপুর",
+        "id": "153"
+      },
+      {
+        "name": "Khord Bandaikhara",
+        "bn_name": "খোর্দ বান্দাইখাড়া",
+        "id": "154"
+      },
+      {
+        "name": "Bharatta Nasirganj",
+        "bn_name": "ভরট্ট নাসিরগঞ্জ",
+        "id": "155"
+      },
+      {
+        "name": "Chakpara",
+        "bn_name": "চকপাড়া",
+        "id": "156"
+      },
+      {
+        "name": "Konabaria",
+        "bn_name": "কোনাবাড়িয়া",
+        "id": "157"
+      },
+      {
+        "name": "Khudojhina",
+        "bn_name": "খুদোঝিনা",
+        "id": "158"
+      },
+      {
+        "name": "Hasanpur",
+        "bn_name": "হাসানপুর",
+        "id": "159"
+      },
+      {
+        "name": "Nichu Katila",
+        "bn_name": "নিচু কাতিলা",
+        "id": "160"
+      },
+      {
+        "name": "Sahapur",
+        "bn_name": "সাহাপুর",
+        "id": "161"
+      },
+      {
+        "name": "Nanchhar",
+        "bn_name": "নানছর",
+        "id": "162"
+      },
+      {
+        "name": "Gorsar",
+        "bn_name": "গোরসার",
+        "id": "163"
+      },
+      {
+        "name": "Hatkalupara",
+        "bn_name": "হাটকালুপাড়া",
+        "id": "164"
+      },
+      {
+        "name": "Jajgram",
+        "bn_name": "জাজগ্রাম",
+        "id": "165"
+      },
+      {
+        "name": "Payeshghosh",
+        "bn_name": "পয়েশঘোষ",
+        "id": "166"
+      },
+      {
+        "name": "Kashopara",
+        "bn_name": "কাশোপাড়া",
+        "id": "167"
+      },
+      {
+        "name": "Mandiel",
+        "bn_name": "মন্দিয়েল",
+        "id": "168"
+      },
+      {
+        "name": "Brajpur Itbhata",
+        "bn_name": "ব্রজপুর ইটভাটা",
+        "id": "169"
+      },
+      {
+        "name": "Taratia",
+        "bn_name": "তারাটিয়া",
+        "id": "170"
+      },
+      {
+        "name": "Lohachura",
+        "bn_name": "লোহাচুড়া",
+        "id": "171"
+      },
+      {
+        "name": "Bhatpara",
+        "bn_name": "ভাটপাড়া",
+        "id": "172"
+      },
+      {
+        "name": "Nababer Tambu",
+        "bn_name": "নবাবেরতাম্বু",
+        "id": "173"
+      },
+      {
+        "name": "Bir Koya",
+        "bn_name": "বীরকয়া",
+        "id": "174"
+      },
+      {
+        "name": "Dokholpara",
+        "bn_name": "ডোখলপাড়া",
+        "id": "175"
+      },
+      {
+        "name": "Sonadanga",
+        "bn_name": "সোনাডাঙ্গা",
+        "id": "176"
+      },
+      {
+        "name": "Laubaria",
+        "bn_name": "লাউবাড়িয়া",
+        "id": "177"
+      },
+      {
+        "name": "Bejpur Khalifa Para Singra Atrai Jalil",
+        "bn_name": "বেজপুর খলিফা পাড়া সিংড়া আত্রাই জলিল",
+        "id": "178"
+      },
+      {
+        "name": "Balaramchak",
+        "bn_name": "বলরামচক",
+        "id": "179"
+      },
+      {
+        "name": "Mohanghos",
+        "bn_name": "মোহনঘোস",
+        "id": "180"
+      },
+      {
+        "name": "Shantipur",
+        "bn_name": "শান্তিপুর",
+        "id": "181"
+      },
+      {
+        "name": "Par Gurnai Chak",
+        "bn_name": "পারগুরনই চক",
+        "id": "182"
+      },
+      {
+        "name": "Khalabaria",
+        "bn_name": "খলাবাড়িয়া",
+        "id": "183"
+      },
+      {
+        "name": "Sonapatil",
+        "bn_name": "সোনাপাতিল",
+        "id": "184"
+      },
+      {
+        "name": "Hingulkandi",
+        "bn_name": "হিঙ্গুলকান্দি",
+        "id": "185"
+      },
+      {
+        "name": "Jhanjhania",
+        "bn_name": "ঝনঝনিয়া",
+        "id": "186"
+      },
+      {
+        "name": "Ulairbaria",
+        "bn_name": "উলাইড়বাড়িয়া",
+        "id": "187"
+      },
+      {
+        "name": "Nakhorpara",
+        "bn_name": "নখোরপাড়া",
+        "id": "188"
+      },
+      {
+        "name": "Tilabadli",
+        "bn_name": "তিলাবদলী",
+        "id": "189"
+      },
+      {
+        "name": "Halti",
+        "bn_name": "হালতি",
+        "id": "190"
+      },
+      {
+        "name": "Kachua",
+        "bn_name": "কচুয়া",
+        "id": "191"
+      },
+      {
+        "name": "Shimlia",
+        "bn_name": "শিমলিয়া",
+        "id": "192"
+      },
+      {
+        "name": "Hat Madhnagar",
+        "bn_name": "হাট মাধনগর",
+        "id": "193"
+      },
+      {
+        "name": "Mahishdanga",
+        "bn_name": "মহিষডাঙ্গা",
+        "id": "194"
+      },
+      {
+        "name": "Paikara",
+        "bn_name": "পাইকারা",
+        "id": "195"
+      },
+      {
+        "name": "Fotokia",
+        "bn_name": "ফটোকিয়া",
+        "id": "196"
+      },
+      {
+        "name": "Mirpur",
+        "bn_name": "মিরপুর",
+        "id": "197"
+      },
+      {
+        "name": "Hisabdinagar",
+        "bn_name": "হিসাবদী নগর",
+        "id": "198"
+      },
+      {
+        "name": "Amrul Kasba Atrai",
+        "bn_name": "আমরুল কসবা আত্রাই",
+        "id": "199"
+      },
+      {
+        "name": "Kalapara",
+        "bn_name": "কালাপারা",
+        "id": "200"
+      },
+      {
+        "name": "Bisha",
+        "bn_name": "বিশা",
+        "id": "201"
+      },
+      {
+        "name": "Purb Mirzapur",
+        "bn_name": "পূর্ব মির্জাপুর",
+        "id": "202"
+      },
+      {
+        "name": "Pannatpur",
+        "bn_name": "পান্নাতপুর",
+        "id": "203"
+      },
+      {
+        "name": "Adhaipur",
+        "bn_name": "আধাইপুর",
+        "id": "204"
+      },
+      {
+        "name": "Digha",
+        "bn_name": "দিঘা",
+        "id": "205"
+      },
+      {
+        "name": "Nikhira",
+        "bn_name": "নিখিরা",
+        "id": "206"
+      },
+      {
+        "name": "Bera Hasan",
+        "bn_name": "বেড়া হাসান",
+        "id": "207"
+      },
+      {
+        "name": "Jagadas",
+        "bn_name": "জগদাস",
+        "id": "208"
+      },
+      {
+        "name": "Kolakasunda",
+        "bn_name": "কোলাকাসুন্দা",
+        "id": "209"
+      },
+      {
+        "name": "Chaksimla",
+        "bn_name": "চকসিমলা",
+        "id": "210"
+      },
+      {
+        "name": "Bil Golia",
+        "bn_name": "বিলগোলিয়া",
+        "id": "211"
+      },
+      {
+        "name": "Purb Daulatpur",
+        "bn_name": "পূর্ব দৌলতপুর",
+        "id": "212"
+      },
+      {
+        "name": "Gajmatkhali",
+        "bn_name": "গজমতখালি",
+        "id": "213"
+      }
+    ]
+  }
+]

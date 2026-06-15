@@ -16,7 +16,12 @@ import { BangladeshAddressEditPage } from './src/app/bangladesh-address/[geoType
 import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
 import { geoTranslationsBn, geoTranslationsEn } from './src/i18n/geo-translations';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
-import { geoDivision, geoDistrict, paginated } from './src/bangladesh-address/geo-fixtures';
+import {
+  geoDivision,
+  geoDistrict,
+  geoVillage,
+  paginated,
+} from './src/bangladesh-address/geo-fixtures';
 import { geoMswHandlers } from './src/bangladesh-address/geo-msw-handlers';
 import { adminUser, server } from './vitest.setup';
 
@@ -111,6 +116,36 @@ describe('BangladeshAddressPage', () => {
     renderWithAuth(<BangladeshAddressPage />);
 
     expect(await screen.findByText(geoTranslationsEn['geo.list.emptySearch'])).toBeInTheDocument();
+  });
+
+  it('renders villages tab with bilingual row and import panel', async () => {
+    mockSearchParams = new URLSearchParams('type=villages');
+    renderWithAuth(<BangladeshAddressPage />);
+
+    expect(await screen.findByTestId('village-import-panel')).toBeInTheDocument();
+    expect(await screen.findByTestId('geo-address-table')).toBeInTheDocument();
+    expect(screen.getByText(geoVillage.nameEn)).toBeInTheDocument();
+    expect(screen.getByText(geoVillage.nameBn)).toBeInTheDocument();
+  });
+
+  it('previews village import from JSON file', async () => {
+    mockSearchParams = new URLSearchParams('type=villages');
+    const user = userEvent.setup();
+    renderWithAuth(<BangladeshAddressPage />);
+    await screen.findByTestId('village-import-panel');
+
+    const file = new File(
+      [JSON.stringify([{ id: '1', name: 'Balarampur', bn_name: 'বলরামপুর' }])],
+      'villages.json',
+      { type: 'application/json' },
+    );
+    const input = screen.getByTestId('village-import-file-input');
+    await user.upload(input, file);
+    await user.click(screen.getByTestId('village-import-preview-button'));
+
+    expect(await screen.findByTestId('village-import-preview')).toBeInTheDocument();
+    expect(await screen.findByTestId('village-import-preview')).toBeInTheDocument();
+    expect(screen.getByTestId('village-import-commit-button')).toBeInTheDocument();
   });
 
   it('keeps pagination and table rows mounted during search refetch', async () => {

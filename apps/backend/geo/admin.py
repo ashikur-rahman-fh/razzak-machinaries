@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import District, Division, Union, Upazila
+from .models import District, Division, Union, Upazila, Village
 
 
 class ReadOnlyGeoAdmin(admin.ModelAdmin):
@@ -42,3 +42,9 @@ class UnionAdmin(ReadOnlyGeoAdmin):
     list_filter = ("upazila__district__division", "upazila__district", "upazila")
     search_fields = ("name_en", "name_bn")
     raw_id_fields = ("upazila",)
+
+
+@admin.register(Village)
+class VillageAdmin(ReadOnlyGeoAdmin):
+    list_display = ("id", "name_en", "name_bn")
+    search_fields = ("name_en", "name_bn")

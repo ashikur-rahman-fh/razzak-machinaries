@@ -30,19 +30,28 @@ export type {
   RetryConfig,
 } from './core/types';
 export { getHello } from './hello';
-export { getDistricts, getDivisions, getUnions, getUpazilas } from './geo';
+export { getDistricts, getDivisions, getUnions, getUpazilas, getVillages } from './geo';
 export type {
   AdminCsrfResponse,
   AdminLoginRequest,
   AdminLogoutResponse,
   AdminUser,
 } from '../types/admin-auth';
-export type { GeoArea, GeoDistrict, GeoDivision, GeoUnion, GeoUpazila } from '../types/geo';
+export type {
+  GeoArea,
+  GeoDistrict,
+  GeoDivision,
+  GeoUnion,
+  GeoUpazila,
+  GeoVillage,
+} from '../types/geo';
 export type {
   GeoDistrictWrite,
   GeoDivisionWrite,
   GeoListParams,
   GeoUnionWrite,
   GeoUpazilaWrite,
+  GeoVillageWrite,
   Paginated,
+  VillageImportSummary,
 } from '../types/geo';

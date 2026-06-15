@@ -8,6 +8,7 @@ export type GeoDivision = GeoArea;
 export type GeoDistrict = GeoArea & { divisionId: number };
 export type GeoUpazila = GeoArea & { districtId: number };
 export type GeoUnion = GeoArea & { upazilaId: number };
+export type GeoVillage = GeoArea;
 
 export type Paginated<T> = {
   count: number;
@@ -42,4 +43,20 @@ export type GeoUpazilaWrite = GeoDivisionWrite & {
 
 export type GeoUnionWrite = GeoDivisionWrite & {
   upazilaId?: number;
+};
+
+export type GeoVillageWrite = GeoDivisionWrite;
+
+export type VillageImportError = {
+  rowIndex: number;
+  message: string;
+};
+
+export type VillageImportSummary = {
+  total: number;
+  valid: number;
+  invalid: number;
+  wouldCreate: number;
+  wouldUpdate: number;
+  errors: VillageImportError[];
 };

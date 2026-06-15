@@ -25,6 +25,7 @@ const STAT_ITEMS = [
   { key: 'districts' as const, labelKey: 'geo.stats.districts' },
   { key: 'upazilas' as const, labelKey: 'geo.stats.upazilas' },
   { key: 'unions' as const, labelKey: 'geo.stats.unions' },
+  { key: 'villages' as const, labelKey: 'geo.stats.villages' },
 ];
 
 export function BangladeshAddressStatsCards({
@@ -47,7 +48,7 @@ export function BangladeshAddressStatsCards({
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-testid="geo-stats-cards">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5" data-testid="geo-stats-cards">
       {STAT_ITEMS.map((item) => (
         <Card key={item.key}>
           <CardHeader className="pb-2">

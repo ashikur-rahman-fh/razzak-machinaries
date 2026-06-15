@@ -1,7 +1,10 @@
 from django.db.models.deletion import ProtectedError
 from rest_framework import status, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.views import APIView
 
 from api.admin.authentication import AdminSessionAuthentication
 from api.admin.permissions import IsActiveSuperuser
@@ -10,11 +13,13 @@ from geo.admin_serializers import (
     DivisionAdminSerializer,
     UnionAdminSerializer,
     UpazilaAdminSerializer,
+    VillageAdminSerializer,
 )
 from geo.cache import bump_geo_cache_version
 from geo.exceptions import GeoHasChildren
 from geo.filters import apply_geo_ordering, apply_geo_search, apply_parent_filter
-from geo.models import District, Division, Union, Upazila
+from geo.import_services import commit_village_import, preview_village_import
+from geo.models import District, Division, Union, Upazila, Village
 from geo.pagination import GeoPageNumberPagination
 
 
@@ -96,3 +101,36 @@ class UnionAdminViewSet(AdminGeoViewSet):
     serializer_class = UnionAdminSerializer
     parent_query_param = "upazilaId"
     parent_filter_field = "upazila_id"
+
+
+class VillageAdminViewSet(AdminGeoViewSet):
+    queryset = Village.objects.all()
+    serializer_class = VillageAdminSerializer
+
+
+def _parse_dry_run_flag(value: str | None) -> bool:
+    if value is None:
+        return False
+    return value.lower() in {"1", "true", "yes"}
+
+
+class VillageImportView(APIView):
+    authentication_classes = [AdminSessionAuthentication]
+    permission_classes = [IsActiveSuperuser]
+    throttle_classes = [GeoApiThrottle]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        upload = request.FILES.get("file")
+        if upload is None:
+            raise ValidationError({"file": "This field is required."})
+
+        dry_run = _parse_dry_run_flag(request.query_params.get("dryRun"))
+
+        try:
+            raw = upload.read()
+            summary = preview_village_import(raw) if dry_run else commit_village_import(raw)
+        except ValueError as exc:
+            raise ValidationError({"file": str(exc)}) from exc
+
+        return Response(summary.to_response())

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from api.serializers.bilingual import validate_bilingual_pair
 from geo.exceptions import GeoIdConflict
-from geo.models import District, Division, Union, Upazila
+from geo.models import District, Division, Union, Upazila, Village
 from geo.services import next_geo_id
 
 
@@ -108,4 +108,20 @@ class UnionAdminSerializer(BilingualGeoWriteMixin, serializers.ModelSerializer):
             if "upazila" not in attrs:
                 raise serializers.ValidationError({"upazilaId": "This field is required."})
             attrs = self.assign_id_on_create(attrs, Union)
+        return attrs
+
+
+class VillageAdminSerializer(BilingualGeoWriteMixin, serializers.ModelSerializer):
+    nameEn = serializers.CharField(source="name_en", required=False, allow_blank=True)
+    nameBn = serializers.CharField(source="name_bn", required=False, allow_blank=True)
+    id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Village
+        fields = ["id", "nameEn", "nameBn"]
+
+    def validate(self, attrs):
+        attrs = self.validate_name_fields(attrs, partial=self.partial)
+        if not self.instance:
+            attrs = self.assign_id_on_create(attrs, Village)
         return attrs

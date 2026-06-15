@@ -8,16 +8,29 @@ import type {
   GeoUnionWrite,
   GeoUpazila,
   GeoUpazilaWrite,
+  GeoVillage,
+  GeoVillageWrite,
   Paginated,
 } from '@razzak-machinaries/shared/api';
 
-export const GEO_RESOURCE_TYPES = ['divisions', 'districts', 'upazilas', 'unions'] as const;
+export const GEO_RESOURCE_TYPES = [
+  'divisions',
+  'districts',
+  'upazilas',
+  'unions',
+  'villages',
+] as const;
 
 export type GeoResourceType = (typeof GEO_RESOURCE_TYPES)[number];
 
-export type GeoRecord = GeoDivision | GeoDistrict | GeoUpazila | GeoUnion;
+export type GeoRecord = GeoDivision | GeoDistrict | GeoUpazila | GeoUnion | GeoVillage;
 
-export type GeoWritePayload = GeoDivisionWrite | GeoDistrictWrite | GeoUpazilaWrite | GeoUnionWrite;
+export type GeoWritePayload =
+  | GeoDivisionWrite
+  | GeoDistrictWrite
+  | GeoUpazilaWrite
+  | GeoUnionWrite
+  | GeoVillageWrite;
 
 export type GeoListState = {
   type: GeoResourceType;
@@ -35,6 +48,7 @@ export type GeoStats = {
   districts: number;
   upazilas: number;
   unions: number;
+  villages: number;
 };
 
 export type ParentLookupMap = Map<number, { nameEn: string; nameBn: string }>;

@@ -58,7 +58,8 @@ export function parseListState(searchParams: URLSearchParams): GeoListState {
     typeParam === 'divisions' ||
     typeParam === 'districts' ||
     typeParam === 'upazilas' ||
-    typeParam === 'unions'
+    typeParam === 'unions' ||
+    typeParam === 'villages'
       ? typeParam
       : 'divisions';
 

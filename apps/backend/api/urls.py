@@ -5,6 +5,7 @@ from geo.views import (
     public_geo_divisions,
     public_geo_unions,
     public_geo_upazilas,
+    public_geo_villages,
 )
 
 from .admin.auth_views import admin_change_password, admin_csrf, admin_login, admin_logout, admin_me
@@ -18,6 +19,7 @@ urlpatterns = [
     path("public/geo/districts/", public_geo_districts, name="public-geo-districts"),
     path("public/geo/upazilas/", public_geo_upazilas, name="public-geo-upazilas"),
     path("public/geo/unions/", public_geo_unions, name="public-geo-unions"),
+    path("public/geo/villages/", public_geo_villages, name="public-geo-villages"),
     path("admin/auth/csrf/", admin_csrf, name="admin-auth-csrf"),
     path("admin/auth/login/", admin_login, name="admin-auth-login"),
     path("admin/auth/logout/", admin_logout, name="admin-auth-logout"),

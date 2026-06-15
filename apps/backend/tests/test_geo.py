@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from rest_framework.test import APIClient
 
-from geo.models import District, Division, Union, Upazila
+from geo.models import District, Division, Union, Upazila, Village
 
 pytestmark = pytest.mark.django_db
 
@@ -88,6 +88,16 @@ def sample_geo_data_dir(tmp_path):
     (tmp_path / "districts.json").write_text(json.dumps(districts), encoding="utf-8")
     (tmp_path / "upazilas.json").write_text(json.dumps(upazilas), encoding="utf-8")
     (tmp_path / "unions.json").write_text(json.dumps(unions), encoding="utf-8")
+    villages = [
+        {
+            "type": "table",
+            "name": "villages",
+            "data": [
+                {"id": "1", "name": "Balarampur", "bn_name": "বলরামপুর"},
+            ],
+        }
+    ]
+    (tmp_path / "villages.json").write_text(json.dumps(villages), encoding="utf-8")
     return tmp_path
 
 
@@ -97,10 +107,19 @@ def test_load_bd_geo_code_is_idempotent(sample_geo_data_dir):
     assert District.objects.count() == 2
     assert Upazila.objects.count() == 1
     assert Union.objects.count() == 1
+    assert Village.objects.count() == 1
 
     call_command("load_bd_geo_code", data_dir=str(sample_geo_data_dir))
     assert Division.objects.count() == 2
     assert District.objects.count() == 2
+    assert Village.objects.count() == 1
+
+
+def test_load_bd_geo_code_loads_villages(sample_geo_data_dir):
+    call_command("load_bd_geo_code", data_dir=str(sample_geo_data_dir), clear=True)
+    village = Village.objects.get(pk=1)
+    assert village.name_en == "Balarampur"
+    assert village.name_bn == "বলরামপুর"
 
 
 def test_load_bd_geo_code_fails_on_missing_parent(sample_geo_data_dir):

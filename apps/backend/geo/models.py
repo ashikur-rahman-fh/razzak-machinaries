@@ -67,3 +67,11 @@ class Union(BilingualGeoNameMixin):
         indexes = [
             models.Index(fields=["upazila"]),
         ]
+
+
+class Village(BilingualGeoNameMixin):
+    id = models.PositiveIntegerField(primary_key=True)
+
+    class Meta(BilingualGeoNameMixin.Meta):
+        verbose_name = "village"
+        verbose_name_plural = "villages"

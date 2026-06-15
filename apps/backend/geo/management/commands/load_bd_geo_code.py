@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from geo.data_loader import parse_bilingual_row, parse_int, parse_phpmyadmin_table
+from geo.import_services import commit_village_import
 from geo.models import District, Division, Union, Upazila
 
 
@@ -12,17 +15,23 @@ class Command(BaseCommand):
         parser.add_argument(
             "--data-dir",
             default=None,
-            help="Directory containing divisions.json, districts.json, upazilas.json, unions.json",
+            help=(
+                "Directory containing divisions.json, districts.json, upazilas.json, "
+                "unions.json, villages.json"
+            ),
         )
         parser.add_argument(
             "--clear",
             action="store_true",
             help="Delete all geo rows before loading (dev/troubleshooting only).",
         )
+        parser.add_argument(
+            "--villages-file",
+            default=None,
+            help="Override path to PHPMyAdmin JSON or plain-array file for villages import.",
+        )
 
     def handle(self, *args, **options):
-        from pathlib import Path
-
         default_dir = Path(__file__).resolve().parent.parent.parent / "data"
         data_dir = Path(options["data_dir"]) if options["data_dir"] else default_dir
         if not data_dir.is_dir():
@@ -47,20 +56,49 @@ class Command(BaseCommand):
             upazila_stats = self._load_upazilas(files["upazilas"])
             union_stats = self._load_unions(files["unions"])
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Geo sync complete. "
-                f"divisions={division_stats} districts={district_stats} "
-                f"upazilas={upazila_stats} unions={union_stats}"
+            village_stats = self._load_villages(
+                data_dir=data_dir,
+                villages_file=options["villages_file"],
             )
+
+        message = (
+            "Geo sync complete. "
+            f"divisions={division_stats} districts={district_stats} "
+            f"upazilas={upazila_stats} unions={union_stats}"
         )
+        if village_stats is not None:
+            message += f" villages={village_stats}"
+
+        self.stdout.write(self.style.SUCCESS(message))
 
     def _clear_geo_tables(self):
+        from geo.models import Village
+
+        Village.objects.all().delete()
         Union.objects.all().delete()
         Upazila.objects.all().delete()
         District.objects.all().delete()
         Division.objects.all().delete()
         self.stdout.write("Cleared all geo tables.")
+
+    def _load_villages(self, *, data_dir, villages_file):
+        villages_path = Path(villages_file) if villages_file else data_dir / "villages.json"
+        if not villages_path.is_file():
+            if villages_file:
+                raise CommandError(f"Villages file not found: {villages_path}")
+            self.stdout.write("Skipping villages (villages.json not found).")
+            return None
+
+        village_summary = commit_village_import(villages_path.read_bytes())
+        if village_summary.invalid > 0:
+            raise CommandError(
+                f"Village import failed with {village_summary.invalid} invalid row(s)."
+            )
+        return {
+            "created": village_summary.would_create,
+            "updated": village_summary.would_update,
+            "total": village_summary.total,
+        }
 
     def _load_divisions(self, path):
         rows = parse_phpmyadmin_table(path)
