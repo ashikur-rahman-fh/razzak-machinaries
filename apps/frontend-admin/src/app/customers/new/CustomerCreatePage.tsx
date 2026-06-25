@@ -1,7 +1,7 @@
 'use client';
 
 import { adminCustomersApi } from '@razzak-machinaries/shared/api';
-import { useTranslation } from '@razzak-machinaries/shared/i18n';
+import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import { PageShell, TranslatedText } from '@razzak-machinaries/shared/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -15,7 +15,7 @@ import { getCustomerCreateErrorMessage } from '@/customers/errors';
 import { buildCustomerFormData, type CustomerFormValues } from '@/customers/validation';
 
 export function CustomerCreatePage() {
-  const { language } = useTranslation();
+  const { language } = useLanguagePreference();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
