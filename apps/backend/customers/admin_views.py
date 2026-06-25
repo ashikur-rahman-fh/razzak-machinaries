@@ -8,6 +8,7 @@ from customers.admin_serializers import CustomerAdminSerializer
 from customers.filters import apply_customer_ordering, apply_customer_search
 from customers.models import Customer
 from customers.pagination import CustomerPageNumberPagination
+from customers.search_ranking import normalize_search_text
 
 
 class CustomerApiThrottle(ScopedRateThrottle):
@@ -26,5 +27,11 @@ class AdminCustomerViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = apply_customer_search(queryset, self.request.query_params.get("search"))
-        return apply_customer_ordering(queryset, self.request.query_params.get("ordering"))
+        search = self.request.query_params.get("search")
+        has_search = bool(normalize_search_text(search))
+        queryset = apply_customer_search(queryset, search)
+        return apply_customer_ordering(
+            queryset,
+            self.request.query_params.get("ordering"),
+            has_search=has_search,
+        )

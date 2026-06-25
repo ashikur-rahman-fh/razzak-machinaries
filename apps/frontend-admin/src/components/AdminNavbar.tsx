@@ -26,7 +26,7 @@ export function AdminNavbar({ activeRoute, onLogout, isLoggingOut = false }: Adm
     },
     {
       label: <TranslatedText translationKey="nav.customers" as="span" layout="inline" />,
-      href: '/customers/new',
+      href: '/customers',
       active: activeRoute === 'customers',
     },
     ...(activeRoute === 'change-password'

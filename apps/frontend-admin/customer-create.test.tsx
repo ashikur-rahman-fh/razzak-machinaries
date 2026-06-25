@@ -152,7 +152,7 @@ describe('CustomerCreatePage', () => {
     await user.click(screen.getByTestId('customer-create-submit'));
 
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith('/customers/new?success=created');
+      expect(pushMock).toHaveBeenCalledWith('/customers?success=created');
     });
   });
 });

@@ -14,12 +14,17 @@ ALLOWED_IMAGE_CONTENT_TYPES = {
 
 BD_MOBILE_DIGITS_PATTERN = re.compile(r"^1[3-9]\d{8}$")
 BANGLA_DIGIT_TRANSLATION = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
+LATIN_DIGIT_TRANSLATION = str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")
 MEMO_BN_INPUT_PATTERN = re.compile(r"^[\u09E6-\u09EF0-9\s]+$")
 DIGITS_ONLY_PATTERN = re.compile(r"^\d+$")
 
 
 def bangla_to_latin_digits(value: str) -> str:
     return value.translate(BANGLA_DIGIT_TRANSLATION)
+
+
+def latin_to_bangla_digits(value: str) -> str:
+    return value.translate(LATIN_DIGIT_TRANSLATION)
 
 
 def normalize_bangladesh_phone(raw: str) -> str:
@@ -47,6 +52,46 @@ def normalize_phone_en(raw: str) -> str:
     if cleaned.startswith("880"):
         return f"0{cleaned[3:]}"
     return cleaned
+
+
+def _strip_phone_search_chars(value: str) -> str:
+    return re.sub(r"[\s\-()[\]]", "", value)
+
+
+def normalize_phone_search_term(raw: str) -> list[str]:
+    """Build deduplicated phone search variants for icontains matching."""
+    cleaned = _strip_phone_search_chars(bangla_to_latin_digits((raw or "").strip()))
+    if not cleaned:
+        return []
+
+    variants: list[str] = [cleaned]
+    digits_only = re.sub(r"\D", "", cleaned)
+    if digits_only:
+        variants.append(digits_only)
+
+    core_digits = digits_only
+    if core_digits.startswith("880"):
+        core_digits = core_digits[3:]
+    elif core_digits.startswith("0"):
+        core_digits = core_digits[1:]
+
+    if core_digits:
+        variants.extend(
+            [
+                core_digits,
+                f"0{core_digits}",
+                f"880{core_digits}",
+                f"+880{core_digits}",
+            ]
+        )
+
+    seen: set[str] = set()
+    result: list[str] = []
+    for variant in variants:
+        if variant and variant not in seen:
+            seen.add(variant)
+            result.append(variant)
+    return result
 
 
 def validate_digits_only(value: str | None, *, field_label: str) -> str:

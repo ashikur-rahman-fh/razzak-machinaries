@@ -21,21 +21,28 @@ import {
 import { CustomerFormSection } from './CustomerFormSection';
 
 type CustomerCreateFormProps = {
+  mode?: 'create' | 'edit';
+  initialValues?: CustomerFormValues;
+  initialProfilePictureUrl?: string | null;
   onSubmit: (values: CustomerFormValues, profilePicture: File | null) => Promise<void>;
   serverError?: string | null;
   showSuccess?: boolean;
 };
 
 export function CustomerCreateForm({
+  mode = 'create',
+  initialValues,
+  initialProfilePictureUrl = null,
   onSubmit,
   serverError,
   showSuccess = false,
 }: CustomerCreateFormProps) {
   const { t } = useTranslation();
-  const [values, setValues] = useState<CustomerFormValues>(EMPTY_CUSTOMER_FORM);
+  const [values, setValues] = useState<CustomerFormValues>(initialValues ?? EMPTY_CUSTOMER_FORM);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEdit = mode === 'edit';
 
   const translationStatusLabels = {
     translating: t('customer.translation.translating'),
@@ -84,21 +91,28 @@ export function CustomerCreateForm({
     }
   }
 
+  const successKey = isEdit ? 'customer.edit.success' : 'customer.create.success';
+  const submitKey = isEdit
+    ? isSubmitting
+      ? 'customer.edit.saving'
+      : 'customer.edit.submit'
+    : isSubmitting
+      ? 'customer.create.creating'
+      : 'customer.create.submit';
+
   return (
     <form
       noValidate
       onSubmit={(event) => void handleSubmit(event)}
       className="mx-auto w-full max-w-2xl space-y-6"
-      data-testid="customer-create-form"
+      data-testid={isEdit ? 'customer-edit-form' : 'customer-create-form'}
     >
       {showSuccess ? (
         <SuccessAlert
-          title={
-            <TranslatedText translationKey="customer.create.success" as="span" layout="inline" />
-          }
+          title={<TranslatedText translationKey={successKey} as="span" layout="inline" />}
           role="status"
           aria-live="polite"
-          data-testid="customer-create-success"
+          data-testid={isEdit ? 'customer-edit-success' : 'customer-create-success'}
         />
       ) : null}
 
@@ -107,7 +121,7 @@ export function CustomerCreateForm({
           title={serverError}
           role="alert"
           aria-live="assertive"
-          data-testid="customer-create-error"
+          data-testid={isEdit ? 'customer-edit-error' : 'customer-create-error'}
         />
       ) : null}
 
@@ -212,6 +226,19 @@ export function CustomerCreateForm({
       </CustomerFormSection>
 
       <CustomerFormSection titleKey="customer.section.profilePicture" optional>
+        {initialProfilePictureUrl && !profilePicture ? (
+          <div className="mb-4">
+            {/* eslint-disable-next-line @next/next/no-img-element -- existing profile from API */}
+            <img
+              src={initialProfilePictureUrl}
+              alt=""
+              className="max-h-40 rounded-lg border object-contain"
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              <TranslatedText translationKey="customer.profile.replace" as="span" layout="inline" />
+            </p>
+          </div>
+        ) : null}
         <ProfileImagePicker
           value={profilePicture}
           onChange={setProfilePicture}
@@ -221,8 +248,12 @@ export function CustomerCreateForm({
       </CustomerFormSection>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting} data-testid="customer-create-submit">
-          {isSubmitting ? t('customer.create.creating') : t('customer.create.submit')}
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          data-testid={isEdit ? 'customer-edit-submit' : 'customer-create-submit'}
+        >
+          {t(submitKey)}
         </Button>
       </div>
     </form>

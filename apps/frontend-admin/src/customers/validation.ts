@@ -4,6 +4,7 @@ import {
   isDigitsOnly,
   isValidMemoBnInput,
 } from '@razzak-machinaries/shared/i18n';
+import type { Customer } from '@razzak-machinaries/shared/api';
 
 export type CustomerFormValues = {
   fullNameBn: string;
@@ -130,4 +131,21 @@ export function buildCustomerFormData(
     formData.append('profilePicture', profilePicture);
   }
   return formData;
+}
+
+export function customerToFormValues(customer: Customer): CustomerFormValues {
+  return {
+    fullNameBn: customer.fullNameBn,
+    fullNameEn: customer.fullNameEn,
+    addressBn: customer.addressBn,
+    addressEn: customer.addressEn,
+    phoneBn: customer.phoneBn,
+    phoneEn: customer.phoneEn,
+    fatherNameBn: customer.fatherNameBn,
+    fatherNameEn: customer.fatherNameEn,
+    memoPageNumberBn: customer.memoPageNumberBn,
+    memoPageNumberEn: customer.memoPageNumberEn,
+    mediatorNameBn: customer.mediatorNameBn,
+    mediatorNameEn: customer.mediatorNameEn,
+  };
 }

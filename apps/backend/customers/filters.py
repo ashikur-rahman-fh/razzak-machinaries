@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from django.db.models import Q
+from django.db.models import QuerySet
 from rest_framework.exceptions import ValidationError
+
+from customers.models import Customer
+from customers.search_ranking import apply_ranked_customer_search
 
 ORDERING_MAP = {
     "fullNameBn": "full_name_bn",
@@ -20,30 +23,63 @@ ORDERING_MAP = {
     "-memoPageNumberEn": "-memo_page_number_en",
     "createdAt": "created_at",
     "-createdAt": "-created_at",
+    "relevance": "-search_rank",
+    "-relevance": "search_rank",
     "id": "id",
     "-id": "-id",
 }
 
 DEFAULT_ORDERING = "-created_at"
+RELEVANCE_ORDERING = ("-search_rank", "-created_at")
+EXPLICIT_SORT_KEYS = {
+    "fullNameBn",
+    "-fullNameBn",
+    "fullNameEn",
+    "-fullNameEn",
+    "phone",
+    "-phone",
+    "phoneBn",
+    "-phoneBn",
+    "phoneEn",
+    "-phoneEn",
+    "memoPageNumberBn",
+    "-memoPageNumberBn",
+    "memoPageNumberEn",
+    "-memoPageNumberEn",
+    "createdAt",
+    "-createdAt",
+    "id",
+    "-id",
+}
 
 
-def apply_customer_search(queryset, search: str | None):
-    normalized = (search or "").strip()
-    if not normalized:
-        return queryset
-
-    return queryset.filter(
-        Q(full_name_bn__icontains=normalized)
-        | Q(full_name_en__icontains=normalized)
-        | Q(phone__icontains=normalized)
-        | Q(phone_bn__icontains=normalized)
-        | Q(phone_en__icontains=normalized)
-        | Q(memo_page_number_bn__icontains=normalized)
-        | Q(memo_page_number_en__icontains=normalized)
-    )
+def apply_customer_search(queryset: QuerySet[Customer], search: str | None) -> QuerySet[Customer]:
+    return apply_ranked_customer_search(queryset, search)
 
 
-def apply_customer_ordering(queryset, ordering: str | None):
+def _should_order_by_relevance(ordering: str | None, *, has_search: bool) -> bool:
+    if not has_search:
+        return False
+    if not ordering or ordering == "-createdAt":
+        return True
+    return ordering in {"relevance", "-relevance"}
+
+
+def apply_customer_ordering(
+    queryset: QuerySet[Customer],
+    ordering: str | None,
+    *,
+    has_search: bool = False,
+):
+    if _should_order_by_relevance(ordering, has_search=has_search):
+        return queryset.order_by(*RELEVANCE_ORDERING)
+
+    if has_search and ordering in EXPLICIT_SORT_KEYS:
+        db_ordering = ORDERING_MAP.get(ordering)
+        if db_ordering is None:
+            raise ValidationError({"ordering": "Invalid ordering field."})
+        return queryset.order_by(db_ordering)
+
     if not ordering:
         return queryset.order_by(DEFAULT_ORDERING)
 

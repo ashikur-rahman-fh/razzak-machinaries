@@ -39,7 +39,7 @@ export function CustomerCreatePage() {
       const formData = buildCustomerFormData(values, profilePicture);
       await adminCustomersApi.createCustomer(formData);
       setFormKey((current) => current + 1);
-      router.push('/customers/new?success=created');
+      router.push('/customers?success=created');
       router.refresh();
     } catch (error) {
       setServerError(getCustomerCreateErrorMessage(error, language));

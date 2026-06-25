@@ -39,6 +39,7 @@ export type {
   AdminLogoutResponse,
   AdminUser,
 } from '../types/admin-auth';
+export type { Customer, CustomerListParams, CustomerWrite } from '../types/customer';
 export type {
   GeoArea,
   GeoDistrict,
