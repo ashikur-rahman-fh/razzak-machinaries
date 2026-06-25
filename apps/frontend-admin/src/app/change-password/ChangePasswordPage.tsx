@@ -16,11 +16,15 @@ import {
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
 import { AdminNavbar } from '@/components/AdminNavbar';
+import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 
 export function ChangePasswordPage() {
+  const router = useRouter();
+  const { logout, isLoggingOut } = useAdminAuth();
   const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -84,103 +88,132 @@ export function ChangePasswordPage() {
     }
   }
 
+  async function handleLogout() {
+    await logout();
+    router.replace('/login');
+  }
+
   return (
     <RequireAdminAuth>
       <PageShell
         data-testid="admin-change-password-page"
-        header={<AdminNavbar activeRoute="change-password" />}
-        contentClassName="flex flex-1 items-center justify-center px-4 py-12"
+        header={
+          <AdminNavbar
+            activeRoute="change-password"
+            onLogout={() => void handleLogout()}
+            isLoggingOut={isLoggingOut}
+          />
+        }
       >
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-2">
-            <CardTitle>
+        <div className="mx-auto w-full max-w-md space-y-6">
+          <header className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
               <TranslatedText translationKey="password.title" as="span" />
-            </CardTitle>
-            <CardDescription>
+            </h1>
+            <p className="text-sm text-muted-foreground">
               <TranslatedText translationKey="password.subtitle" as="span" />
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)} noValidate>
-              {error ? (
-                <ErrorAlert
-                  id={errorId}
-                  title={t('password.updateFailed')}
-                  description={error}
-                  role="alert"
-                  aria-live="polite"
-                  data-testid="admin-change-password-error"
+            </p>
+          </header>
+
+          <Card className="w-full">
+            <CardHeader className="sr-only space-y-2">
+              <CardTitle>
+                <TranslatedText translationKey="password.title" as="span" />
+              </CardTitle>
+              <CardDescription>
+                <TranslatedText translationKey="password.subtitle" as="span" />
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)} noValidate>
+                {error ? (
+                  <ErrorAlert
+                    id={errorId}
+                    title={t('password.updateFailed')}
+                    description={error}
+                    role="alert"
+                    aria-live="polite"
+                    data-testid="admin-change-password-error"
+                  />
+                ) : null}
+                {successKey ? (
+                  <SuccessAlert
+                    title={<TranslatedText translationKey={successKey} as="span" />}
+                    role="status"
+                    aria-live="polite"
+                    data-testid="admin-change-password-success"
+                  />
+                ) : null}
+
+                <PasswordInput
+                  id={currentId}
+                  name="currentPassword"
+                  label={
+                    <TranslatedText translationKey="password.currentPasswordLabel" as="span" />
+                  }
+                  value={currentPassword}
+                  onChange={(event) => setCurrentPassword(event.target.value)}
+                  autoComplete="current-password"
+                  disabled={isSaving}
+                  required
+                  showPasswordLabel={t('password.showCurrentPassword')}
+                  hidePasswordLabel={t('password.hideCurrentPassword')}
                 />
-              ) : null}
-              {successKey ? (
-                <SuccessAlert
-                  title={<TranslatedText translationKey={successKey} as="span" />}
-                  role="status"
-                  aria-live="polite"
-                  data-testid="admin-change-password-success"
+
+                <PasswordInput
+                  id={newId}
+                  name="newPassword"
+                  label={<TranslatedText translationKey="password.newPasswordLabel" as="span" />}
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
+                  autoComplete="new-password"
+                  disabled={isSaving}
+                  required
+                  showPasswordLabel={t('password.showNewPassword')}
+                  hidePasswordLabel={t('password.hideNewPassword')}
                 />
-              ) : null}
 
-              <PasswordInput
-                id={currentId}
-                name="currentPassword"
-                label={<TranslatedText translationKey="password.currentPasswordLabel" as="span" />}
-                value={currentPassword}
-                onChange={(event) => setCurrentPassword(event.target.value)}
-                autoComplete="current-password"
-                disabled={isSaving}
-                required
-                showPasswordLabel={t('profile.showPassword')}
-                hidePasswordLabel={t('profile.hidePassword')}
-              />
+                <PasswordInput
+                  id={confirmId}
+                  name="confirmPassword"
+                  label={
+                    <TranslatedText translationKey="password.confirmPasswordLabel" as="span" />
+                  }
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  autoComplete="new-password"
+                  disabled={isSaving}
+                  required
+                  showPasswordLabel={t('password.showConfirmPassword')}
+                  hidePasswordLabel={t('password.hideConfirmPassword')}
+                />
 
-              <PasswordInput
-                id={newId}
-                name="newPassword"
-                label={<TranslatedText translationKey="password.newPasswordLabel" as="span" />}
-                value={newPassword}
-                onChange={(event) => setNewPassword(event.target.value)}
-                autoComplete="new-password"
-                disabled={isSaving}
-                required
-                showPasswordLabel={t('profile.showPassword')}
-                hidePasswordLabel={t('profile.hidePassword')}
-              />
+                {trimmedMismatch ? (
+                  <ErrorAlert title={t('password.mismatch')} role="alert" aria-live="polite" />
+                ) : null}
 
-              <PasswordInput
-                id={confirmId}
-                name="confirmPassword"
-                label={<TranslatedText translationKey="password.confirmPasswordLabel" as="span" />}
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                autoComplete="new-password"
-                disabled={isSaving}
-                required
-                showPasswordLabel={t('profile.showPassword')}
-                hidePasswordLabel={t('profile.hidePassword')}
-              />
-
-              {trimmedMismatch ? (
-                <ErrorAlert title={t('password.mismatch')} role="alert" aria-live="polite" />
-              ) : null}
-
-              <div className="flex flex-col gap-2">
-                <Button type="submit" disabled={!canSubmit} aria-busy={isSaving}>
-                  {isSaving ? (
-                    <TranslatedText translationKey="password.updatingPassword" as="span" compact />
-                  ) : (
-                    <TranslatedText translationKey="password.updatePassword" as="span" compact />
-                  )}
-                </Button>
-                <Button type="button" variant="ghost" asChild>
-                  <Link href="/">
-                    <TranslatedText translationKey="password.backToProfile" as="span" compact />
-                  </Link>
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="flex flex-col gap-2">
+                  <Button type="submit" disabled={!canSubmit} aria-busy={isSaving}>
+                    {isSaving ? (
+                      <TranslatedText
+                        translationKey="password.updatingPassword"
+                        as="span"
+                        compact
+                      />
+                    ) : (
+                      <TranslatedText translationKey="password.updatePassword" as="span" compact />
+                    )}
+                  </Button>
+                  <Button type="button" variant="ghost" asChild>
+                    <Link href="/">
+                      <TranslatedText translationKey="password.backToProfile" as="span" compact />
+                    </Link>
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </PageShell>
     </RequireAdminAuth>
   );

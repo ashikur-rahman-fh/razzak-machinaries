@@ -36,7 +36,7 @@ Values are examples. Generate strong secrets for anything security-sensitive.
 
 Nginx also applies per-IP rate limits at the edge (`infra/nginx/snippets/`). With Cloudflare in front, prod Nginx restores the client IP from `CF-Connecting-IP` before rate limiting. Health checks use a dedicated location with higher burst limits.
 
-**Next.js CSP:** `NEXT_PUBLIC_BACKEND_MAIN_API_URL` is included in the frontend `connect-src` directive at build time (see `packages/shared/src/security/headers.mjs`).
+**Next.js CSP:** `NEXT_PUBLIC_BACKEND_MAIN_API_URL` is included in the frontend `connect-src` and `img-src` directives at build time (see `packages/shared/src/security/headers.mjs`).
 
 **CSRF cookie (production):** `CSRF_COOKIE_HTTPONLY=True` prevents JavaScript from reading `csrftoken`. The Next admin app uses `GET /api/admin/auth/csrf/` and `backendAdminApi` (`X-CSRFToken`). Ensure the admin browser origin is in `CSRF_TRUSTED_ORIGINS` and `CORS_ALLOWED_ORIGINS`. `backendMainApi` remains stateless.
 
@@ -83,7 +83,7 @@ Never commit real passwords. Prefer env sync for bootstrap and `make *-reset-use
 | Variable                   | Purpose                                                                                                                                                         |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BACKEND_URL`              | Canonical backend base URL for documentation / non-Next consumers.                                                                                              |
-| `NEXT_PUBLIC_BACKEND_MAIN_API_URL` | Browser-accessible base URL for `backendMainApi` in `@razzak-machinaries/shared`. **Production:** must be `https://` and your public API hostname (e.g. `https://api.razzak-machinaries.com`, same as `API_HOST`). Never use `http://backend:8000` or internal Docker hostnames — CI and Docker builds reject those. Included in frontend CSP `connect-src` at build time. |
+| `NEXT_PUBLIC_BACKEND_MAIN_API_URL` | Browser-accessible base URL for `backendMainApi` in `@razzak-machinaries/shared`. **Production:** must be `https://` and your public API hostname (e.g. `https://api.razzak-machinaries.com`, same as `API_HOST`). Never use `http://backend:8000` or internal Docker hostnames — CI and Docker builds reject those. Included in frontend CSP `connect-src` and `img-src` at build time (API serves `/media/` profile pictures). |
 | *(future)* `NEXT_PUBLIC_BACKEND_SECONDARY_API_URL` | Reserved for an additional backend client when a second API service is added. |
 | `NEXT_PUBLIC_BASE_PATH`    | Optional Next `basePath` for the **admin** app when using path-based routing. Leave empty in default dev (`:3001/`) and production (separate hostnames). |
 | `NEXT_PUBLIC_THEME_MODE`   | Shared theme mode for both `frontend-main` and `frontend-admin`. Accepted values: `light`, `dark`, `system`. Default/fallback is `system` when missing, empty, `system`, or invalid. `light` forces light mode; `dark` forces dark mode; `system` follows OS/browser preference. |

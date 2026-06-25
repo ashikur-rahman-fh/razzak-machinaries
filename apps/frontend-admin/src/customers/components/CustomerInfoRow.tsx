@@ -30,7 +30,7 @@ export function CustomerInfoRow({
   return (
     <div className="space-y-1">
       <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        <TranslatedText translationKey={labelKey} as="span" layout="inline" />
+        <TranslatedText translationKey={labelKey} as="span" />
       </dt>
       <dd className="text-sm">
         {children}
@@ -47,7 +47,7 @@ export function CustomerInfoRow({
         {!children && !hasBilingual && hasPlain ? <span>{value}</span> : null}
         {isEmpty ? (
           <span className="text-muted-foreground">
-            <TranslatedText translationKey={emptyKey} as="span" layout="inline" />
+            <TranslatedText translationKey={emptyKey} as="span" />
           </span>
         ) : null}
       </dd>

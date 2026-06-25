@@ -10,6 +10,7 @@ import {
   SuccessAlert,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
+import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 
 import {
@@ -139,6 +140,7 @@ export function CustomerCreateForm({
           enError={fieldErrors.fullNameEn ? t(fieldErrors.fullNameEn) : undefined}
           statusLabels={translationStatusLabels}
           retranslateLabel={t('customer.translation.retranslate')}
+          skipInitialAutoTranslate={isEdit}
           disabled={isSubmitting}
         />
 
@@ -156,6 +158,7 @@ export function CustomerCreateForm({
           enError={fieldErrors.addressEn ? t(fieldErrors.addressEn) : undefined}
           statusLabels={translationStatusLabels}
           retranslateLabel={t('customer.translation.retranslate')}
+          skipInitialAutoTranslate={isEdit}
           disabled={isSubmitting}
         />
 
@@ -190,9 +193,12 @@ export function CustomerCreateForm({
           enError={fieldErrors.fatherNameEn ? t(fieldErrors.fatherNameEn) : undefined}
           statusLabels={translationStatusLabels}
           retranslateLabel={t('customer.translation.retranslate')}
+          skipInitialAutoTranslate={isEdit}
           disabled={isSubmitting}
         />
+      </CustomerFormSection>
 
+      <CustomerFormSection titleKey="customer.section.mediatorInfo" optional>
         <BilingualTranslatableField
           label={t('customer.field.mediatorName')}
           bnLabel={t('customer.field.bnLabel')}
@@ -203,6 +209,7 @@ export function CustomerCreateForm({
           onEnChange={(value) => updateField('mediatorNameEn', value)}
           statusLabels={translationStatusLabels}
           retranslateLabel={t('customer.translation.retranslate')}
+          skipInitialAutoTranslate={isEdit}
           disabled={isSubmitting}
         />
       </CustomerFormSection>
@@ -247,7 +254,14 @@ export function CustomerCreateForm({
         />
       </CustomerFormSection>
 
-      <div className="flex justify-end">
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        {!isEdit ? (
+          <Button type="button" variant="ghost" asChild>
+            <Link href="/customers">
+              <TranslatedText translationKey="customer.actions.cancel" as="span" compact />
+            </Link>
+          </Button>
+        ) : null}
         <Button
           type="submit"
           disabled={isSubmitting}

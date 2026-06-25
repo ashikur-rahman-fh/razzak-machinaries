@@ -433,3 +433,10 @@ def test_search_customers_relevance_ordering_param(superuser_client):
     )
     assert response.status_code == 200
     assert response.data["results"][0]["fullNameEn"] == "Rahim Uddin"
+
+
+def test_list_customers_relevance_ordering_without_search_returns_200(superuser_client):
+    _create_customer(full_name_en="Amir", phone="+8801711111121", phone_en="01711111121")
+    response = _auth_get(superuser_client, f"{CUSTOMERS_URL}?ordering=relevance")
+    assert response.status_code == 200
+    assert response.data["count"] >= 1

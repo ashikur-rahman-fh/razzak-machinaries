@@ -71,6 +71,9 @@ def apply_customer_ordering(
     *,
     has_search: bool = False,
 ):
+    if ordering in {"relevance", "-relevance"} and not has_search:
+        return queryset.order_by(DEFAULT_ORDERING)
+
     if _should_order_by_relevance(ordering, has_search=has_search):
         return queryset.order_by(*RELEVANCE_ORDERING)
 

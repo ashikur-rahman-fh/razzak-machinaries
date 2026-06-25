@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-build dev-logs dev-restart dev-install-js debug-install-js \
+.PHONY: dev-up dev-down dev-build dev-logs dev-restart dev-install-js doctor-js debug-install-js \
 	debug-up debug-down debug-build debug-logs debug-restart \
 	backend-shell backend-migrate backend-makemigrations backend-check-migrations backend-createsuperuser \
 	backend-sync-superusers backend-sync-geo backend-reset-user-password prod-sync-superusers prod-sync-geo prod-reset-user-password \
@@ -26,6 +26,9 @@ dev-restart:
 
 dev-install-js:
 	bash infra/scripts/dev/install-js.sh
+
+doctor-js:
+	bash infra/scripts/dev/check-js-native-deps.sh
 
 debug-install-js:
 	COMPOSE_FILE=infra/docker/compose/docker-compose.debug.yml bash infra/scripts/dev/install-js.sh

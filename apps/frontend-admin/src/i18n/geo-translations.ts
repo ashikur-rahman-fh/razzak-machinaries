@@ -5,6 +5,11 @@ export const geoTranslationsEn: TranslationCatalog = {
   'geo.title': 'Bangladesh Address Management',
   'geo.subtitle':
     'Manage divisions, districts, upazilas, and unions with searchable, paginated admin tools.',
+  'geo.cardDescription.divisions': 'Search and manage division records.',
+  'geo.cardDescription.districts': 'Filter by division to find and manage district records.',
+  'geo.cardDescription.upazilas': 'Filter by district to find and manage upazila records.',
+  'geo.cardDescription.unions': 'Filter by upazila to find and manage union records.',
+  'geo.cardDescription.villages': 'Upload village JSON or search existing village records.',
   'geo.type.division': 'Division',
   'geo.type.district': 'District',
   'geo.type.upazila': 'Upazila',
@@ -71,6 +76,8 @@ export const geoTranslationsEn: TranslationCatalog = {
   'geo.detail.sourceIdSubtitle': '{type} · Source ID: {id}',
   'geo.detail.loadError': 'Could not load this place.',
   'geo.detail.notFound': 'Place not found.',
+  'geo.detail.notFoundDescription':
+    'This record may have been deleted or the link may be incorrect.',
   'geo.value.notAvailable': 'Not available',
   'geo.edit.title': 'Edit address record',
   'geo.edit.loadError': 'Could not load this record for editing.',
@@ -124,6 +131,12 @@ export const geoTranslationsBn: TranslationCatalog = {
   'geo.title': 'বাংলাদেশ ঠিকানা ব্যবস্থাপনা',
   'geo.subtitle':
     'বিভাগ, জেলা, উপজেলা ও ইউনিয়ন অনুসন্ধানযোগ্য, পেজিনেটেড অ্যাডমিন টুল দিয়ে পরিচালনা করুন।',
+  'geo.cardDescription.divisions': 'বিভাগ রেকর্ড অনুসন্ধান ও পরিচালনা করুন।',
+  'geo.cardDescription.districts': 'বিভাগ অনুযায়ী ফিল্টার করে জেলা রেকর্ড খুঁজুন ও পরিচালনা করুন।',
+  'geo.cardDescription.upazilas': 'জেলা অনুযায়ী ফিল্টার করে উপজেলা রেকর্ড খুঁজুন ও পরিচালনা করুন।',
+  'geo.cardDescription.unions':
+    'উপজেলা অনুযায়ী ফিল্টার করে ইউনিয়ন রেকর্ড খুঁজুন ও পরিচালনা করুন।',
+  'geo.cardDescription.villages': 'গ্রাম JSON আপলোড করুন বা বিদ্যমান গ্রাম রেকর্ড অনুসন্ধান করুন।',
   'geo.type.division': 'বিভাগ',
   'geo.type.district': 'জেলা',
   'geo.type.upazila': 'উপজেলা',
@@ -189,6 +202,7 @@ export const geoTranslationsBn: TranslationCatalog = {
   'geo.detail.sourceIdSubtitle': '{type} · সোর্স আইডি: {id}',
   'geo.detail.loadError': 'এই স্থান লোড করা যায়নি।',
   'geo.detail.notFound': 'স্থান পাওয়া যায়নি।',
+  'geo.detail.notFoundDescription': 'রেকর্ডটি মুছে ফেলা হতে পারে বা লিঙ্কটি ভুল হতে পারে।',
   'geo.value.notAvailable': 'পাওয়া যায়নি',
   'geo.edit.title': 'ঠিকানা রেকর্ড সম্পাদনা',
   'geo.edit.loadError': 'সম্পাদনার জন্য রেকর্ড লোড করা যায়নি।',

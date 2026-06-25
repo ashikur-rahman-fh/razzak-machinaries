@@ -15,18 +15,18 @@ export function CustomerFormSection({
   optional = false,
 }: CustomerFormSectionProps) {
   return (
-    <section className="space-y-4 rounded-lg border bg-card p-4 sm:p-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-base font-semibold">
-          <TranslatedText translationKey={titleKey} as="span" layout="inline" />
+    <section className="rounded-lg border bg-card p-4 sm:p-6">
+      <header className="mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border/60 pb-4">
+        <h2 className="text-base font-semibold leading-snug">
+          <TranslatedText translationKey={titleKey} as="span" />
         </h2>
         {optional ? (
-          <span className="text-xs text-muted-foreground">
-            (<TranslatedText translationKey="customer.field.optional" as="span" layout="inline" />)
+          <span className="text-xs font-normal text-muted-foreground">
+            <TranslatedText translationKey="customer.field.optional" as="span" compact />
           </span>
         ) : null}
-      </div>
-      {children}
+      </header>
+      <div className="space-y-4">{children}</div>
     </section>
   );
 }

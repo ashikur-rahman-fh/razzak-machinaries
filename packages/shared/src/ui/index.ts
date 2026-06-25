@@ -38,6 +38,10 @@ export {
 } from './components/gear-loader';
 export { EmptyState, type EmptyStateProps } from './components/empty-state';
 export { ErrorState, type ErrorStateProps } from './components/error-state';
+export {
+  RecoverableErrorState,
+  type RecoverableErrorStateProps,
+} from './components/recoverable-error-state';
 export { Badge, badgeVariants, type BadgeProps } from './components/badge';
 export { Input, type InputProps } from './components/input';
 export { Textarea, type TextareaProps } from './components/textarea';
@@ -58,7 +62,7 @@ export {
   ProfileImagePicker,
   type ProfileImagePickerProps,
 } from './components/profile-image-picker';
-export { DataTable, type DataTableProps } from './components/data-table';
+export { DataTable, DataTableRefreshBar, type DataTableProps } from './components/data-table';
 export { PaginationControls, type PaginationControlsProps } from './components/pagination-controls';
 export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dialog';
 export {

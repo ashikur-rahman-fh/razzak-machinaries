@@ -38,7 +38,7 @@ function StatusBadge({
   status: TransliterationStatus;
   labels: Partial<Record<TransliterationStatus, string>>;
 }) {
-  if (status === 'idle') {
+  if (status === 'idle' || status === 'auto') {
     return null;
   }
 
@@ -112,6 +112,8 @@ export function BilingualTransliterationField({
           value={bnValue}
           onChange={(event) => onBnChange(event.target.value)}
           className="font-bangla"
+          required={required}
+          aria-required={required || undefined}
           aria-invalid={Boolean(bnError)}
           aria-describedby={bnError ? bnErrorId : undefined}
           data-testid={`${label}-bn-input`}
@@ -149,6 +151,8 @@ export function BilingualTransliterationField({
           autoComplete={mode === 'phone' ? 'tel' : 'off'}
           value={enValue}
           onChange={(event) => handleEnChange(event.target.value)}
+          required={required}
+          aria-required={required || undefined}
           data-testid={`${label}-en-input`}
         />
       </div>

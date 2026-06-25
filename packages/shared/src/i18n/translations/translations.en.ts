@@ -29,6 +29,7 @@ export const sharedTranslationsEn: TranslationCatalog = {
   'nav.settings': 'Settings',
   'nav.navigation': 'navigation',
   'nav.openMenu': 'Open navigation menu',
+  'nav.menuDescription': 'Admin navigation',
   'language.english': 'English',
   'language.bangla': 'বাংলা',
   'language.both': 'Both',

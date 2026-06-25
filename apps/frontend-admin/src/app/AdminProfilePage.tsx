@@ -136,23 +136,174 @@ export function AdminProfilePage() {
         }
       >
         {user ? (
-          <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
-            <Card>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <CardTitle>
-                    <TranslatedText translationKey="profile.title" as="span" />
+          <div className="mx-auto w-full max-w-4xl space-y-6">
+            <header className="space-y-1">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                <TranslatedText translationKey="profile.title" as="span" />
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                <TranslatedText translationKey="profile.subtitle" as="span" />
+              </p>
+            </header>
+
+            <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+              <Card>
+                <CardHeader className="space-y-1">
+                  <CardTitle className="text-base">
+                    <TranslatedText translationKey="profile.accountDetails" as="span" />
                   </CardTitle>
                   <CardDescription>
-                    <TranslatedText translationKey="profile.subtitle" as="span" />
+                    <TranslatedText translationKey="profile.accountDetailsHint" as="span" />
                   </CardDescription>
-                </div>
-                {!isEditing ? (
-                  <div className="flex flex-wrap gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={startEditing}>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {successKey ? (
+                    <SuccessAlert
+                      id={successId}
+                      title={<TranslatedText translationKey={successKey} as="span" />}
+                      role="status"
+                      aria-live="polite"
+                      data-testid="admin-profile-success"
+                    />
+                  ) : null}
+
+                  {isEditing ? (
+                    <form
+                      className="space-y-4"
+                      onSubmit={(event) => void handleSave(event)}
+                      noValidate
+                    >
+                      {error ? (
+                        <ErrorAlert
+                          id={errorId}
+                          title={t('profile.saveFailed')}
+                          description={error}
+                          role="alert"
+                          aria-live="polite"
+                          data-testid="admin-profile-error"
+                        />
+                      ) : null}
+                      <div className="space-y-2">
+                        <label
+                          htmlFor={firstNameId}
+                          className="text-sm font-medium text-foreground"
+                        >
+                          <TranslatedText translationKey="profile.firstName" as="span" />
+                        </label>
+                        <Input
+                          id={firstNameId}
+                          name="firstName"
+                          value={firstName}
+                          onChange={(event) => setFirstName(event.target.value)}
+                          autoComplete="given-name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor={lastNameId} className="text-sm font-medium text-foreground">
+                          <TranslatedText translationKey="profile.lastName" as="span" />
+                        </label>
+                        <Input
+                          id={lastNameId}
+                          name="lastName"
+                          value={lastName}
+                          onChange={(event) => setLastName(event.target.value)}
+                          autoComplete="family-name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor={emailId} className="text-sm font-medium text-foreground">
+                          <TranslatedText translationKey="profile.email" as="span" />
+                        </label>
+                        <Input
+                          id={emailId}
+                          name="email"
+                          type="email"
+                          value={email}
+                          onChange={(event) => setEmail(event.target.value)}
+                          autoComplete="email"
+                          required
+                        />
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button type="submit" disabled={!canSave} aria-busy={isSaving}>
+                          {isSaving ? (
+                            <TranslatedText
+                              translationKey="profile.savingProfile"
+                              as="span"
+                              compact
+                            />
+                          ) : (
+                            <TranslatedText
+                              translationKey="profile.saveProfile"
+                              as="span"
+                              compact
+                            />
+                          )}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={cancelEditing}
+                          disabled={isSaving}
+                        >
+                          <TranslatedText translationKey="profile.cancelEdit" as="span" compact />
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <dl className="grid gap-3 text-sm">
+                        <div className="grid gap-1">
+                          <dt className="font-medium text-muted-foreground">
+                            <TranslatedText translationKey="profile.name" as="span" />
+                          </dt>
+                          <dd data-testid="admin-profile-name">{user.name}</dd>
+                        </div>
+                        <div className="grid gap-1">
+                          <dt className="font-medium text-muted-foreground">
+                            <TranslatedText translationKey="profile.username" as="span" />
+                          </dt>
+                          <dd data-testid="admin-profile-username">{user.username}</dd>
+                        </div>
+                        <div className="grid gap-1">
+                          <dt className="font-medium text-muted-foreground">
+                            <TranslatedText translationKey="profile.email" as="span" />
+                          </dt>
+                          <dd data-testid="admin-profile-email">{user.email}</dd>
+                        </div>
+                      </dl>
+                      <div className="flex flex-wrap gap-2">
+                        <StatusBadge
+                          labelKey="profile.staffStatus"
+                          active={user.isStaff}
+                          testId="admin-profile-staff-badge"
+                        />
+                        <StatusBadge
+                          labelKey="profile.superuserStatus"
+                          active={user.isSuperuser}
+                          testId="admin-profile-superuser-badge"
+                        />
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              {!isEditing ? (
+                <Card>
+                  <CardHeader className="space-y-1">
+                    <CardTitle className="text-base">
+                      <TranslatedText translationKey="profile.securityTitle" as="span" />
+                    </CardTitle>
+                    <CardDescription>
+                      <TranslatedText translationKey="profile.securityHint" as="span" />
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2">
+                    <Button type="button" variant="outline" onClick={startEditing}>
                       <TranslatedText translationKey="profile.editProfile" as="span" compact />
                     </Button>
-                    <Button type="button" variant="outline" size="sm" asChild>
+                    <Button type="button" variant="outline" asChild>
                       <Link href="/change-password">
                         <TranslatedText
                           translationKey="password.changePassword"
@@ -161,134 +312,10 @@ export function AdminProfilePage() {
                         />
                       </Link>
                     </Button>
-                  </div>
-                ) : null}
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {successKey ? (
-                  <SuccessAlert
-                    id={successId}
-                    title={<TranslatedText translationKey={successKey} as="span" />}
-                    role="status"
-                    aria-live="polite"
-                    data-testid="admin-profile-success"
-                  />
-                ) : null}
-
-                {isEditing ? (
-                  <form
-                    className="space-y-4"
-                    onSubmit={(event) => void handleSave(event)}
-                    noValidate
-                  >
-                    {error ? (
-                      <ErrorAlert
-                        id={errorId}
-                        title={t('profile.saveFailed')}
-                        description={error}
-                        role="alert"
-                        aria-live="polite"
-                        data-testid="admin-profile-error"
-                      />
-                    ) : null}
-                    <div className="space-y-2">
-                      <label htmlFor={firstNameId} className="text-sm font-medium text-foreground">
-                        <TranslatedText translationKey="profile.firstName" as="span" />
-                      </label>
-                      <Input
-                        id={firstNameId}
-                        name="firstName"
-                        value={firstName}
-                        onChange={(event) => setFirstName(event.target.value)}
-                        autoComplete="given-name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor={lastNameId} className="text-sm font-medium text-foreground">
-                        <TranslatedText translationKey="profile.lastName" as="span" />
-                      </label>
-                      <Input
-                        id={lastNameId}
-                        name="lastName"
-                        value={lastName}
-                        onChange={(event) => setLastName(event.target.value)}
-                        autoComplete="family-name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor={emailId} className="text-sm font-medium text-foreground">
-                        <TranslatedText translationKey="profile.email" as="span" />
-                      </label>
-                      <Input
-                        id={emailId}
-                        name="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        autoComplete="email"
-                        required
-                      />
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button type="submit" disabled={!canSave} aria-busy={isSaving}>
-                        {isSaving ? (
-                          <TranslatedText
-                            translationKey="profile.savingProfile"
-                            as="span"
-                            compact
-                          />
-                        ) : (
-                          <TranslatedText translationKey="profile.saveProfile" as="span" compact />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={cancelEditing}
-                        disabled={isSaving}
-                      >
-                        <TranslatedText translationKey="profile.cancelEdit" as="span" compact />
-                      </Button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <dl className="grid gap-3 text-sm">
-                      <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">
-                          <TranslatedText translationKey="profile.name" as="span" />
-                        </dt>
-                        <dd data-testid="admin-profile-name">{user.name}</dd>
-                      </div>
-                      <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">
-                          <TranslatedText translationKey="profile.username" as="span" />
-                        </dt>
-                        <dd data-testid="admin-profile-username">{user.username}</dd>
-                      </div>
-                      <div className="grid gap-1">
-                        <dt className="font-medium text-muted-foreground">
-                          <TranslatedText translationKey="profile.email" as="span" />
-                        </dt>
-                        <dd data-testid="admin-profile-email">{user.email}</dd>
-                      </div>
-                    </dl>
-                    <div className="flex flex-wrap gap-2">
-                      <StatusBadge
-                        labelKey="profile.staffStatus"
-                        active={user.isStaff}
-                        testId="admin-profile-staff-badge"
-                      />
-                      <StatusBadge
-                        labelKey="profile.superuserStatus"
-                        active={user.isSuperuser}
-                        testId="admin-profile-superuser-badge"
-                      />
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ) : null}
+            </div>
           </div>
         ) : null}
       </PageShell>

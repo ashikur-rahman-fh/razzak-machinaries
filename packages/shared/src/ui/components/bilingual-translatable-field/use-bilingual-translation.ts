@@ -12,6 +12,7 @@ type UseBilingualTranslationOptions = {
   enValue: string;
   onEnChange: (value: string) => void;
   debounceMs?: number;
+  skipInitialAutoTranslate?: boolean;
 };
 
 export function useBilingualTranslation({
@@ -19,11 +20,21 @@ export function useBilingualTranslation({
   enValue,
   onEnChange,
   debounceMs = 400,
+  skipInitialAutoTranslate = false,
 }: UseBilingualTranslationOptions) {
-  const [status, setStatus] = useState<TranslationStatus>('idle');
-  const statusRef = useRef<TranslationStatus>('idle');
-  const lastAutoEnRef = useRef('');
-  const lastTranslatedBnRef = useRef('');
+  const [status, setStatus] = useState<TranslationStatus>(() => {
+    if (skipInitialAutoTranslate && enValue.trim()) {
+      return 'manual';
+    }
+    return 'idle';
+  });
+  const statusRef = useRef<TranslationStatus>(
+    skipInitialAutoTranslate && enValue.trim() ? 'manual' : 'idle',
+  );
+  const lastAutoEnRef = useRef(skipInitialAutoTranslate && enValue.trim() ? enValue : '');
+  const lastTranslatedBnRef = useRef(
+    skipInitialAutoTranslate && enValue.trim() ? bnValue.trim() : '',
+  );
   const enValueRef = useRef(enValue);
   const onEnChangeRef = useRef(onEnChange);
   const requestIdRef = useRef(0);

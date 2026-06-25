@@ -59,6 +59,29 @@ If it persists:
 
 See [`development.md`](development.md#docker-js-dependencies-macos--bind-mounts).
 
+## Turbopack panic: Next.js package not found (Docker dev)
+
+Symptoms:
+
+- `make dev-logs` shows `FATAL: An unexpected Turbopack error occurred` with `Failed to write app endpoint /page` and `Next.js package not found`
+- Browser `ChunkLoadError` or HMR client failures after the panic
+- Rapid alternating `GET /` and `GET /login` in logs, burst of `/api/admin/auth/csrf/` requests, or `429` on CSRF (secondary — caused by reload storms)
+
+Cause: In this pnpm monorepo, `next` is symlinked under each app (`apps/frontend-*/node_modules/next`), not at the repo root. Next.js 16 Turbopack picks its dev root as `turbopack.root || outputFileTracingRoot || appDir`. Without `turbopack.root`, it used the monorepo root (from `outputFileTracingRoot`) during HMR and could not resolve `node_modules/next` there.
+
+Fix (from repo root):
+
+```bash
+make dev-install-js
+make dev-restart
+```
+
+Then hard-refresh the browser (`Cmd+Shift+R`).
+
+Both frontends set `turbopack.root` to the app directory in `next.config.mjs` while keeping `outputFileTracingRoot` at the monorepo root for standalone production builds. If panics persist after a clean reinstall, rebuild images with `make dev-build` and restart.
+
+See [`development.md`](development.md#docker-js-dependencies-macos--bind-mounts).
+
 ## Port already in use
 
 Symptoms: Compose fails binding `3000`, `3001`, `8000`, `8080`, `5432`, `6379`, or `5678`.

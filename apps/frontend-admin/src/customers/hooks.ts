@@ -2,6 +2,30 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const LARGE_SCREEN_QUERY = '(min-width: 1024px)';
+
+export function useLargeScreen(): boolean {
+  const [isLargeScreen, setIsLargeScreen] = useState(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return true;
+    }
+    return window.matchMedia(LARGE_SCREEN_QUERY).matches;
+  });
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') {
+      return;
+    }
+    const mediaQuery = window.matchMedia(LARGE_SCREEN_QUERY);
+    const handleChange = () => setIsLargeScreen(mediaQuery.matches);
+    handleChange();
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return isLargeScreen;
+}
+
 export function useDebouncedValue<T>(value: T, delayMs = 300): T {
   const [debounced, setDebounced] = useState(value);
 

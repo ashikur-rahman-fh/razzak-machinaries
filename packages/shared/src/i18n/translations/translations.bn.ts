@@ -29,6 +29,7 @@ export const sharedTranslationsBn: TranslationCatalog = {
   'nav.settings': 'সেটিংস',
   'nav.navigation': 'নেভিগেশন',
   'nav.openMenu': 'নেভিগেশন মেনু খুলুন',
+  'nav.menuDescription': 'অ্যাডমিন নেভিগেশন',
   'language.english': 'English',
   'language.bangla': 'বাংলা',
   'language.both': 'উভয়',

@@ -264,12 +264,13 @@ describe('BangladeshAddressPage', () => {
   it('shows both languages on stats, tabs, and table headers when display mode is both', async () => {
     renderWithAuth(<BangladeshAddressPage />, { language: 'en', displayMode: 'both' });
 
-    expect(await screen.findByTestId('geo-stats-cards')).toBeInTheDocument();
-    expect(screen.getByText(geoTranslationsEn['geo.stats.divisions'])).toHaveAttribute(
+    const statsCards = await screen.findByTestId('geo-stats-cards');
+    expect(statsCards).toBeInTheDocument();
+    expect(within(statsCards).getByText(geoTranslationsEn['geo.stats.divisions'])).toHaveAttribute(
       'lang',
       'en',
     );
-    expect(screen.getByText(geoTranslationsBn['geo.stats.divisions'])).toHaveAttribute(
+    expect(within(statsCards).getByText(geoTranslationsBn['geo.stats.divisions'])).toHaveAttribute(
       'lang',
       'bn',
     );
@@ -471,6 +472,19 @@ describe('BangladeshAddressEditPage', () => {
     expect(screen.getByLabelText(geoTranslationsEn['geo.field.nameBn'])).toHaveValue(
       geoDivision.nameBn,
     );
+  });
+
+  it('shows not-found recovery on edit when record is missing', async () => {
+    mockParams = { geoType: 'divisions', id: '999' };
+    renderWithAuth(<BangladeshAddressEditPage />);
+
+    expect(await screen.findByText(geoTranslationsEn['geo.detail.notFound'])).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: geoTranslationsEn['geo.actions.backToBangladeshAddressList'],
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('geo-edit-form')).not.toBeInTheDocument();
   });
 
   it('opens confirm modal on save and patches on confirm', async () => {

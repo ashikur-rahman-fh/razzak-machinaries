@@ -22,6 +22,7 @@ export type BilingualTranslatableFieldProps = {
   enError?: string;
   statusLabels?: Partial<Record<TranslationStatus, string>>;
   retranslateLabel?: string;
+  skipInitialAutoTranslate?: boolean;
 };
 
 const DEFAULT_STATUS_LABELS: Partial<Record<TranslationStatus, string>> = {
@@ -38,7 +39,7 @@ function StatusBadge({
   status: TranslationStatus;
   labels: Partial<Record<TranslationStatus, string>>;
 }) {
-  if (status === 'idle') {
+  if (status !== 'translating' && status !== 'failed') {
     return null;
   }
 
@@ -74,6 +75,7 @@ export function BilingualTranslatableField({
   enError,
   statusLabels = DEFAULT_STATUS_LABELS,
   retranslateLabel = 'Re-translate',
+  skipInitialAutoTranslate = false,
 }: BilingualTranslatableFieldProps) {
   const bnFieldId = useId();
   const enFieldId = useId();
@@ -84,6 +86,7 @@ export function BilingualTranslatableField({
     bnValue,
     enValue,
     onEnChange,
+    skipInitialAutoTranslate,
   });
 
   const InputComponent = multiline ? Textarea : Input;
@@ -106,6 +109,8 @@ export function BilingualTranslatableField({
           value={bnValue}
           onChange={(event) => onBnChange(event.target.value)}
           className="font-bangla"
+          required={required}
+          aria-required={required || undefined}
           aria-invalid={Boolean(bnError)}
           aria-describedby={bnError ? bnErrorId : undefined}
           data-testid={`${label}-bn-input`}
@@ -123,13 +128,13 @@ export function BilingualTranslatableField({
             {enLabel ?? 'English (auto-translated, editable)'}
             {required ? <span className="text-destructive"> *</span> : null}
           </label>
-          {bnValue.trim() ? (
+          {bnValue.trim() && status !== 'translating' ? (
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => void retranslate()}
-              disabled={disabled || status === 'translating'}
+              disabled={disabled}
               data-testid={`${label}-retranslate`}
             >
               {retranslateLabel}
@@ -141,6 +146,8 @@ export function BilingualTranslatableField({
           id={enFieldId}
           value={enValue}
           onChange={(event) => handleEnChange(event.target.value)}
+          required={required}
+          aria-required={required || undefined}
           aria-invalid={Boolean(enError)}
           aria-describedby={enError ? enErrorId : undefined}
           data-testid={`${label}-en-input`}

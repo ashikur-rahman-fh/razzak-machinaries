@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { RequireAdminAuth } from '@/auth/guards';
+import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { AdminNavbar } from '@/components/AdminNavbar';
 
 import { FEEDBACK_DISMISS_MS } from '@/customers/constants';
@@ -17,6 +18,7 @@ import { buildCustomerFormData, type CustomerFormValues } from '@/customers/vali
 export function CustomerCreatePage() {
   const { language } = useLanguagePreference();
   const router = useRouter();
+  const { logout, isLoggingOut } = useAdminAuth();
   const searchParams = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(searchParams.get('success') === 'created');
@@ -48,14 +50,22 @@ export function CustomerCreatePage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell header={<AdminNavbar activeRoute="customers" />}>
+      <PageShell
+        header={
+          <AdminNavbar
+            activeRoute="customers"
+            onLogout={() => void logout().then(() => router.replace('/login'))}
+            isLoggingOut={isLoggingOut}
+          />
+        }
+      >
         <div className="space-y-6" data-testid="customer-create-page">
           <header className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight">
-              <TranslatedText translationKey="customer.create.title" as="span" layout="inline" />
+              <TranslatedText translationKey="customer.create.title" as="span" />
             </h1>
             <p className="text-sm text-muted-foreground">
-              <TranslatedText translationKey="customer.create.subtitle" as="span" layout="inline" />
+              <TranslatedText translationKey="customer.create.subtitle" as="span" />
             </p>
           </header>
 

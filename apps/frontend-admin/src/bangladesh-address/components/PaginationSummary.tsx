@@ -54,13 +54,6 @@ export function PaginationSummary({
   }
 
   return (
-    <BilingualText
-      en={summaryEn}
-      bn={summaryBn}
-      mode={displayMode}
-      language={language}
-      layout="inline"
-      as="span"
-    />
+    <BilingualText en={summaryEn} bn={summaryBn} mode={displayMode} language={language} as="span" />
   );
 }

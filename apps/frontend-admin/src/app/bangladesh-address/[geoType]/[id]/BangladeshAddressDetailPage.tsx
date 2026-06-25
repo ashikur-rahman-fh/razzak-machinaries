@@ -7,6 +7,7 @@ import {
   EmptyState,
   ErrorState,
   PageShell,
+  RecoverableErrorState,
   SuccessAlert,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
@@ -166,6 +167,13 @@ export function BangladeshAddressDetailPage() {
               title={
                 <TranslatedText translationKey="geo.detail.notFound" as="span" layout="inline" />
               }
+              description={
+                <TranslatedText
+                  translationKey="geo.detail.notFoundDescription"
+                  as="span"
+                  layout="inline"
+                />
+              }
               action={
                 <Button type="button" variant="outline" size="sm" asChild>
                   <Link href={backHref}>
@@ -181,32 +189,21 @@ export function BangladeshAddressDetailPage() {
           ) : null}
 
           {isLoadError ? (
-            <div className="space-y-4">
-              <ErrorState
-                message={
-                  <TranslatedText translationKey="geo.detail.loadError" as="span" layout="inline" />
-                }
-              />
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => void reloadRecord()}
-                >
-                  <TranslatedText translationKey="geo.list.retry" as="span" compact />
-                </Button>
-                <Button type="button" variant="outline" size="sm" asChild>
-                  <Link href={backHref}>
-                    <TranslatedText
-                      translationKey="geo.actions.backToBangladeshAddressList"
-                      as="span"
-                      compact
-                    />
-                  </Link>
-                </Button>
-              </div>
-            </div>
+            <RecoverableErrorState
+              message={
+                <TranslatedText translationKey="geo.detail.loadError" as="span" layout="inline" />
+              }
+              onRetry={() => void reloadRecord()}
+              retryLabel={<TranslatedText translationKey="geo.list.retry" as="span" compact />}
+              backHref={backHref}
+              backLabel={
+                <TranslatedText
+                  translationKey="geo.actions.backToBangladeshAddressList"
+                  as="span"
+                  compact
+                />
+              }
+            />
           ) : null}
 
           {record ? (

@@ -3,11 +3,11 @@
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import {
   BilingualText,
-  Button,
   cn,
   DataTable,
+  DataTableRefreshBar,
   EmptyState,
-  ErrorState,
+  RecoverableErrorState,
   Skeleton,
   TableBody,
   TableCell,
@@ -47,7 +47,7 @@ type BangladeshAddressTableProps = {
 };
 
 function TableHeadLabel({ translationKey }: { translationKey: string }) {
-  return <TranslatedText translationKey={translationKey} as="span" layout="inline" compact />;
+  return <TranslatedText translationKey={translationKey} as="span" compact />;
 }
 
 function interpolate(template: string, values: Record<string, string>): string {
@@ -94,7 +94,6 @@ function ParentNameCell({
       bn={parent.nameBn}
       mode={displayMode}
       language={language}
-      layout="inline"
       as="span"
     />
   );
@@ -141,14 +140,11 @@ export function BangladeshAddressTable({
 
   if (error) {
     return (
-      <div className="space-y-3">
-        <ErrorState
-          message={<TranslatedText translationKey="geo.list.loadError" as="span" layout="inline" />}
-        />
-        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-          <TranslatedText translationKey="geo.list.retry" as="span" compact />
-        </Button>
-      </div>
+      <RecoverableErrorState
+        message={<TranslatedText translationKey="geo.list.loadError" as="span" />}
+        onRetry={onRetry}
+        retryLabel={<TranslatedText translationKey="geo.list.retry" as="span" compact />}
+      />
     );
   }
 
@@ -183,12 +179,8 @@ export function BangladeshAddressTable({
         data-testid="geo-address-table"
         aria-busy={isRefreshing}
         className={cn(isRefreshing && 'relative opacity-60 transition-opacity')}
+        overlay={isRefreshing ? <DataTableRefreshBar /> : undefined}
       >
-        {isRefreshing ? (
-          <div className="absolute inset-x-0 top-0 h-0.5 overflow-hidden bg-primary/20" aria-hidden>
-            <div className="h-full w-1/3 animate-pulse bg-primary" />
-          </div>
-        ) : null}
         <TableHeader>
           <TableRow>
             <TableHead>
@@ -260,7 +252,6 @@ export function BangladeshAddressTable({
                         bn={record.nameBn}
                         mode={displayMode}
                         language={language}
-                        layout="inline"
                         as="span"
                       />
                     </Link>

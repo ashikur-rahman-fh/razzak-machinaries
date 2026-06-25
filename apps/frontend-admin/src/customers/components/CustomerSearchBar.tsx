@@ -8,9 +8,16 @@ type CustomerSearchBarProps = {
   onChange: (value: string) => void;
   onClear: () => void;
   disabled?: boolean;
+  isSearching?: boolean;
 };
 
-export function CustomerSearchBar({ value, onChange, onClear, disabled }: CustomerSearchBarProps) {
+export function CustomerSearchBar({
+  value,
+  onChange,
+  onClear,
+  disabled,
+  isSearching = false,
+}: CustomerSearchBarProps) {
   const { t } = useTranslation();
 
   return (
@@ -22,9 +29,19 @@ export function CustomerSearchBar({ value, onChange, onClear, disabled }: Custom
         placeholder={t('customer.search.placeholder')}
         disabled={disabled}
         aria-label={t('customer.search.placeholder')}
+        aria-busy={isSearching}
         data-testid="customer-search-input"
         className="pr-10"
       />
+      {isSearching ? (
+        <span
+          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-muted-foreground"
+          aria-live="polite"
+          data-testid="customer-search-loading"
+        >
+          <TranslatedText translationKey="customer.list.searching" as="span" compact />
+        </span>
+      ) : null}
       {value ? (
         <Button
           type="button"

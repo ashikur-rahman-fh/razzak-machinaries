@@ -7,6 +7,7 @@ import {
   Button,
   cn,
   DataTable,
+  DataTableRefreshBar,
   EmptyState,
   ErrorState,
   Skeleton,
@@ -23,7 +24,13 @@ import { useState } from 'react';
 
 import { getCustomerDeleteErrorMessage } from '../errors';
 import { buildDetailUrl, buildEditUrl, type CustomerListState } from '../routes';
-import { formatCustomerPhone, hasMediator, truncateAddress } from '../utils';
+import {
+  formatCustomerPhone,
+  hasMediator,
+  hasMemoPageNumber,
+  truncateAddress,
+  EMPTY_CELL_VALUE,
+} from '../utils';
 import { CustomerAvatar } from './CustomerAvatar';
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 
@@ -38,10 +45,11 @@ type CustomerTableProps = {
   onRetry: () => void;
   onClearSearch: () => void;
   onDeleteSuccess: () => void;
+  ariaHidden?: boolean;
 };
 
 function TableHeadLabel({ translationKey }: { translationKey: string }) {
-  return <TranslatedText translationKey={translationKey} as="span" layout="inline" compact />;
+  return <TranslatedText translationKey={translationKey} as="span" compact />;
 }
 
 function TableSkeletonRows({ columns, rowCount }: { columns: number; rowCount: number }) {
@@ -71,6 +79,7 @@ export function CustomerTable({
   onRetry,
   onClearSearch,
   onDeleteSuccess,
+  ariaHidden = false,
 }: CustomerTableProps) {
   const router = useRouter();
   const { language, displayMode } = useLanguagePreference();
@@ -99,9 +108,7 @@ export function CustomerTable({
     return (
       <div className="space-y-3">
         <ErrorState
-          message={
-            <TranslatedText translationKey="customer.list.loadError" as="span" layout="inline" />
-          }
+          message={<TranslatedText translationKey="customer.list.loadError" as="span" />}
         />
         <Button type="button" variant="outline" size="sm" onClick={onRetry}>
           <TranslatedText translationKey="customer.actions.retry" as="span" compact />
@@ -146,13 +153,10 @@ export function CustomerTable({
       <DataTable
         data-testid="customer-table"
         aria-busy={isRefreshing}
-        className={cn('hidden md:block', isRefreshing && 'relative opacity-60 transition-opacity')}
+        className={cn('hidden lg:block', isRefreshing && 'relative opacity-60 transition-opacity')}
+        aria-hidden={ariaHidden || undefined}
+        overlay={isRefreshing ? <DataTableRefreshBar /> : undefined}
       >
-        {isRefreshing ? (
-          <div className="absolute inset-x-0 top-0 h-0.5 overflow-hidden bg-primary/20" aria-hidden>
-            <div className="h-full w-1/3 animate-pulse bg-primary" />
-          </div>
-        ) : null}
         <TableHeader>
           <TableRow>
             <TableHead>
@@ -224,6 +228,7 @@ export function CustomerTable({
                       language={language}
                       layout="default"
                       as="span"
+                      fallback={EMPTY_CELL_VALUE}
                     />
                   </TableCell>
                   <TableCell className="max-w-[200px]">
@@ -240,20 +245,26 @@ export function CustomerTable({
                         as="span"
                       />
                     ) : (
-                      '—'
+                      EMPTY_CELL_VALUE
                     )}
                   </TableCell>
                   <TableCell>
-                    <span className="font-bangla">{customer.memoPageNumberBn}</span>
-                    {customer.memoPageNumberEn !== customer.memoPageNumberBn ? (
-                      <span className="block text-xs text-muted-foreground">
-                        {customer.memoPageNumberEn}
-                      </span>
-                    ) : null}
+                    {hasMemoPageNumber(customer) ? (
+                      <>
+                        <span className="font-bangla">{customer.memoPageNumberBn}</span>
+                        {customer.memoPageNumberEn !== customer.memoPageNumberBn ? (
+                          <span className="block text-xs text-muted-foreground">
+                            {customer.memoPageNumberEn}
+                          </span>
+                        ) : null}
+                      </>
+                    ) : (
+                      EMPTY_CELL_VALUE
+                    )}
                   </TableCell>
                   <TableCell onClick={(event) => event.stopPropagation()}>
                     <div className="flex gap-1">
-                      <Button asChild variant="ghost" size="sm">
+                      <Button asChild variant="outline" size="sm">
                         <Link href={detailHref}>
                           <TranslatedText
                             translationKey="customer.actions.view"
@@ -262,7 +273,7 @@ export function CustomerTable({
                           />
                         </Link>
                       </Button>
-                      <Button asChild variant="ghost" size="sm">
+                      <Button asChild variant="outline" size="sm">
                         <Link href={editHref}>
                           <TranslatedText
                             translationKey="customer.actions.edit"

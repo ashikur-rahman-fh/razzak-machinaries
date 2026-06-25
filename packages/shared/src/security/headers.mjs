@@ -1,11 +1,15 @@
 /** Placeholder when NEXT_PUBLIC_BACKEND_MAIN_API_URL is unset (e.g. next lint). Real prod builds validate via validate-backend-main-api-url.sh */
 export const CSP_API_PLACEHOLDER = 'https://api.example.test';
 
-const DEV_CONNECT_ORIGINS = [
+const DEV_HTTP_ORIGINS = [
   'http://localhost:8000',
   'http://127.0.0.1:8000',
   'http://localhost:8080',
   'http://127.0.0.1:8080',
+];
+
+const DEV_CONNECT_ORIGINS = [
+  ...DEV_HTTP_ORIGINS,
   'ws://localhost:3000',
   'ws://127.0.0.1:3000',
   'ws://localhost:3001',
@@ -48,6 +52,42 @@ export function buildConnectSrc(options = {}) {
 }
 
 /**
+ * Build img-src directive for CSP (exported for tests).
+ * Allows media served from the API origin (e.g. /media/ profile pictures).
+ * @param {{ apiBaseUrl?: string, isProduction?: boolean }} [options]
+ */
+export function buildImgSrc(options = {}) {
+  const production = options.isProduction ?? process.env.NODE_ENV === 'production';
+  let apiBaseUrl = options.apiBaseUrl ?? process.env.NEXT_PUBLIC_BACKEND_MAIN_API_URL;
+
+  if (production && !apiBaseUrl?.trim()) {
+    apiBaseUrl = CSP_API_PLACEHOLDER;
+  }
+
+  const origins = new Set(["'self'", 'data:', 'blob:']);
+
+  if (apiBaseUrl?.trim()) {
+    try {
+      const parsed = new URL(apiBaseUrl.trim());
+      origins.add(`${parsed.protocol}//${parsed.host}`);
+    } catch {
+      if (production) {
+        const parsed = new URL(CSP_API_PLACEHOLDER);
+        origins.add(`${parsed.protocol}//${parsed.host}`);
+      }
+    }
+  }
+
+  if (!production) {
+    for (const origin of DEV_HTTP_ORIGINS) {
+      origins.add(origin);
+    }
+  }
+
+  return `img-src ${[...origins].join(' ')}`;
+}
+
+/**
  * Build full Content-Security-Policy header value (exported for tests).
  * @param {{ apiBaseUrl?: string, isProduction?: boolean }} [options]
  */
@@ -62,7 +102,7 @@ export function buildContentSecurityPolicy(options = {}) {
     "default-src 'self'",
     scriptSrc,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
+    buildImgSrc(options),
     "font-src 'self'",
     buildConnectSrc(options),
     "frame-ancestors 'none'",

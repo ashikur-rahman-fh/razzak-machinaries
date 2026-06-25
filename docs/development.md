@@ -21,7 +21,7 @@ make dev-up
 make editor-happy
 ```
 
-Then open the repo root in VS Code/Cursor and run **Developer: Reload Window**. `editor-happy` installs host `node_modules` and `apps/backend/.venv`. On macOS, run `make dev-install-js` again before Docker dev so native JS binaries match Linux containers. See [Docker JS dependencies](#docker-js-dependencies-macos--bind-mounts).
+Then open the repo root in VS Code/Cursor and run **Developer: Reload Window**. `editor-happy` installs host `node_modules` and `apps/backend/.venv`. On macOS, run `make doctor-js` after install to verify native Tailwind/lightningcss bindings, and run `make dev-install-js` again before Docker dev so native JS binaries match Linux containers. See [Docker JS dependencies](#docker-js-dependencies-macos--bind-mounts).
 
 See [Fixing editor import/package errors](#fixing-editor-importpackage-errors) if squiggles remain.
 
@@ -363,6 +363,7 @@ Dev and debug Compose bind-mount the repo (`.:/workspace`), so frontends use **h
 
 - `Cannot find module '../lightningcss.linux-arm64-gnu.node'` in `make dev-logs`
 - `http://localhost:8080/` returns **500** with a CSS / PostCSS build error
+- Turbopack panic with `Next.js package not found` or `ChunkLoadError` in the browser — see [`runbook-troubleshooting.md`](runbook-troubleshooting.md#turbopack-panic-nextjs-package-not-found-docker-dev)
 
 ### Fix
 
@@ -443,3 +444,4 @@ Select interpreter: **Python: Select Interpreter** → `apps/backend/.venv`.
 | `.next/types` warnings                                                   | Run `pnpm dev` once in a frontend app, or ignore until first dev session                                                                                                                                                                                                                                     |
 | Wrong workspace                                                          | Close folder and re-open the **monorepo root**                                                                                                                                                                                                                                                               |
 | Docker frontend **500**, `lightningcss.linux-arm64-gnu.node` in logs     | `make dev-install-js` then `make dev-up` or `make dev-restart` — see [Docker JS dependencies](#docker-js-dependencies-macos--bind-mounts)                                                                                                                                                                   |
+| Turbopack panic, `Next.js package not found`, or `ChunkLoadError` in Docker dev | `make dev-install-js` then `make dev-restart`; see [runbook](runbook-troubleshooting.md#turbopack-panic-nextjs-package-not-found-docker-dev)                                                                                                                                                              |

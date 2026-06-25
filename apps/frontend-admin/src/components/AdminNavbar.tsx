@@ -44,11 +44,20 @@ export function AdminNavbar({ activeRoute, onLogout, isLoggingOut = false }: Adm
 
   return (
     <Navbar
-      appName={<TranslatedText translationKey="admin.appName" as="span" layout="inline" />}
+      appName={
+        <>
+          <span className="lg:hidden">
+            <TranslatedText translationKey="admin.appNameShort" as="span" layout="inline" />
+          </span>
+          <span className="hidden lg:inline">
+            <TranslatedText translationKey="admin.appName" as="span" layout="inline" />
+          </span>
+        </>
+      }
       navigationLabel={`${t('admin.appName')} ${t('nav.navigation')}`}
       openMenuLabel={t('nav.openMenu')}
       closeMenuLabel={t('common.close')}
-      menuDescription={t('nav.openMenu')}
+      menuDescription={t('nav.menuDescription')}
       items={items}
       actions={
         <div className="flex items-center gap-2">

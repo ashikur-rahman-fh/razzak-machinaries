@@ -198,7 +198,10 @@ export function BangladeshAddressPage() {
                   <TranslatedText translationKey={`geo.type.${effectiveState.type}`} as="span" />
                 </CardTitle>
                 <CardDescription>
-                  <TranslatedText translationKey="geo.subtitle" as="span" />
+                  <TranslatedText
+                    translationKey={`geo.cardDescription.${effectiveState.type}`}
+                    as="span"
+                  />
                 </CardDescription>
               </div>
               <BangladeshAddressTypeTabs
@@ -207,8 +210,8 @@ export function BangladeshAddressPage() {
               />
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
                   <div className="min-w-[220px] flex-1">
                     <Input
                       value={searchInput}
@@ -238,7 +241,7 @@ export function BangladeshAddressPage() {
                       }
                     >
                       <SelectTrigger
-                        className="w-full sm:w-[200px]"
+                        className="w-full shrink-0 sm:w-auto sm:min-w-[12.5rem] sm:max-w-[17.5rem]"
                         aria-label={t('geo.filter.division')}
                       >
                         <SelectValue placeholder={t('geo.filter.division')} />
@@ -273,7 +276,7 @@ export function BangladeshAddressPage() {
                       }
                     >
                       <SelectTrigger
-                        className="w-full sm:w-[200px]"
+                        className="w-full shrink-0 sm:w-auto sm:min-w-[12.5rem] sm:max-w-[17.5rem]"
                         aria-label={t('geo.filter.district')}
                       >
                         <SelectValue placeholder={t('geo.filter.district')} />
@@ -308,7 +311,7 @@ export function BangladeshAddressPage() {
                       }
                     >
                       <SelectTrigger
-                        className="w-full sm:w-[200px]"
+                        className="w-full shrink-0 sm:w-auto sm:min-w-[12.5rem] sm:max-w-[17.5rem]"
                         aria-label={t('geo.filter.upazila')}
                       >
                         <SelectValue placeholder={t('geo.filter.upazila')} />

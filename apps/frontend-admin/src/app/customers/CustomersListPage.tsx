@@ -35,6 +35,7 @@ import {
   isAsyncInitialLoad,
   useAsyncData,
   useDebouncedValue,
+  useLargeScreen,
 } from '@/customers/hooks';
 import {
   buildListUrl,
@@ -58,6 +59,7 @@ export function CustomersListPage() {
   const searchParams = useSearchParams();
   const { t } = useTranslation();
   const { logout, isLoggingOut } = useAdminAuth();
+  const isLargeScreen = useLargeScreen();
 
   const listState = useMemo(() => parseListState(searchParams), [searchParams]);
   const [searchInput, setSearchInput] = useState(listState.search);
@@ -126,6 +128,8 @@ export function CustomersListPage() {
   const customers = listData?.results ?? [];
   const totalCount = listData?.count ?? 0;
   const hasSearch = Boolean(effectiveState.search);
+  const isSearchPending =
+    searchInput !== debouncedSearch || (isRefreshing && Boolean(searchInput.trim()));
 
   const handleClearSearch = () => {
     setSearchInput('');
@@ -185,22 +189,28 @@ export function CustomersListPage() {
 
           <Card>
             <CardHeader className="space-y-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+              <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start">
                 <CustomerSearchBar
                   value={searchInput}
                   onChange={setSearchInput}
                   onClear={handleClearSearch}
                   disabled={isInitialLoad}
+                  isSearching={isSearchPending}
                 />
                 <Select
                   value={effectiveState.ordering}
                   onValueChange={(ordering) => navigate({ ordering, page: 1 })}
                 >
-                  <SelectTrigger className="w-full lg:w-[200px]" aria-label="Sort customers">
+                  <SelectTrigger
+                    className="w-full shrink-0 lg:w-auto lg:min-w-[12.5rem] lg:max-w-[17.5rem]"
+                    aria-label="Sort customers"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {SORT_OPTIONS.map((option) => (
+                    {SORT_OPTIONS.filter(
+                      (option) => option.value !== RELEVANCE_CUSTOMER_ORDERING || hasSearch,
+                    ).map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         <TranslatedText translationKey={option.labelKey} as="span" compact />
                       </SelectItem>
@@ -237,9 +247,10 @@ export function CustomersListPage() {
                         `${buildListUrl(effectiveState)}${buildListUrl(effectiveState).includes('?') ? '&' : '?'}success=deleted`,
                       );
                     }}
+                    ariaHidden={!isLargeScreen}
                   />
 
-                  <div className="space-y-3 md:hidden">
+                  <div className="space-y-3 lg:hidden" aria-hidden={isLargeScreen || undefined}>
                     {customers.map((customer) => (
                       <CustomerMobileCard
                         key={customer.id}

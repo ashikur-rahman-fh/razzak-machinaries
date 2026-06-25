@@ -107,6 +107,22 @@ describe('CustomerCreatePage', () => {
     expect(screen.getByTestId('Memo page number-bn-input')).toBeInTheDocument();
   });
 
+  it('shows sign out in navbar', async () => {
+    renderWithAuth(<CustomerCreatePage />);
+    await screen.findByTestId('customer-create-page');
+    expect(
+      screen.getByRole('button', { name: adminTranslationsEn['profile.logout'] }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows cancel link back to customers list', async () => {
+    renderWithAuth(<CustomerCreatePage />);
+    await screen.findByTestId('customer-create-form');
+    expect(
+      screen.getByRole('link', { name: customerTranslationsEn['customer.actions.cancel'] }),
+    ).toHaveAttribute('href', '/customers');
+  });
+
   it('auto-translates English fields from Bangla input', async () => {
     const user = userEvent.setup();
     renderWithAuth(<CustomerCreatePage />);
@@ -116,7 +132,7 @@ describe('CustomerCreatePage', () => {
     await user.type(fullNameBn, 'হ্যালো');
 
     await waitFor(() => {
-      expect(screen.getByTestId('translation-status-auto')).toBeInTheDocument();
+      expect(screen.getByTestId('Full name-en-input')).toHaveValue('Translated: হ্যালো');
     });
   });
 
@@ -131,7 +147,6 @@ describe('CustomerCreatePage', () => {
     await waitFor(() => {
       expect(screen.getByTestId('Phone number-en-input')).toHaveValue('01712345678');
       expect(screen.getByTestId('Memo page number-en-input')).toHaveValue('123');
-      expect(screen.getAllByTestId('transliteration-status-auto')).toHaveLength(2);
     });
   });
 

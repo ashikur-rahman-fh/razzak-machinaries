@@ -1,13 +1,22 @@
 import type { Customer } from '@razzak-machinaries/shared/api';
 
+export const EMPTY_CELL_VALUE = '—';
+
 export function formatCustomerPhone(customer: Pick<Customer, 'phoneEn' | 'phone'>): string {
   return customer.phoneEn || customer.phone;
 }
 
 export function truncateAddress(text: string, maxLength = 48): string {
   const trimmed = text.trim();
+  if (!trimmed) return EMPTY_CELL_VALUE;
   if (trimmed.length <= maxLength) return trimmed;
   return `${trimmed.slice(0, maxLength - 1)}…`;
+}
+
+export function hasMemoPageNumber(
+  customer: Pick<Customer, 'memoPageNumberBn' | 'memoPageNumberEn'>,
+): boolean {
+  return Boolean(customer.memoPageNumberBn.trim() || customer.memoPageNumberEn.trim());
 }
 
 export function hasMediator(

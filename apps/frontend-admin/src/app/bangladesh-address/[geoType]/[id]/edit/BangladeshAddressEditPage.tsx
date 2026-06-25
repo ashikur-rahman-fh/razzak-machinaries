@@ -1,5 +1,6 @@
 'use client';
 
+import { isApiError } from '@razzak-machinaries/shared/api';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import {
   Button,
@@ -7,9 +8,11 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  EmptyState,
   ErrorState,
   LoadingState,
   PageShell,
+  RecoverableErrorState,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
@@ -24,7 +27,7 @@ import { getGeoConfig } from '@/bangladesh-address/config';
 import { getGeoUpdateErrorMessage } from '@/bangladesh-address/errors';
 import { useAsyncData } from '@/bangladesh-address/hooks';
 import { loadParentLookup } from '@/bangladesh-address/parent-lookup';
-import { buildDetailUrl } from '@/bangladesh-address/routes';
+import { buildDetailUrl, buildListUrl } from '@/bangladesh-address/routes';
 import { isGeoResourceType } from '@/bangladesh-address/types';
 export function BangladeshAddressEditPage() {
   const params = useParams<{ geoType: string; id: string }>();
@@ -40,7 +43,7 @@ export function BangladeshAddressEditPage() {
   const geoType = isValidType ? geoTypeParam : 'divisions';
   const config = isValidType ? getGeoConfig(geoType) : null;
 
-  const { state: recordState } = useAsyncData(async () => {
+  const { state: recordState, reload: reloadRecord } = useAsyncData(async () => {
     if (!config || !recordId) throw new Error('Invalid');
     return config.get(recordId);
   }, [geoTypeParam, recordId]);
@@ -64,6 +67,10 @@ export function BangladeshAddressEditPage() {
   }
 
   const record = recordState.status === 'success' ? recordState.data : null;
+  const backListHref = buildListUrl({ type: geoType });
+  const isNotFound =
+    recordState.status === 'error' && isApiError(recordState.error) && recordState.error.isNotFound;
+  const isLoadError = recordState.status === 'error' && !isNotFound;
   const parentOptions =
     parentOptionsState.status === 'success' ? parentOptionsState.data : new Map();
 
@@ -111,10 +118,50 @@ export function BangladeshAddressEditPage() {
                 />
               ) : null}
 
-              {recordState.status === 'error' ? (
-                <ErrorState
+              {isNotFound ? (
+                <EmptyState
+                  title={
+                    <TranslatedText
+                      translationKey="geo.detail.notFound"
+                      as="span"
+                      layout="inline"
+                    />
+                  }
+                  description={
+                    <TranslatedText
+                      translationKey="geo.detail.notFoundDescription"
+                      as="span"
+                      layout="inline"
+                    />
+                  }
+                  action={
+                    <Button type="button" variant="outline" size="sm" asChild>
+                      <Link href={backListHref}>
+                        <TranslatedText
+                          translationKey="geo.actions.backToBangladeshAddressList"
+                          as="span"
+                          compact
+                        />
+                      </Link>
+                    </Button>
+                  }
+                />
+              ) : null}
+
+              {isLoadError ? (
+                <RecoverableErrorState
                   message={
                     <TranslatedText translationKey="geo.edit.loadError" as="span" layout="inline" />
+                  }
+                  onRetry={() => void reloadRecord()}
+                  retryLabel={<TranslatedText translationKey="geo.list.retry" as="span" compact />}
+                  backHref={backListHref}
+                  backLabel={
+                    <TranslatedText
+                      translationKey="geo.actions.backToBangladeshAddressList"
+                      as="span"
+                      compact
+                    />
                   }
                 />
               ) : null}

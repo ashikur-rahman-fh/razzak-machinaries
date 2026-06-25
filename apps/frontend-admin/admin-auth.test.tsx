@@ -4,7 +4,7 @@ import {
   LanguageProvider,
   type LanguagePreference,
 } from '@razzak-machinaries/shared/i18n';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
@@ -473,6 +473,29 @@ describe('ChangePasswordPage', () => {
     expect(screen.queryByText(/INVALID_CURRENT_PASSWORD/i)).not.toBeInTheDocument();
   });
 
+  it('shows unique password toggle labels per field', async () => {
+    renderWithAuth(<ChangePasswordPage />);
+    await screen.findByTestId('admin-change-password-page');
+
+    expect(
+      screen.getByRole('button', { name: adminTranslationsEn['password.showCurrentPassword'] }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: adminTranslationsEn['password.showNewPassword'] }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: adminTranslationsEn['password.showConfirmPassword'] }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows sign out in navbar', async () => {
+    renderWithAuth(<ChangePasswordPage />);
+    await screen.findByTestId('admin-change-password-page');
+    expect(
+      screen.getByRole('button', { name: adminTranslationsEn['profile.logout'] }),
+    ).toBeInTheDocument();
+  });
+
   it('shows both languages on change password when display mode is both', async () => {
     const user = userEvent.setup();
     renderWithAuth(<ChangePasswordPage />, { language: 'en', displayMode: 'both' });
@@ -480,34 +503,33 @@ describe('ChangePasswordPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Both' }));
 
-    expect(await screen.findByText(adminTranslationsEn['password.title'])).toHaveAttribute(
+    const page = await screen.findByTestId('admin-change-password-page');
+    const heading = within(page).getByRole('heading', { level: 1 });
+    expect(within(heading).getByText(adminTranslationsEn['password.title'])).toHaveAttribute(
       'lang',
       'en',
     );
-    expect(screen.getByText(adminTranslationsBn['password.title'])).toHaveAttribute('lang', 'bn');
-    expect(screen.getByText(adminTranslationsEn['password.currentPasswordLabel'])).toHaveAttribute(
-      'lang',
-      'en',
-    );
-    expect(screen.getByText(adminTranslationsBn['password.currentPasswordLabel'])).toHaveAttribute(
+    expect(within(heading).getByText(adminTranslationsBn['password.title'])).toHaveAttribute(
       'lang',
       'bn',
     );
-    expect(screen.getByText(adminTranslationsEn['password.newPasswordLabel'])).toHaveAttribute(
-      'lang',
-      'en',
-    );
-    expect(screen.getByText(adminTranslationsBn['password.newPasswordLabel'])).toHaveAttribute(
-      'lang',
-      'bn',
-    );
-    expect(screen.getByText(adminTranslationsEn['password.confirmPasswordLabel'])).toHaveAttribute(
-      'lang',
-      'en',
-    );
-    expect(screen.getByText(adminTranslationsBn['password.confirmPasswordLabel'])).toHaveAttribute(
-      'lang',
-      'bn',
-    );
+    expect(
+      within(page).getByText(adminTranslationsEn['password.currentPasswordLabel']),
+    ).toHaveAttribute('lang', 'en');
+    expect(
+      within(page).getByText(adminTranslationsBn['password.currentPasswordLabel']),
+    ).toHaveAttribute('lang', 'bn');
+    expect(
+      within(page).getByText(adminTranslationsEn['password.newPasswordLabel']),
+    ).toHaveAttribute('lang', 'en');
+    expect(
+      within(page).getByText(adminTranslationsBn['password.newPasswordLabel']),
+    ).toHaveAttribute('lang', 'bn');
+    expect(
+      within(page).getByText(adminTranslationsEn['password.confirmPasswordLabel']),
+    ).toHaveAttribute('lang', 'en');
+    expect(
+      within(page).getByText(adminTranslationsBn['password.confirmPasswordLabel']),
+    ).toHaveAttribute('lang', 'bn');
   });
 });

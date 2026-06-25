@@ -107,6 +107,38 @@ describe('Navbar', () => {
       <Navbar appName="Main App" items={items} actions={<button type="button">Sign in</button>} />,
     );
     const headerActions = screen.getAllByRole('button', { name: 'Sign in' })[0].parentElement;
-    expect(headerActions).toHaveClass('hidden', 'sm:flex');
+    expect(headerActions).toHaveClass('hidden', 'lg:flex');
+  });
+
+  it('uses lg breakpoint for mobile menu trigger', () => {
+    render(<Navbar appName="Main App" items={items} />);
+    expect(screen.getByRole('button', { name: 'Open navigation menu' })).toHaveClass(
+      'navbar-mobile-trigger',
+      'lg:hidden',
+    );
+  });
+
+  it('exposes both-mode layout hooks on nav structure', () => {
+    render(<Navbar appName="Main App" items={items} />);
+
+    expect(document.querySelector('.navbar-desktop-nav')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Open navigation menu' })).toHaveClass(
+      'navbar-mobile-trigger',
+    );
+
+    const homeLink = screen.getByRole('link', { name: 'Home' });
+    expect(homeLink).toHaveAttribute('data-nav-link');
+
+    const brandLink = screen.getByRole('link', { name: 'Main App' });
+    expect(brandLink).toHaveAttribute('data-navbar-brand');
+  });
+
+  it('tags header actions with navbar-header-actions class', () => {
+    render(
+      <Navbar appName="Main App" items={items} actions={<button type="button">Sign in</button>} />,
+    );
+    const headerActions = document.querySelector('.navbar-header-actions');
+    expect(headerActions).toBeInTheDocument();
+    expect(headerActions).toHaveClass('hidden', 'lg:flex');
   });
 });

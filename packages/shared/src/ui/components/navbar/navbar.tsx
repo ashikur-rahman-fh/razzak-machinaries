@@ -48,18 +48,19 @@ function NavLinks({
   return (
     <ul
       className={cn(
-        'flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-center sm:gap-1',
+        'flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-center lg:gap-1',
         className,
       )}
     >
       {items.map((item) => (
-        <li key={item.href}>
+        <li key={item.href} className="w-full lg:w-auto">
           <a
             href={item.href}
+            data-nav-link
             aria-current={item.active ? 'page' : undefined}
             onClick={onNavigate}
             className={cn(
-              'inline-flex min-h-9 cursor-pointer flex-col items-center justify-center rounded-md px-3 py-1.5 text-center text-sm font-medium transition-colors duration-150',
+              'inline-flex w-full min-h-9 cursor-pointer flex-col items-center justify-center rounded-md px-3 py-1.5 text-center text-sm font-medium transition-colors duration-150 lg:w-auto',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               item.active
                 ? 'bg-muted text-foreground'
@@ -133,8 +134,10 @@ export function Navbar({
           {logo ?? (
             <a
               href={homeHref}
+              data-navbar-brand
               className={cn(
                 brandClassName,
+                'max-w-[min(100%,12rem)] truncate lg:max-w-none',
                 'rounded-sm transition-colors duration-150 hover:text-foreground/90',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               )}
@@ -144,16 +147,18 @@ export function Navbar({
           )}
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 hidden justify-center sm:flex">
+        <div className="navbar-desktop-nav pointer-events-none absolute inset-x-0 hidden justify-center lg:flex">
           <div className="pointer-events-auto">
             <NavLinks items={items} />
           </div>
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-          {actions ? <div className="hidden items-center gap-2 sm:flex">{actions}</div> : null}
+          {actions ? (
+            <div className="navbar-header-actions hidden items-center gap-2 lg:flex">{actions}</div>
+          ) : null}
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild className="sm:hidden">
+            <SheetTrigger asChild className="navbar-mobile-trigger lg:hidden">
               <Button variant="outline" size="sm" aria-label={openMenuLabel}>
                 <Menu className="h-4 w-4" aria-hidden />
               </Button>
@@ -167,7 +172,7 @@ export function Navbar({
               </SheetHeader>
               <NavLinks items={items} className="mt-6" onNavigate={closeDrawer} />
               {actions ? (
-                <div className="mt-6 flex flex-col gap-3 border-t border-border pt-4 sm:hidden">
+                <div className="mt-6 flex flex-col gap-3 border-t border-border pt-4 lg:hidden">
                   {enhanceDrawerActions(actions)}
                 </div>
               ) : null}

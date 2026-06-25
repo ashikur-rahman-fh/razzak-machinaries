@@ -42,8 +42,11 @@ function setLanguagePreference(preference: LanguagePreference) {
   localStorage.setItem(DISPLAY_MODE_STORAGE_KEY, preference.displayMode);
 }
 
-function renderWithAuth(ui: ReactElement) {
-  setLanguagePreference({ language: 'en', displayMode: 'en' });
+function renderWithAuth(
+  ui: ReactElement,
+  preference: LanguagePreference = { language: 'en', displayMode: 'en' },
+) {
+  setLanguagePreference(preference);
   return render(
     <LanguageProvider
       catalogs={{
@@ -82,6 +85,15 @@ describe('CustomersListPage', () => {
     expect(card).toHaveTextContent(sampleCustomer.fullNameEn);
   });
 
+  it('keeps secondary customer fields in a collapsed details section', async () => {
+    renderWithAuth(<CustomersListPage />);
+    const card = await screen.findByTestId(`customer-card-${sampleCustomer.id}`);
+    expect(
+      within(card).getByText(customerTranslationsEn['customer.list.moreDetails']),
+    ).toBeInTheDocument();
+    expect(within(card).queryByText(sampleCustomer.fatherNameEn)).not.toBeVisible();
+  });
+
   it('updates URL when search input changes', async () => {
     const user = userEvent.setup();
     renderWithAuth(<CustomersListPage />);
@@ -107,6 +119,26 @@ describe('CustomersListPage', () => {
       await screen.findByText(customerTranslationsEn['customer.list.emptySearch']),
     ).toBeInTheDocument();
     expect(screen.getByTestId('customer-search-clear')).toBeInTheDocument();
+  });
+
+  it('shows both languages on pagination summary and sort control when display mode is both', async () => {
+    mockSearchParams = new URLSearchParams('search=nomatch');
+    renderWithAuth(<CustomersListPage />, { language: 'en', displayMode: 'both' });
+
+    expect(await screen.findByTestId('customers-list-page')).toBeInTheDocument();
+    expect(document.documentElement.dataset.contentDisplay).toBe('both');
+
+    expect(
+      screen.getByText(customerTranslationsEn['customer.pagination.summaryEmpty']),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(customerTranslationsBn['customer.pagination.summaryEmpty']),
+    ).toHaveAttribute('lang', 'bn');
+
+    const sortTrigger = screen.getByRole('combobox', { name: 'Sort customers' });
+    expect(sortTrigger).toHaveAttribute('data-slot', 'select-trigger');
+    expect(sortTrigger).toHaveTextContent(customerTranslationsEn['customer.list.sort.newest']);
+    expect(sortTrigger).toHaveTextContent(customerTranslationsBn['customer.list.sort.newest']);
   });
 });
 
