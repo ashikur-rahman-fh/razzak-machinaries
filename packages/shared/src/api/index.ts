@@ -1,6 +1,7 @@
 export { adminAuthApi, ensureAdminCsrf } from './admin-auth';
 export { adminCustomersApi } from './admin-customers';
 export { adminGeoApi } from './admin-geo';
+export { adminTransactionsApi } from './admin-transactions';
 export { adminTranslationsApi } from './admin-translations';
 export {
   backendAdminApi,
@@ -40,6 +41,16 @@ export type {
   AdminUser,
 } from '../types/admin-auth';
 export type { Customer, CustomerListParams, CustomerWrite } from '../types/customer';
+export type {
+  CustomerBalance,
+  PaymentMethod,
+  Transaction,
+  TransactionItem,
+  TransactionItemWrite,
+  TransactionListParams,
+  TransactionType,
+  TransactionWrite,
+} from '../types/transaction';
 export type {
   GeoArea,
   GeoDistrict,

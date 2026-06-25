@@ -10,7 +10,7 @@ import {
 } from '@razzak-machinaries/shared/ui';
 
 export type AdminNavbarProps = {
-  activeRoute: 'profile' | 'change-password' | 'bangladesh-address' | 'customers';
+  activeRoute: 'profile' | 'change-password' | 'bangladesh-address' | 'customers' | 'transactions';
   onLogout?: () => void;
   isLoggingOut?: boolean;
 };
@@ -34,6 +34,11 @@ export function AdminNavbar({ activeRoute, onLogout, isLoggingOut = false }: Adm
       label: <TranslatedText translationKey="nav.customers" as="span" layout="inline" />,
       href: '/customers',
       active: activeRoute === 'customers',
+    },
+    {
+      label: <TranslatedText translationKey="nav.transactions" as="span" layout="inline" />,
+      href: '/transactions',
+      active: activeRoute === 'transactions',
     },
     ...(activeRoute === 'change-password'
       ? [

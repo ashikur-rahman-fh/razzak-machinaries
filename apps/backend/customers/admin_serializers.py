@@ -41,6 +41,12 @@ class CustomerAdminSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
     profilePictureUrl = serializers.SerializerMethodField()
+    cachedBalance = serializers.DecimalField(
+        source="cached_balance",
+        max_digits=14,
+        decimal_places=2,
+        read_only=True,
+    )
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
 
@@ -63,6 +69,7 @@ class CustomerAdminSerializer(serializers.ModelSerializer):
             "mediatorNameEn",
             "profilePicture",
             "profilePictureUrl",
+            "cachedBalance",
             "createdAt",
             "updatedAt",
         ]

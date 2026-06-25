@@ -29,5 +29,6 @@ urlpatterns = [
     path("admin/translations/", AdminTranslationView.as_view(), name="admin-translations"),
     path("admin/geo/", include("geo.urls")),
     path("admin/customers/", include("customers.urls")),
+    path("admin/transactions/", include("transactions.urls")),
     re_path(r"^.*$", api_not_found, name="api-not-found"),
 ]

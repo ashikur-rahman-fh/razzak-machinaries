@@ -16,6 +16,8 @@ import { AdminNavbar } from '@/components/AdminNavbar';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { CustomerDetailSkeleton } from '@/customers/components/CustomerDetailSkeleton';
+import { CustomerBalanceSummary } from '@/transactions/components/CustomerBalanceSummary';
+import { CustomerTransactionsPanel } from '@/transactions/components/CustomerTransactionsPanel';
 import { CustomerReadOnlyDetails } from '@/customers/components/CustomerReadOnlyDetails';
 import { DeleteConfirmationModal } from '@/customers/components/DeleteConfirmationModal';
 import { FEEDBACK_DISMISS_MS } from '@/customers/constants';
@@ -42,7 +44,8 @@ export function CustomerDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [dismissedRedirectSuccess, setDismissedRedirectSuccess] = useState(false);
-  const showRedirectSuccess = success === 'updated' && !dismissedRedirectSuccess;
+  const showRedirectSuccess =
+    (success === 'updated' || success === 'transactionCreated') && !dismissedRedirectSuccess;
 
   const dismissRedirectSuccess = useCallback(() => {
     setDismissedRedirectSuccess(true);
@@ -95,7 +98,15 @@ export function CustomerDetailPage() {
         {showRedirectSuccess ? (
           <SuccessAlert
             title={
-              <TranslatedText translationKey="customer.detail.updated" as="span" layout="inline" />
+              <TranslatedText
+                translationKey={
+                  success === 'transactionCreated'
+                    ? 'transaction.create.success'
+                    : 'customer.detail.updated'
+                }
+                as="span"
+                layout="inline"
+              />
             }
             role="status"
             className="mb-6"
@@ -139,6 +150,10 @@ export function CustomerDetailPage() {
 
         {customer ? (
           <>
+            <div className="mb-6 space-y-6">
+              <CustomerBalanceSummary customerId={customer.id} />
+              <CustomerTransactionsPanel customerId={customer.id} />
+            </div>
             <CustomerReadOnlyDetails
               customer={customer}
               listState={listState}

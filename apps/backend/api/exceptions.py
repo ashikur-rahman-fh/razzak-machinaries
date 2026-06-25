@@ -37,6 +37,16 @@ from geo.exceptions import (
     GEO_ID_CONFLICT_CODE,
     GEO_ID_CONFLICT_MESSAGE,
 )
+from transactions.exceptions import (
+    INVALID_SALE_ITEM_QUANTITY_MESSAGE,
+    INVALID_SALE_ITEM_UNIT_PRICE_MESSAGE,
+    INVALID_SALE_ITEMS_MESSAGE,
+    INVALID_TRANSACTION_AMOUNT_MESSAGE,
+    InvalidSaleItemQuantity,
+    InvalidSaleItems,
+    InvalidSaleItemUnitPrice,
+    InvalidTransactionAmount,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +64,10 @@ SAFE_MESSAGES = {
     GEO_HAS_CHILDREN_CODE: GEO_HAS_CHILDREN_MESSAGE,
     GEO_ID_CONFLICT_CODE: GEO_ID_CONFLICT_MESSAGE,
     TRANSLATION_FAILED_CODE: TRANSLATION_FAILED_MESSAGE,
+    InvalidTransactionAmount.default_code: INVALID_TRANSACTION_AMOUNT_MESSAGE,
+    InvalidSaleItems.default_code: INVALID_SALE_ITEMS_MESSAGE,
+    InvalidSaleItemQuantity.default_code: INVALID_SALE_ITEM_QUANTITY_MESSAGE,
+    InvalidSaleItemUnitPrice.default_code: INVALID_SALE_ITEM_UNIT_PRICE_MESSAGE,
 }
 
 

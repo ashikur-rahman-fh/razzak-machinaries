@@ -29,4 +29,21 @@ export const customerMswHandlers = [
     });
   }),
   http.delete('*/api/admin/customers/:id/', () => new HttpResponse(null, { status: 204 })),
+  http.get('*/api/admin/customers/:id/balance/', ({ params }) => {
+    if (Number(params.id) === sampleCustomer.id) {
+      return HttpResponse.json({
+        customerId: sampleCustomer.id,
+        currentBalance: '0.00',
+        totalInitial: '0.00',
+        totalSales: '0.00',
+        totalPayments: '0.00',
+        transactionCount: 0,
+        cachedBalance: '0.00',
+      });
+    }
+    return HttpResponse.json({ success: false, error: { code: 'NOT_FOUND' } }, { status: 404 });
+  }),
+  http.get('*/api/admin/customers/:id/transactions/', () =>
+    HttpResponse.json(paginatedCustomers([], 0)),
+  ),
 ];

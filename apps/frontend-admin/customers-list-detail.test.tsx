@@ -1,4 +1,4 @@
-import { setAdminCsrfToken } from '@razzak-machinaries/shared/api';
+import { setAdminCsrfToken, type Transaction } from '@razzak-machinaries/shared/api';
 import {
   DISPLAY_MODE_STORAGE_KEY,
   LANGUAGE_STORAGE_KEY,
@@ -14,12 +14,70 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CustomersListPage } from './src/app/customers/CustomersListPage';
 import { CustomerDetailPage } from './src/app/customers/[id]/CustomerDetailPage';
 import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
-import { sampleCustomer } from './src/customers/customer-fixtures';
+import { paginatedCustomers, sampleCustomer } from './src/customers/customer-fixtures';
 import { customerMswHandlers } from './src/customers/customer-msw-handlers';
 import { customerTranslationsBn, customerTranslationsEn } from './src/i18n/customer-translations';
 import { geoTranslationsBn, geoTranslationsEn } from './src/i18n/geo-translations';
+import {
+  transactionTranslationsBn,
+  transactionTranslationsEn,
+} from './src/i18n/transaction-translations';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
 import { adminUser, server } from './vitest.setup';
+
+const sampleTransactions: Transaction[] = [
+  {
+    id: 1,
+    customerId: sampleCustomer.id,
+    customerNameBn: sampleCustomer.fullNameBn,
+    customerNameEn: sampleCustomer.fullNameEn,
+    transactionType: 'SALE',
+    date: '2026-06-25',
+    amount: '12000.00',
+    totalAmount: '12000.00',
+    note: '',
+    paymentMethod: '',
+    balanceImpact: '12000.00',
+    items: [],
+    createdByName: null,
+    createdAt: '2026-06-25T10:00:00Z',
+    updatedAt: '2026-06-25T10:00:00Z',
+  },
+  {
+    id: 2,
+    customerId: sampleCustomer.id,
+    customerNameBn: sampleCustomer.fullNameBn,
+    customerNameEn: sampleCustomer.fullNameEn,
+    transactionType: 'PAYMENT',
+    date: '2026-06-24',
+    amount: '50.00',
+    totalAmount: '50.00',
+    note: '',
+    paymentMethod: 'cash',
+    balanceImpact: '-50.00',
+    items: [],
+    createdByName: null,
+    createdAt: '2026-06-24T10:00:00Z',
+    updatedAt: '2026-06-24T10:00:00Z',
+  },
+  {
+    id: 3,
+    customerId: sampleCustomer.id,
+    customerNameBn: sampleCustomer.fullNameBn,
+    customerNameEn: sampleCustomer.fullNameEn,
+    transactionType: 'INITIAL',
+    date: '2026-06-20',
+    amount: '100.00',
+    totalAmount: '100.00',
+    note: 'halkhata 2026',
+    paymentMethod: '',
+    balanceImpact: '100.00',
+    items: [],
+    createdByName: null,
+    createdAt: '2026-06-20T10:00:00Z',
+    updatedAt: '2026-06-20T10:00:00Z',
+  },
+];
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -50,8 +108,18 @@ function renderWithAuth(
   return render(
     <LanguageProvider
       catalogs={{
-        en: { ...adminTranslationsEn, ...geoTranslationsEn, ...customerTranslationsEn },
-        bn: { ...adminTranslationsBn, ...geoTranslationsBn, ...customerTranslationsBn },
+        en: {
+          ...adminTranslationsEn,
+          ...geoTranslationsEn,
+          ...customerTranslationsEn,
+          ...transactionTranslationsEn,
+        },
+        bn: {
+          ...adminTranslationsBn,
+          ...geoTranslationsBn,
+          ...customerTranslationsBn,
+          ...transactionTranslationsBn,
+        },
       }}
     >
       <AdminAuthProvider>{ui}</AdminAuthProvider>
@@ -170,5 +238,41 @@ describe('CustomerDetailPage', () => {
     await user.click(deleteButtons[0]!);
 
     expect(await screen.findByTestId('confirm-dialog-confirm')).toBeInTheDocument();
+  });
+
+  it('renders recent transactions in a table with aligned columns', async () => {
+    server.use(
+      http.get('*/api/admin/customers/:id/transactions/', () =>
+        HttpResponse.json(paginatedCustomers(sampleTransactions)),
+      ),
+    );
+
+    renderWithAuth(<CustomerDetailPage />);
+    await screen.findByTestId('customer-detail-content');
+    await screen.findByText('halkhata 2026');
+
+    const table = screen.getByRole('table');
+    expect(within(table).getByText('Type')).toBeInTheDocument();
+    expect(within(table).getByText('Date')).toBeInTheDocument();
+    expect(within(table).getByText('Note')).toBeInTheDocument();
+    expect(within(table).getByText('Amount')).toBeInTheDocument();
+
+    const rows = within(table).getAllByRole('row');
+    expect(rows).toHaveLength(4);
+
+    const saleCells = within(rows[1]!).getAllByRole('cell');
+    expect(saleCells[0]).toHaveTextContent(transactionTranslationsEn['transaction.type.sale']);
+    expect(saleCells[1]).toHaveTextContent('2026-06-25');
+    expect(saleCells[2]).toHaveTextContent('—');
+    expect(saleCells[3]).toHaveTextContent('+');
+
+    const paymentCells = within(rows[2]!).getAllByRole('cell');
+    expect(paymentCells[1]).toHaveTextContent('2026-06-24');
+    expect(paymentCells[3]).toHaveTextContent('-');
+
+    const initialCells = within(rows[3]!).getAllByRole('cell');
+    expect(initialCells[1]).toHaveTextContent('2026-06-20');
+    expect(initialCells[2]).toHaveTextContent('halkhata 2026');
+    expect(initialCells[3]).toHaveTextContent('+');
   });
 });

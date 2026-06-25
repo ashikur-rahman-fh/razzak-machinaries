@@ -14,6 +14,7 @@ export type Customer = {
   mediatorNameBn: string;
   mediatorNameEn: string;
   profilePictureUrl: string | null;
+  cachedBalance: string;
   createdAt: string;
   updatedAt: string;
 };
