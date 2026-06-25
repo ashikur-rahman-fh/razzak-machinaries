@@ -9,6 +9,7 @@ from geo.views import (
 )
 
 from .admin.auth_views import admin_change_password, admin_csrf, admin_login, admin_logout, admin_me
+from .admin.translation_views import AdminTranslationView
 from .views import api_not_found, health, hello, public_meta
 
 urlpatterns = [
@@ -25,6 +26,8 @@ urlpatterns = [
     path("admin/auth/logout/", admin_logout, name="admin-auth-logout"),
     path("admin/auth/me/", admin_me, name="admin-auth-me"),
     path("admin/auth/change-password/", admin_change_password, name="admin-auth-change-password"),
+    path("admin/translations/", AdminTranslationView.as_view(), name="admin-translations"),
     path("admin/geo/", include("geo.urls")),
+    path("admin/customers/", include("customers.urls")),
     re_path(r"^.*$", api_not_found, name="api-not-found"),
 ]

@@ -40,7 +40,24 @@ export { EmptyState, type EmptyStateProps } from './components/empty-state';
 export { ErrorState, type ErrorStateProps } from './components/error-state';
 export { Badge, badgeVariants, type BadgeProps } from './components/badge';
 export { Input, type InputProps } from './components/input';
+export { Textarea, type TextareaProps } from './components/textarea';
 export { PasswordInput, type PasswordInputProps } from './components/password-input/password-input';
+export {
+  BilingualTranslatableField,
+  useBilingualTranslation,
+  type BilingualTranslatableFieldProps,
+  type TranslationStatus,
+} from './components/bilingual-translatable-field';
+export {
+  BilingualTransliterationField,
+  useBilingualTransliteration,
+  type BilingualTransliterationFieldProps,
+  type TransliterationStatus,
+} from './components/bilingual-transliteration-field';
+export {
+  ProfileImagePicker,
+  type ProfileImagePickerProps,
+} from './components/profile-image-picker';
 export { DataTable, type DataTableProps } from './components/data-table';
 export { PaginationControls, type PaginationControlsProps } from './components/pagination-controls';
 export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dialog';

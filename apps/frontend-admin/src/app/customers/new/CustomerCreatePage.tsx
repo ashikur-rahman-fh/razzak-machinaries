@@ -1,0 +1,72 @@
+'use client';
+
+import { adminCustomersApi } from '@razzak-machinaries/shared/api';
+import { useTranslation } from '@razzak-machinaries/shared/i18n';
+import { PageShell, TranslatedText } from '@razzak-machinaries/shared/ui';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { RequireAdminAuth } from '@/auth/guards';
+import { AdminNavbar } from '@/components/AdminNavbar';
+
+import { FEEDBACK_DISMISS_MS } from '@/customers/constants';
+import { CustomerCreateForm } from '@/customers/components/CustomerCreateForm';
+import { getCustomerCreateErrorMessage } from '@/customers/errors';
+import { buildCustomerFormData, type CustomerFormValues } from '@/customers/validation';
+
+export function CustomerCreatePage() {
+  const { language } = useTranslation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(searchParams.get('success') === 'created');
+  const [formKey, setFormKey] = useState(0);
+
+  useEffect(() => {
+    if (!showSuccess) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setShowSuccess(false);
+      router.replace('/customers/new');
+    }, FEEDBACK_DISMISS_MS);
+    return () => window.clearTimeout(timer);
+  }, [router, showSuccess]);
+
+  async function handleSubmit(values: CustomerFormValues, profilePicture: File | null) {
+    setServerError(null);
+    try {
+      const formData = buildCustomerFormData(values, profilePicture);
+      await adminCustomersApi.createCustomer(formData);
+      setFormKey((current) => current + 1);
+      router.push('/customers/new?success=created');
+      router.refresh();
+    } catch (error) {
+      setServerError(getCustomerCreateErrorMessage(error, language));
+    }
+  }
+
+  return (
+    <RequireAdminAuth>
+      <PageShell header={<AdminNavbar activeRoute="customers" />}>
+        <div className="space-y-6" data-testid="customer-create-page">
+          <header className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              <TranslatedText translationKey="customer.create.title" as="span" layout="inline" />
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              <TranslatedText translationKey="customer.create.subtitle" as="span" layout="inline" />
+            </p>
+          </header>
+
+          <CustomerCreateForm
+            key={formKey}
+            onSubmit={handleSubmit}
+            serverError={serverError}
+            showSuccess={showSuccess}
+          />
+        </div>
+      </PageShell>
+    </RequireAdminAuth>
+  );
+}

@@ -1,0 +1,3 @@
+from geo.pagination import GeoPageNumberPagination
+
+CustomerPageNumberPagination = GeoPageNumberPagination

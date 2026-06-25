@@ -4,7 +4,7 @@ import { useLanguagePreference, useTranslation } from '@razzak-machinaries/share
 import { Button, LanguageSwitcher, Navbar, TranslatedText } from '@razzak-machinaries/shared/ui';
 
 export type AdminNavbarProps = {
-  activeRoute: 'profile' | 'change-password' | 'bangladesh-address';
+  activeRoute: 'profile' | 'change-password' | 'bangladesh-address' | 'customers';
   onLogout?: () => void;
   isLoggingOut?: boolean;
 };
@@ -23,6 +23,11 @@ export function AdminNavbar({ activeRoute, onLogout, isLoggingOut = false }: Adm
       label: <TranslatedText translationKey="nav.bangladeshAddress" as="span" layout="inline" />,
       href: '/bangladesh-address',
       active: activeRoute === 'bangladesh-address',
+    },
+    {
+      label: <TranslatedText translationKey="nav.customers" as="span" layout="inline" />,
+      href: '/customers/new',
+      active: activeRoute === 'customers',
     },
     ...(activeRoute === 'change-password'
       ? [

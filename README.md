@@ -220,6 +220,7 @@ Push a deployment branch (`staging_YYMMDD_N` or `release_YYMMDD_N`) to build and
 
 - [`docs/architecture.md`](docs/architecture.md)
 - [`docs/api-geo.md`](docs/api-geo.md) — Bangladesh geo public API
+- [`docs/customers-and-translation.md`](docs/customers-and-translation.md) — Admin customer creation, Azure Translator, profile pictures
 - [`docs/ui-system.md`](docs/ui-system.md)
 - [`docs/development.md`](docs/development.md) — includes [release metadata](docs/development.md#release-metadata) (`GET /api/public/meta/`)
 - [`docs/testing.md`](docs/testing.md)

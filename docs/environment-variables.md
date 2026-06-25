@@ -24,6 +24,7 @@ Values are examples. Generate strong secrets for anything security-sensitive.
 | `DRF_THROTTLE_ANON`     | DRF anonymous throttle rate (default `100/hour`).                       |
 | `DRF_THROTTLE_API`      | DRF scoped API throttle rate (default `200/hour`). `/api/health/` is exempt. |
 | `DRF_THROTTLE_ADMIN_LOGIN` | Throttle rate for `POST /api/admin/auth/login/` (default `10/minute`). |
+| `DRF_THROTTLE_ADMIN_TRANSLATION` | Throttle rate for `POST /api/admin/translations/` (default `60/minute`). |
 | `CORS_ALLOW_CREDENTIALS` | When `true` (default), browsers may send cookies to the API from allowed origins. Required for Next admin session auth. Main app still uses `withCredentials: false`. |
 | `AXES_FAILURE_LIMIT`    | Failed Django admin logins before lockout (default `5`).                |
 | `AXES_COOLOFF_MINUTES`  | Admin lockout duration in minutes (default `30`).                         |
@@ -97,6 +98,24 @@ Nginx production vhosts (rendered into `infra/nginx/prod/conf.d/default.conf` vi
 | `MAIN_FRONTEND_WWW_HOST`| Optional `www` host; defaults to `www.${MAIN_FRONTEND_HOST}`. |
 | `ADMIN_FRONTEND_HOST`   | Admin app hostname.                                           |
 | `API_HOST`              | API / Django hostname.                                        |
+
+## Translation (Azure Translator)
+
+Used by `POST /api/admin/translations/` for Bangla → English auto-fill in the admin customer form. The frontend never calls Azure directly.
+
+| Variable | Purpose |
+| -------- | ------- |
+| `TRANSLATION_PROVIDER` | Translation backend to use (default `azure`). Set to `libretranslate` only if self-hosting LibreTranslate. |
+| `AZURE_TRANSLATOR_ENDPOINT` | Azure Text Translation endpoint from the Azure Portal (e.g. `https://your-resource-name.cognitiveservices.azure.com`). |
+| `AZURE_TRANSLATOR_KEY` | Azure subscription key. **Secret** — set in local `.env` or deploy secrets only; never commit. |
+| `AZURE_TRANSLATOR_REGION` | Azure resource region (from portal; required for some key/endpoint combinations). |
+| `TRANSLATION_TIMEOUT_SECONDS` | HTTP timeout for translation requests (default `10`). |
+| `TRANSLATION_CACHE_TTL_SECONDS` | Redis cache TTL for repeated translations (default `86400`). |
+| `DRF_THROTTLE_ADMIN_TRANSLATION` | Throttle rate for translation endpoint (default `60/minute`). |
+
+Legacy optional LibreTranslate vars (only when `TRANSLATION_PROVIDER=libretranslate`): `LIBRETRANSLATE_URL`, `LIBRETRANSLATE_API_KEY`.
+
+See [customers-and-translation.md](./customers-and-translation.md) for setup and architecture.
 
 ## Docker Compose (production)
 

@@ -59,6 +59,7 @@ export default [
     },
     rules: {
       '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
   eslintConfigPrettier,

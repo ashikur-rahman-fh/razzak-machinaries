@@ -1,5 +1,7 @@
 export { adminAuthApi, ensureAdminCsrf } from './admin-auth';
+export { adminCustomersApi } from './admin-customers';
 export { adminGeoApi } from './admin-geo';
+export { adminTranslationsApi } from './admin-translations';
 export {
   backendAdminApi,
   backendMainApi,

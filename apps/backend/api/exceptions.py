@@ -27,6 +27,10 @@ from api.admin.exceptions import (
     AdminUnauthenticated,
     InvalidAdminCredentials,
 )
+from api.services.translation.exceptions import (
+    TRANSLATION_FAILED_CODE,
+    TRANSLATION_FAILED_MESSAGE,
+)
 from geo.exceptions import (
     GEO_HAS_CHILDREN_CODE,
     GEO_HAS_CHILDREN_MESSAGE,
@@ -49,6 +53,7 @@ SAFE_MESSAGES = {
     WEAK_PASSWORD_CODE: WEAK_PASSWORD_MESSAGE,
     GEO_HAS_CHILDREN_CODE: GEO_HAS_CHILDREN_MESSAGE,
     GEO_ID_CONFLICT_CODE: GEO_ID_CONFLICT_MESSAGE,
+    TRANSLATION_FAILED_CODE: TRANSLATION_FAILED_MESSAGE,
 }
 
 

@@ -44,6 +44,10 @@ next-env.d.ts
 apps/backend/staticfiles/*
 !apps/backend/staticfiles/.gitkeep
 
+# Django user uploads (profile pictures, capture sessions, etc.)
+apps/backend/media/*
+!apps/backend/media/.gitkeep
+
 # database backups
 infra/scripts/db/backups/*.sql
 infra/scripts/db/backups/*.sql.gz

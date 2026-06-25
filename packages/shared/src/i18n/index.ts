@@ -21,6 +21,13 @@ export {
   normalizeLanguagePreference,
 } from './localization-utils';
 export {
+  banglaToLatinDigits,
+  banglaToLatinDigitsOnly,
+  banglaToLatinPhone,
+  isDigitsOnly,
+  isValidMemoBnInput,
+} from './bangla-script-utils';
+export {
   applyDocumentDisplayMode,
   applyDocumentLanguage,
   applyDocumentLanguagePreference,

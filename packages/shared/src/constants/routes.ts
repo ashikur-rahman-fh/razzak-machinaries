@@ -28,4 +28,9 @@ export const API_ROUTES = {
     unionDetail: (id: number) => `/api/admin/geo/unions/${id}/`,
     villageDetail: (id: number) => `/api/admin/geo/villages/${id}/`,
   },
+  adminCustomers: {
+    list: '/api/admin/customers/',
+    detail: (id: number) => `/api/admin/customers/${id}/`,
+  },
+  adminTranslations: '/api/admin/translations/',
 } as const;
