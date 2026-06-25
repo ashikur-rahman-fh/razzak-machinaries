@@ -1,7 +1,13 @@
 'use client';
 
 import { useLanguagePreference, useTranslation } from '@razzak-machinaries/shared/i18n';
-import { Button, LanguageSwitcher, Navbar, TranslatedText } from '@razzak-machinaries/shared/ui';
+import {
+  Button,
+  BrandLogo,
+  LanguageSwitcher,
+  Navbar,
+  TranslatedText,
+} from '@razzak-machinaries/shared/ui';
 
 export type AdminNavbarProps = {
   activeRoute: 'profile' | 'change-password' | 'bangladesh-address' | 'customers';
@@ -44,6 +50,7 @@ export function AdminNavbar({ activeRoute, onLogout, isLoggingOut = false }: Adm
 
   return (
     <Navbar
+      logo={<BrandLogo size="navbar" />}
       appName={
         <>
           <span className="lg:hidden">

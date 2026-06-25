@@ -2,6 +2,7 @@
 
 import {
   ErrorAlert,
+  BrandLogo,
   Button,
   Card,
   CardContent,
@@ -52,7 +53,8 @@ export function LoginPage() {
         contentClassName="flex flex-1 items-center justify-center px-4 py-12"
       >
         <Card className="w-full max-w-md">
-          <CardHeader className="space-y-2 text-center">
+          <CardHeader className="space-y-3 text-center">
+            <BrandLogo size="login" className="mx-auto" />
             <CardTitle className="text-2xl">{ADMIN_AUTH_COPY.loginTitle}</CardTitle>
             <CardDescription>{ADMIN_AUTH_COPY.loginSubtitle}</CardDescription>
           </CardHeader>

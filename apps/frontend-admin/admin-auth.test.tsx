@@ -14,6 +14,7 @@ import { AdminProfilePage } from './src/app/AdminProfilePage';
 import { LoginPage } from './src/app/login/LoginPage';
 import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
 import { ADMIN_AUTH_COPY } from './src/auth/messages';
+import { BRAND_LOGO_ALT } from '@razzak-machinaries/shared/ui';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
 import { adminUser, server } from './vitest.setup';
 
@@ -51,6 +52,7 @@ describe('LoginPage', () => {
   it('renders login page with accessible fields', async () => {
     renderWithAuth(<LoginPage />);
     expect(await screen.findByTestId('admin-login-page')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: BRAND_LOGO_ALT })).toBeInTheDocument();
     expect(screen.getByLabelText(ADMIN_AUTH_COPY.usernameOrEmailLabel)).toBeInTheDocument();
     expect(screen.getByLabelText(ADMIN_AUTH_COPY.passwordLabel)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ADMIN_AUTH_COPY.signIn })).toBeInTheDocument();

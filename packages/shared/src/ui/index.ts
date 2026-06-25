@@ -9,6 +9,14 @@ export {
   type AlertVariant,
 } from './components/alert';
 export { Navbar, type NavbarItem, type NavbarProps } from './components/navbar';
+export {
+  BrandLogo,
+  BRAND_LOGO_ALT,
+  BRAND_LOGO_PATH,
+  getBrandLogoSrc,
+  type BrandLogoProps,
+  type BrandLogoSize,
+} from './components/brand-logo';
 export { BilingualText, type BilingualTextProps } from './components/bilingual-text';
 export { TranslatedText, type TranslatedTextProps } from './components/translated-text';
 export {

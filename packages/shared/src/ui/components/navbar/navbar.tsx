@@ -89,6 +89,14 @@ export function Navbar({
 }: NavbarProps) {
   const navAriaLabel =
     navigationLabel ?? (typeof appName === 'string' ? `${appName} navigation` : 'Site navigation');
+  const brandAriaLabel =
+    typeof appName === 'string'
+      ? appName
+      : (navigationLabel?.replace(/\s+navigation$/i, '') ?? 'Home');
+  const brandLinkClassName = cn(
+    'inline-flex shrink-0 items-center rounded-sm transition-colors duration-150',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+  );
   const [open, setOpen] = React.useState(false);
 
   function closeDrawer() {
@@ -131,15 +139,24 @@ export function Navbar({
         className="relative mx-auto flex min-h-14 h-auto max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          {logo ?? (
+          {logo ? (
+            <a
+              href={homeHref}
+              data-navbar-brand
+              aria-label={brandAriaLabel}
+              className={brandLinkClassName}
+            >
+              {logo}
+            </a>
+          ) : (
             <a
               href={homeHref}
               data-navbar-brand
               className={cn(
                 brandClassName,
+                brandLinkClassName,
                 'max-w-[min(100%,12rem)] truncate lg:max-w-none',
-                'rounded-sm transition-colors duration-150 hover:text-foreground/90',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'hover:text-foreground/90',
               )}
             >
               {appName}

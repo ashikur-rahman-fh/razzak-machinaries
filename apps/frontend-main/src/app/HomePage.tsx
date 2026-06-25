@@ -4,6 +4,7 @@ import { useLanguagePreference, useTranslation } from '@razzak-machinaries/share
 import {
   Alert,
   Badge,
+  BrandLogo,
   Button,
   Card,
   CardContent,
@@ -76,6 +77,7 @@ export function HomePage() {
     <PageShell
       header={
         <Navbar
+          logo={<BrandLogo size="navbar" />}
           appName={<TranslatedText translationKey="home.appName" as="span" layout="inline" />}
           navigationLabel={`${t('home.appName')} ${t('nav.navigation')}`}
           openMenuLabel={t('nav.openMenu')}

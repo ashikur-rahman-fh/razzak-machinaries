@@ -26,7 +26,7 @@ describe('Navbar', () => {
     expect(screen.getByRole('link', { name: 'Main App' })).toHaveAttribute('href', '/dashboard');
   });
 
-  it('does not render a default brand link when logo is provided', () => {
+  it('wraps logo in a home link with accessible label', () => {
     render(
       <Navbar
         appName="Main App"
@@ -35,7 +35,25 @@ describe('Navbar', () => {
       />,
     );
     expect(screen.getByTestId('custom-logo')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Main App' })).not.toBeInTheDocument();
+    const brandLink = screen.getByRole('link', { name: 'Main App' });
+    expect(brandLink).toHaveAttribute('href', '/');
+    expect(brandLink).toHaveAttribute('data-navbar-brand');
+    expect(screen.queryByRole('link', { name: 'Main App' })).toBe(brandLink);
+  });
+
+  it('uses navigationLabel for logo link aria-label when appName is not a string', () => {
+    render(
+      <Navbar
+        appName={<span>Complex name</span>}
+        navigationLabel="Razzak Machinaries Admin navigation"
+        items={items}
+        logo={<span data-testid="custom-logo">Custom logo</span>}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Razzak Machinaries Admin' })).toHaveAttribute(
+      'href',
+      '/',
+    );
   });
 
   it('renders nav items', () => {

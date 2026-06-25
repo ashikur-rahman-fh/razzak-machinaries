@@ -12,6 +12,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Razzak Machinaries',
   description: 'Razzak Machinaries — farming machinery marketplace',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({

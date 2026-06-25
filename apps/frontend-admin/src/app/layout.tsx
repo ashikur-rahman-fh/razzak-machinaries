@@ -13,6 +13,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Razzak Machinaries Admin',
   description: 'Razzak Machinaries admin sign-in and profile',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
