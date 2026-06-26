@@ -1,6 +1,6 @@
 'use client';
 
-import { adminCustomersApi, type Customer } from '@razzak-machinaries/shared/api';
+import { type Customer } from '@razzak-machinaries/shared/api';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import {
   BilingualText,
@@ -20,9 +20,7 @@ import {
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 
-import { getCustomerDeleteErrorMessage } from '../errors';
 import { buildDetailUrl, buildEditUrl, type CustomerListState } from '../routes';
 import {
   formatCustomerPhone,
@@ -32,7 +30,6 @@ import {
   EMPTY_CELL_VALUE,
 } from '../utils';
 import { CustomerAvatar } from './CustomerAvatar';
-import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 
 type CustomerTableProps = {
   customers: Customer[];
@@ -44,7 +41,6 @@ type CustomerTableProps = {
   hasSearch: boolean;
   onRetry: () => void;
   onClearSearch: () => void;
-  onDeleteSuccess: () => void;
   ariaHidden?: boolean;
 };
 
@@ -78,31 +74,12 @@ export function CustomerTable({
   hasSearch,
   onRetry,
   onClearSearch,
-  onDeleteSuccess,
   ariaHidden = false,
 }: CustomerTableProps) {
   const router = useRouter();
   const { language, displayMode } = useLanguagePreference();
-  const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const columnCount = 7;
-
-  async function handleConfirmDelete() {
-    if (!deleteTarget || isDeleting) return;
-    setIsDeleting(true);
-    setDeleteError(null);
-    try {
-      await adminCustomersApi.deleteCustomer(deleteTarget.id);
-      setDeleteTarget(null);
-      onDeleteSuccess();
-    } catch (err) {
-      setDeleteError(getCustomerDeleteErrorMessage(err, language));
-    } finally {
-      setIsDeleting(false);
-    }
-  }
 
   if (error) {
     return (
@@ -149,130 +126,126 @@ export function CustomerTable({
   }
 
   return (
-    <>
-      <DataTable
-        data-testid="customer-table"
-        aria-busy={isRefreshing}
-        className={cn('hidden lg:block', isRefreshing && 'relative opacity-60 transition-opacity')}
-        aria-hidden={ariaHidden || undefined}
-        overlay={isRefreshing ? <DataTableRefreshBar /> : undefined}
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <TableHeadLabel translationKey="customer.list.column.customer" />
-            </TableHead>
-            <TableHead>
-              <TableHeadLabel translationKey="customer.field.phone" />
-            </TableHead>
-            <TableHead>
-              <TableHeadLabel translationKey="customer.field.fatherName" />
-            </TableHead>
-            <TableHead>
-              <TableHeadLabel translationKey="customer.field.address" />
-            </TableHead>
-            <TableHead>
-              <TableHeadLabel translationKey="customer.field.mediatorName" />
-            </TableHead>
-            <TableHead>
-              <TableHeadLabel translationKey="customer.field.memoPageNumber" />
-            </TableHead>
-            <TableHead className="w-[100px]">
-              <span className="sr-only">Actions</span>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading && customers.length === 0 ? (
-            <TableSkeletonRows columns={columnCount} rowCount={pageSize} />
-          ) : (
-            customers.map((customer) => {
-              const detailHref = buildDetailUrl(customer.id, listState);
-              const editHref = buildEditUrl(customer.id, listState);
+    <DataTable
+      data-testid="customer-table"
+      aria-busy={isRefreshing}
+      className={cn('hidden lg:block', isRefreshing && 'relative opacity-60 transition-opacity')}
+      aria-hidden={ariaHidden || undefined}
+      overlay={isRefreshing ? <DataTableRefreshBar /> : undefined}
+    >
+      <TableHeader>
+        <TableRow>
+          <TableHead>
+            <TableHeadLabel translationKey="customer.list.column.customer" />
+          </TableHead>
+          <TableHead>
+            <TableHeadLabel translationKey="customer.field.phone" />
+          </TableHead>
+          <TableHead>
+            <TableHeadLabel translationKey="customer.field.fatherName" />
+          </TableHead>
+          <TableHead>
+            <TableHeadLabel translationKey="customer.field.address" />
+          </TableHead>
+          <TableHead>
+            <TableHeadLabel translationKey="customer.field.mediatorName" />
+          </TableHead>
+          <TableHead>
+            <TableHeadLabel translationKey="customer.field.memoPageNumber" />
+          </TableHead>
+          <TableHead className="w-[100px]">
+            <span className="sr-only">Actions</span>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {isLoading && customers.length === 0 ? (
+          <TableSkeletonRows columns={columnCount} rowCount={pageSize} />
+        ) : (
+          customers.map((customer) => {
+            const detailHref = buildDetailUrl(customer.id, listState);
+            const editHref = buildEditUrl(customer.id, listState);
 
-              return (
-                <TableRow
-                  key={customer.id}
-                  data-testid={`customer-row-${customer.id}`}
-                  className="cursor-pointer"
-                  onClick={() => router.push(detailHref)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      router.push(detailHref);
-                    }
-                  }}
-                  tabIndex={0}
-                  role="link"
-                  aria-label={`${customer.fullNameEn}, ${formatCustomerPhone(customer)}`}
-                >
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <CustomerAvatar
-                        fullNameBn={customer.fullNameBn}
-                        fullNameEn={customer.fullNameEn}
-                        profilePictureUrl={customer.profilePictureUrl}
-                      />
-                      <div className="min-w-0">
-                        <p className="font-bangla font-medium">{customer.fullNameBn}</p>
-                        <p className="text-xs text-muted-foreground">{customer.fullNameEn}</p>
-                      </div>
+            return (
+              <TableRow
+                key={customer.id}
+                data-testid={`customer-row-${customer.id}`}
+                className="cursor-pointer"
+                onClick={() => router.push(detailHref)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    router.push(detailHref);
+                  }
+                }}
+                tabIndex={0}
+                role="link"
+                aria-label={`${customer.fullNameEn}, ${formatCustomerPhone(customer)}`}
+              >
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <CustomerAvatar
+                      fullNameBn={customer.fullNameBn}
+                      fullNameEn={customer.fullNameEn}
+                      profilePictureUrl={customer.profilePictureUrl}
+                    />
+                    <div className="min-w-0">
+                      <p className="font-bangla font-medium">{customer.fullNameBn}</p>
+                      <p className="text-xs text-muted-foreground">{customer.fullNameEn}</p>
                     </div>
-                  </TableCell>
-                  <TableCell>{formatCustomerPhone(customer)}</TableCell>
-                  <TableCell>
+                  </div>
+                </TableCell>
+                <TableCell>{formatCustomerPhone(customer)}</TableCell>
+                <TableCell>
+                  <BilingualText
+                    bn={customer.fatherNameBn}
+                    en={customer.fatherNameEn}
+                    mode={displayMode}
+                    language={language}
+                    layout="default"
+                    as="span"
+                    fallback={EMPTY_CELL_VALUE}
+                  />
+                </TableCell>
+                <TableCell className="max-w-[200px]">
+                  <span className="font-bangla">{truncateAddress(customer.addressBn)}</span>
+                </TableCell>
+                <TableCell>
+                  {hasMediator(customer) ? (
                     <BilingualText
-                      bn={customer.fatherNameBn}
-                      en={customer.fatherNameEn}
+                      bn={customer.mediatorNameBn}
+                      en={customer.mediatorNameEn}
                       mode={displayMode}
                       language={language}
                       layout="default"
                       as="span"
-                      fallback={EMPTY_CELL_VALUE}
                     />
-                  </TableCell>
-                  <TableCell className="max-w-[200px]">
-                    <span className="font-bangla">{truncateAddress(customer.addressBn)}</span>
-                  </TableCell>
-                  <TableCell>
-                    {hasMediator(customer) ? (
-                      <BilingualText
-                        bn={customer.mediatorNameBn}
-                        en={customer.mediatorNameEn}
-                        mode={displayMode}
-                        language={language}
-                        layout="default"
-                        as="span"
-                      />
-                    ) : (
-                      EMPTY_CELL_VALUE
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {hasMemoPageNumber(customer) ? (
-                      <>
-                        <span className="font-bangla">{customer.memoPageNumberBn}</span>
-                        {customer.memoPageNumberEn !== customer.memoPageNumberBn ? (
-                          <span className="block text-xs text-muted-foreground">
-                            {customer.memoPageNumberEn}
-                          </span>
-                        ) : null}
-                      </>
-                    ) : (
-                      EMPTY_CELL_VALUE
-                    )}
-                  </TableCell>
-                  <TableCell onClick={(event) => event.stopPropagation()}>
-                    <div className="flex gap-1">
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={detailHref}>
-                          <TranslatedText
-                            translationKey="customer.actions.view"
-                            as="span"
-                            compact
-                          />
-                        </Link>
-                      </Button>
+                  ) : (
+                    EMPTY_CELL_VALUE
+                  )}
+                </TableCell>
+                <TableCell>
+                  {hasMemoPageNumber(customer) ? (
+                    <>
+                      <span className="font-bangla">{customer.memoPageNumberBn}</span>
+                      {customer.memoPageNumberEn !== customer.memoPageNumberBn ? (
+                        <span className="block text-xs text-muted-foreground">
+                          {customer.memoPageNumberEn}
+                        </span>
+                      ) : null}
+                    </>
+                  ) : (
+                    EMPTY_CELL_VALUE
+                  )}
+                </TableCell>
+                <TableCell onClick={(event) => event.stopPropagation()}>
+                  <div className="flex gap-1">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={detailHref}>
+                        <TranslatedText translationKey="customer.actions.view" as="span" compact />
+                      </Link>
+                    </Button>
+                    {!customer.isArchived ? (
                       <Button asChild variant="outline" size="sm">
                         <Link href={editHref}>
                           <TranslatedText
@@ -282,32 +255,14 @@ export function CustomerTable({
                           />
                         </Link>
                       </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </DataTable>
-
-      {deleteTarget ? (
-        <DeleteConfirmationModal
-          open={Boolean(deleteTarget)}
-          onOpenChange={(open) => {
-            if (!open && !isDeleting) {
-              setDeleteTarget(null);
-              setDeleteError(null);
-            }
-          }}
-          customerNameBn={deleteTarget.fullNameBn}
-          customerNameEn={deleteTarget.fullNameEn}
-          phone={formatCustomerPhone(deleteTarget)}
-          onConfirm={handleConfirmDelete}
-          isLoading={isDeleting}
-          errorMessage={deleteError}
-        />
-      ) : null}
-    </>
+                    ) : null}
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })
+        )}
+      </TableBody>
+    </DataTable>
   );
 }

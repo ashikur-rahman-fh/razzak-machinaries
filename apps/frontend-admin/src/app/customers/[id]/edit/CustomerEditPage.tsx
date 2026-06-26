@@ -43,12 +43,16 @@ export function CustomerEditPage() {
   const customer = getAsyncData(customerState);
   const isInitialLoad = isAsyncInitialLoad(customerState);
 
-  async function handleSubmit(values: CustomerFormValues, profilePicture: File | null) {
+  async function handleSubmit(
+    values: CustomerFormValues,
+    profilePicture: File | null,
+    changeReason?: string,
+  ) {
     if (!customer) return;
     setServerError(null);
     try {
-      const formData = buildCustomerFormData(values, profilePicture);
-      await adminCustomersApi.updateCustomer(customer.id, formData);
+      const formData = buildCustomerFormData(values, profilePicture, changeReason);
+      await adminCustomersApi.createCustomerVersion(customer.id, formData);
       const separator = detailHref.includes('?') ? '&' : '?';
       router.push(`${detailHref}${separator}success=updated`);
     } catch (error) {

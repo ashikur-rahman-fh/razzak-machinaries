@@ -4,7 +4,12 @@ import type { Customer } from '@razzak-machinaries/shared/api';
 import { Button, Card, CardContent, TranslatedText } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 
-import { buildEditUrl, getBackListUrl, type CustomerListState } from '../routes';
+import {
+  buildCustomerHistoryUrl,
+  buildEditUrl,
+  getBackListUrl,
+  type CustomerListState,
+} from '../routes';
 import { formatCustomerDate, formatCustomerPhone, hasMediator } from '../utils';
 import { CustomerAvatar } from './CustomerAvatar';
 import { CustomerDetailSection } from './CustomerDetailSection';
@@ -14,14 +19,14 @@ type CustomerReadOnlyDetailsProps = {
   customer: Customer;
   listState?: Partial<CustomerListState>;
   fromQuery?: string | null;
-  onDelete: () => void;
+  onArchive?: () => void;
 };
 
 export function CustomerReadOnlyDetails({
   customer,
   listState,
   fromQuery,
-  onDelete,
+  onArchive,
 }: CustomerReadOnlyDetailsProps) {
   const backHref = getBackListUrl(fromQuery);
   const editHref = buildEditUrl(customer.id, listState);
@@ -36,15 +41,37 @@ export function CustomerReadOnlyDetails({
         </Button>
         <div className="ml-auto flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link href={editHref}>
-              <TranslatedText translationKey="customer.actions.edit" as="span" compact />
+            <Link href={buildCustomerHistoryUrl(customer.id)}>
+              <TranslatedText translationKey="customer.history.view" as="span" compact />
             </Link>
           </Button>
-          <Button type="button" variant="destructive" size="sm" onClick={onDelete}>
-            <TranslatedText translationKey="customer.actions.delete" as="span" compact />
-          </Button>
+          {!customer.isArchived ? (
+            <>
+              <Button asChild variant="outline" size="sm">
+                <Link href={editHref}>
+                  <TranslatedText translationKey="customer.actions.edit" as="span" compact />
+                </Link>
+              </Button>
+              <Button type="button" variant="destructive" size="sm" onClick={onArchive}>
+                <TranslatedText translationKey="customer.actions.archive" as="span" compact />
+              </Button>
+            </>
+          ) : null}
         </div>
       </div>
+
+      {customer.isArchived ? (
+        <Card className="border-rose-200 bg-rose-50">
+          <CardContent className="p-4">
+            <p className="font-semibold text-rose-800">
+              <TranslatedText translationKey="customer.archive.badge" as="span" />
+            </p>
+            {customer.archiveReason ? (
+              <p className="mt-1 text-sm text-rose-900">{customer.archiveReason}</p>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center">

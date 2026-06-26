@@ -57,6 +57,17 @@ def apply_customer_search(queryset: QuerySet[Customer], search: str | None) -> Q
     return apply_ranked_customer_search(queryset, search)
 
 
+def apply_customer_archive_filter(
+    queryset: QuerySet[Customer], status: str | None
+) -> QuerySet[Customer]:
+    normalized = (status or "active").strip().lower()
+    if normalized == "all":
+        return queryset
+    if normalized == "archived":
+        return queryset.filter(is_archived=True)
+    return queryset.filter(is_archived=False)
+
+
 def _should_order_by_relevance(ordering: str | None, *, has_search: bool) -> bool:
     if not has_search:
         return False

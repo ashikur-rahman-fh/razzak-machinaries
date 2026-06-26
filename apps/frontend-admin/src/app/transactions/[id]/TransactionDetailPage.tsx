@@ -84,7 +84,11 @@ export function TransactionDetailPage() {
         ) : null}
 
         {transaction ? (
-          <TransactionReadOnlyDetails transaction={transaction} fromQuery={fromQuery} />
+          <TransactionReadOnlyDetails
+            transaction={transaction}
+            fromQuery={fromQuery}
+            onChanged={() => void reload()}
+          />
         ) : null}
       </AdminAppShell>
     </RequireAdminAuth>

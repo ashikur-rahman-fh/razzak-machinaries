@@ -1,5 +1,7 @@
 import type { CustomerListParams } from '@razzak-machinaries/shared/api';
 
+import { resolveBackHref } from '@/edit-history/routes';
+
 const BASE_PATH = '/customers';
 
 export type CustomerListState = {
@@ -71,7 +73,15 @@ export function buildEditUrl(id: number, listState?: Partial<CustomerListState>)
   return `${buildDetailUrl(id, listState)}/edit`;
 }
 
+export function buildCustomerHistoryUrl(customerId: number): string {
+  return `${BASE_PATH}/${customerId}/history`;
+}
+
 export function getBackListUrl(fromQuery?: string | null): string {
+  const editHistoryBack = resolveBackHref(fromQuery);
+  if (editHistoryBack) {
+    return editHistoryBack;
+  }
   if (fromQuery) {
     return `${BASE_PATH}?${fromQuery}`;
   }

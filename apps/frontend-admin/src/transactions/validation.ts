@@ -1,5 +1,7 @@
 import type {
   PaymentMethod,
+  Transaction,
+  TransactionCorrectionWrite,
   TransactionType,
   TransactionWrite,
 } from '@razzak-machinaries/shared/api';
@@ -144,4 +146,40 @@ export function buildTransactionWritePayload(values: TransactionFormValues): Tra
 
 export function isTransactionFormValid(values: TransactionFormValues): boolean {
   return Object.keys(validateTransactionForm(values)).length === 0;
+}
+
+export function transactionToFormValues(transaction: Transaction): TransactionFormValues {
+  return {
+    customerId: transaction.customerId,
+    transactionType: transaction.transactionType,
+    date: transaction.date,
+    note: transaction.note,
+    amount: transaction.amount,
+    paymentMethod: (transaction.paymentMethod as PaymentMethod) || 'cash',
+    items:
+      transaction.items.length > 0
+        ? transaction.items.map((item) => ({
+            id: `item-${item.id}`,
+            productName: item.productName,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+          }))
+        : [createEmptySaleItem()],
+  };
+}
+
+export function buildTransactionCorrectionPayload(
+  values: TransactionFormValues,
+  editReason: string,
+): TransactionCorrectionWrite {
+  const base = buildTransactionWritePayload(values);
+  return {
+    transactionType: base.transactionType,
+    date: base.date,
+    note: base.note,
+    amount: base.amount,
+    paymentMethod: base.paymentMethod,
+    items: base.items,
+    editReason: editReason.trim(),
+  };
 }

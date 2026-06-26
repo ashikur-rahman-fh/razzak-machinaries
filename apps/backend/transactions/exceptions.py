@@ -31,6 +31,30 @@ class ConfirmationNotAvailable(APIException):
     default_detail = "Initial balance transactions do not have a printable confirmation."
 
 
+class CorrectionNotAllowed(APIException):
+    status_code = 400
+    default_code = "CORRECTION_NOT_ALLOWED"
+    default_detail = "This transaction cannot be corrected."
+
+
+class VoidNotAllowed(APIException):
+    status_code = 400
+    default_code = "VOID_NOT_ALLOWED"
+    default_detail = "This transaction cannot be voided."
+
+
+class CustomerArchiveNotAllowed(APIException):
+    status_code = 400
+    default_code = "CUSTOMER_ARCHIVE_NOT_ALLOWED"
+    default_detail = "This customer cannot be archived."
+
+
+class CustomerVersionNotAllowed(APIException):
+    status_code = 400
+    default_code = "CUSTOMER_VERSION_NOT_ALLOWED"
+    default_detail = "This customer version cannot be created."
+
+
 INVALID_TRANSACTION_AMOUNT_MESSAGE = InvalidTransactionAmount.default_detail
 INVALID_SALE_ITEMS_MESSAGE = InvalidSaleItems.default_detail
 INVALID_SALE_ITEM_QUANTITY_MESSAGE = InvalidSaleItemQuantity.default_detail

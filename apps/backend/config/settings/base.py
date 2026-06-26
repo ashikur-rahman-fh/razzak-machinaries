@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "customers",
     "transactions",
     "dashboard",
+    "edit_history",
 ]
 
 MIDDLEWARE = [

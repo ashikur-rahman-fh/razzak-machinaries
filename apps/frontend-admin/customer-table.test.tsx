@@ -45,7 +45,6 @@ function renderCustomerTable(customers = [sampleCustomer]) {
         hasSearch={false}
         onRetry={() => undefined}
         onClearSearch={() => undefined}
-        onDeleteSuccess={() => undefined}
       />
     </LanguageProvider>,
   );
@@ -70,7 +69,6 @@ describe('CustomerTable', () => {
           hasSearch={false}
           onRetry={() => undefined}
           onClearSearch={() => undefined}
-          onDeleteSuccess={() => undefined}
         />
       </LanguageProvider>,
     );

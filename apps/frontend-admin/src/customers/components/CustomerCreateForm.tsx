@@ -8,6 +8,7 @@ import {
   ErrorAlert,
   ProfileImagePicker,
   SuccessAlert,
+  Textarea,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
@@ -25,7 +26,11 @@ type CustomerCreateFormProps = {
   mode?: 'create' | 'edit';
   initialValues?: CustomerFormValues;
   initialProfilePictureUrl?: string | null;
-  onSubmit: (values: CustomerFormValues, profilePicture: File | null) => Promise<void>;
+  onSubmit: (
+    values: CustomerFormValues,
+    profilePicture: File | null,
+    changeReason?: string,
+  ) => Promise<void>;
   serverError?: string | null;
   showSuccess?: boolean;
 };
@@ -41,6 +46,7 @@ export function CustomerCreateForm({
   const { t } = useTranslation();
   const [values, setValues] = useState<CustomerFormValues>(initialValues ?? EMPTY_CUSTOMER_FORM);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [changeReason, setChangeReason] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEdit = mode === 'edit';
@@ -86,7 +92,7 @@ export function CustomerCreateForm({
     setFieldErrors({});
     setIsSubmitting(true);
     try {
-      await onSubmit(trimmed, profilePicture);
+      await onSubmit(trimmed, profilePicture, isEdit ? changeReason : undefined);
     } finally {
       setIsSubmitting(false);
     }
@@ -231,6 +237,19 @@ export function CustomerCreateForm({
           disabled={isSubmitting}
         />
       </CustomerFormSection>
+
+      {isEdit ? (
+        <CustomerFormSection titleKey="customer.edit.changeReason">
+          <div className="sm:col-span-2 space-y-1">
+            <Textarea
+              value={changeReason}
+              onChange={(event) => setChangeReason(event.target.value)}
+              rows={3}
+              disabled={isSubmitting}
+            />
+          </div>
+        </CustomerFormSection>
+      ) : null}
 
       <CustomerFormSection titleKey="customer.section.profilePicture" optional>
         {initialProfilePictureUrl && !profilePicture ? (

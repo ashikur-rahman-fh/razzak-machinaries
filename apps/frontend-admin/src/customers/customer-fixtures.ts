@@ -17,6 +17,10 @@ export const sampleCustomer: Customer = {
   mediatorNameEn: 'Mediator Ali',
   profilePictureUrl: null,
   cachedBalance: '0.00',
+  isArchived: false,
+  archivedAt: null,
+  archiveReason: '',
+  archivedByName: null,
   createdAt: '2026-06-24T10:00:00Z',
   updatedAt: '2026-06-24T10:00:00Z',
 };

@@ -65,7 +65,7 @@ export function CustomersListPage() {
   const debouncedSearch = useDebouncedValue(searchInput, 300);
   const success = searchParams.get('success');
   const [dismissedSuccess, setDismissedSuccess] = useState(false);
-  const showSuccess = success === 'created' || (success === 'deleted' && !dismissedSuccess);
+  const showSuccess = success === 'created' && !dismissedSuccess;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync controlled input from URL
@@ -171,9 +171,7 @@ export function CustomersListPage() {
             <SuccessAlert
               title={
                 <TranslatedText
-                  translationKey={
-                    success === 'deleted' ? 'customer.detail.deleted' : 'customer.create.success'
-                  }
+                  translationKey="customer.create.success"
                   as="span"
                   layout="inline"
                 />
@@ -236,12 +234,6 @@ export function CustomersListPage() {
                     hasSearch={hasSearch}
                     onRetry={() => void reloadList()}
                     onClearSearch={handleClearSearch}
-                    onDeleteSuccess={() => {
-                      void reloadList();
-                      router.push(
-                        `${buildListUrl(effectiveState)}${buildListUrl(effectiveState).includes('?') ? '&' : '?'}success=deleted`,
-                      );
-                    }}
                     ariaHidden={!isLargeScreen}
                   />
 

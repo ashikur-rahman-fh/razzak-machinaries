@@ -113,6 +113,7 @@ export function validateCustomerForm(values: CustomerFormValues): CustomerFormEr
 export function buildCustomerFormData(
   values: CustomerFormValues,
   profilePicture: File | null,
+  changeReason?: string,
 ): FormData {
   const formData = new FormData();
   formData.append('fullNameBn', values.fullNameBn);
@@ -127,6 +128,9 @@ export function buildCustomerFormData(
   formData.append('memoPageNumberEn', resolveMemoLatin(values));
   formData.append('mediatorNameBn', values.mediatorNameBn);
   formData.append('mediatorNameEn', values.mediatorNameEn);
+  if (changeReason !== undefined) {
+    formData.append('changeReason', changeReason);
+  }
   if (profilePicture) {
     formData.append('profilePicture', profilePicture);
   }

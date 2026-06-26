@@ -4,12 +4,17 @@ import {
   LanguageProvider,
 } from '@razzak-machinaries/shared/i18n';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
 import { AdminMobileNav } from './src/components/AdminSidebar';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
+import {
+  editHistoryTranslationsBn,
+  editHistoryTranslationsEn,
+} from './src/i18n/edit-history-translations';
 import { adminUser, server } from './vitest.setup';
 
 vi.mock('next/navigation', () => ({
@@ -24,7 +29,12 @@ function renderMobileNav() {
   server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)));
 
   return render(
-    <LanguageProvider catalogs={{ en: adminTranslationsEn, bn: adminTranslationsBn }}>
+    <LanguageProvider
+      catalogs={{
+        en: { ...adminTranslationsEn, ...editHistoryTranslationsEn },
+        bn: { ...adminTranslationsBn, ...editHistoryTranslationsBn },
+      }}
+    >
       <AdminAuthProvider>
         <AdminMobileNav activeRoute="dashboard" onLogout={() => undefined} />
       </AdminAuthProvider>
@@ -40,5 +50,16 @@ describe('AdminMobileNav', () => {
     expect(menuButton).toBeInTheDocument();
     expect(menuButton.querySelector('svg')).toBeInTheDocument();
     expect(screen.queryByText('নেভিগেশন মেনু খুলুন')).not.toBeInTheDocument();
+  });
+
+  it('includes the Edit History navigation item', async () => {
+    const user = userEvent.setup();
+    renderMobileNav();
+
+    await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+    expect(screen.getByRole('link', { name: /Edit History/i })).toHaveAttribute(
+      'href',
+      '/edit-history',
+    );
   });
 });

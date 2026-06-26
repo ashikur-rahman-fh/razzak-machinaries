@@ -19,6 +19,6 @@ export function getCustomerUpdateErrorMessage(error: unknown, language: Language
   return getCustomerValidationErrorMessage(error) ?? getUserFacingMessage(error, language);
 }
 
-export function getCustomerDeleteErrorMessage(error: unknown, language: Language): string {
+export function getCustomerArchiveErrorMessage(error: unknown, language: Language): string {
   return getUserFacingMessage(error, language);
 }

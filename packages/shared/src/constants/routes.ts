@@ -33,12 +33,21 @@ export const API_ROUTES = {
     detail: (id: number) => `/api/admin/customers/${id}/`,
     balance: (id: number) => `/api/admin/customers/${id}/balance/`,
     transactions: (id: number) => `/api/admin/customers/${id}/transactions/`,
+    createVersion: (id: number) => `/api/admin/customers/${id}/create-version/`,
+    archive: (id: number) => `/api/admin/customers/${id}/archive/`,
+    history: (id: number) => `/api/admin/customers/${id}/history/`,
   },
   adminTransactions: {
     list: '/api/admin/transactions/',
     detail: (id: number) => `/api/admin/transactions/${id}/`,
     confirmation: (id: number) => `/api/admin/transactions/${id}/confirmation/`,
+    createCorrection: (id: number) => `/api/admin/transactions/${id}/create-correction/`,
+    void: (id: number) => `/api/admin/transactions/${id}/void/`,
+    history: (id: number) => `/api/admin/transactions/${id}/history/`,
   },
   adminTranslations: '/api/admin/translations/',
   adminDashboard: '/api/admin/dashboard/',
+  adminEditHistory: {
+    list: '/api/admin/edit-history/',
+  },
 } as const;

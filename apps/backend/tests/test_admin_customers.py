@@ -5,7 +5,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
 from rest_framework.test import APIClient
 
-from customers.models import Customer
+from customers.models import Customer, CustomerVersion
+from customers.services import create_customer_with_version
 from tests.test_admin_auth import (
     ADMIN_FORBIDDEN_CODE,
     _create_regular_user,
@@ -55,14 +56,15 @@ def _create_customer(**overrides):
         "address_en": "Address",
         "phone_bn": "০১৭১১১১১১১১১",
         "phone_en": "01711111111",
-        "phone": "+8801711111111",
         "father_name_bn": "বাবা",
         "father_name_en": "Father",
         "memo_page_number_bn": "১",
         "memo_page_number_en": "1",
+        "mediator_name_bn": "",
+        "mediator_name_en": "",
     }
     data.update(overrides)
-    return Customer.objects.create(**data)
+    return create_customer_with_version(**data)
 
 
 @pytest.fixture
@@ -180,16 +182,32 @@ def test_search_customers_by_phone(superuser_client):
     assert response.data["count"] == 1
 
 
-def test_update_customer(superuser_client):
+def test_create_customer_version(superuser_client):
     customer = _create_customer()
-    response = _auth_patch_json(
+    response = _auth_post_json(
         superuser_client,
-        f"{CUSTOMERS_URL}{customer.id}/",
-        {"fullNameEn": "Ali Updated"},
+        f"{CUSTOMERS_URL}{customer.id}/create-version/",
+        {
+            "fullNameBn": customer.full_name_bn,
+            "fullNameEn": "Ali Updated",
+            "addressBn": customer.address_bn,
+            "addressEn": customer.address_en,
+            "phoneBn": customer.phone_bn,
+            "phoneEn": customer.phone_en,
+            "fatherNameBn": customer.father_name_bn,
+            "fatherNameEn": customer.father_name_en,
+            "memoPageNumberBn": customer.memo_page_number_bn,
+            "memoPageNumberEn": customer.memo_page_number_en,
+            "changeReason": "Corrected spelling",
+        },
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     customer.refresh_from_db()
     assert customer.full_name_en == "Ali Updated"
+    versions = CustomerVersion.objects.filter(customer=customer).order_by("version_number")
+    assert versions.count() == 2
+    assert versions.last().is_current is True
+    assert versions.first().is_current is False
 
 
 def test_customer_requires_auth(api_client):
@@ -224,11 +242,38 @@ def test_get_customer_detail(superuser_client):
     assert "profilePictureUrl" in response.data
 
 
-def test_delete_customer(superuser_client):
+def test_archive_customer(superuser_client):
+    customer = _create_customer()
+    response = _auth_post_json(
+        superuser_client,
+        f"{CUSTOMERS_URL}{customer.id}/archive/",
+        {"archiveReason": "Duplicate account"},
+    )
+    assert response.status_code == 200
+    customer.refresh_from_db()
+    assert customer.is_archived is True
+    assert customer.archive_reason == "Duplicate account"
+    list_response = _auth_get(superuser_client, CUSTOMERS_URL)
+    assert list_response.data["count"] == 0
+    archived_response = _auth_get(superuser_client, f"{CUSTOMERS_URL}?status=archived")
+    assert archived_response.data["count"] == 1
+
+
+def test_patch_customer_not_allowed(superuser_client):
+    customer = _create_customer()
+    response = _auth_patch_json(
+        superuser_client,
+        f"{CUSTOMERS_URL}{customer.id}/",
+        {"fullNameEn": "Ali Updated"},
+    )
+    assert response.status_code == 405
+
+
+def test_delete_customer_not_allowed(superuser_client):
     customer = _create_customer()
     response = _auth_delete(superuser_client, f"{CUSTOMERS_URL}{customer.id}/")
-    assert response.status_code == 204
-    assert not Customer.objects.filter(id=customer.id).exists()
+    assert response.status_code == 405
+    assert Customer.objects.filter(id=customer.id).exists()
 
 
 def test_search_customers_by_bangla_name(superuser_client):

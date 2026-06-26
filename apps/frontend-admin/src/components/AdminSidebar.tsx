@@ -26,6 +26,7 @@ export type AdminActiveRoute =
   | 'dashboard'
   | 'customers'
   | 'transactions'
+  | 'edit-history'
   | 'bangladesh-address'
   | 'profile'
   | 'change-password';
@@ -48,6 +49,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', href: '/', translationKey: 'nav.dashboard' },
   { key: 'customers', href: '/customers', translationKey: 'nav.customers' },
   { key: 'transactions', href: '/transactions', translationKey: 'nav.transactions' },
+  { key: 'edit-history', href: '/edit-history', translationKey: 'nav.editHistory' },
   {
     key: 'bangladesh-address',
     href: '/bangladesh-address',

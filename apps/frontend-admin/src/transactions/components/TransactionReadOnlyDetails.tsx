@@ -17,20 +17,30 @@ import {
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { CustomerDetailSection } from '@/customers/components/CustomerDetailSection';
 import { CustomerInfoRow } from '@/customers/components/CustomerInfoRow';
 import { buildDetailUrl as buildCustomerDetailUrl } from '@/customers/routes';
 
 import { PAYMENT_METHODS } from '../constants';
-import { buildConfirmationUrl, getBackListUrl } from '../routes';
+import {
+  buildConfirmationUrl,
+  buildCorrectUrl,
+  buildDetailUrl,
+  buildHistoryUrl,
+  getBackListUrl,
+} from '../routes';
+import { TransactionStatusBadge } from './TransactionStatusBadge';
 import { TransactionTypeBadge } from './TransactionTypeBadge';
+import { TransactionVoidModal } from './TransactionVoidModal';
 
 const EMPTY_CELL_VALUE = '—';
 
 type TransactionReadOnlyDetailsProps = {
   transaction: Transaction;
   fromQuery?: string | null;
+  onChanged?: () => void;
 };
 
 function getPaymentMethodLabel(paymentMethod: string, t: (key: string) => string): string {
@@ -45,6 +55,9 @@ function amountClassName(transactionType: Transaction['transactionType']): strin
 }
 
 function formatImpact(transaction: Transaction, language: 'en' | 'bn'): string {
+  if (!transaction.isCurrent || transaction.status !== 'ACTIVE') {
+    return formatBdt('0', language);
+  }
   const prefix = transaction.transactionType === 'PAYMENT' ? '-' : '+';
   return `${prefix}${formatBdt(transaction.totalAmount, language)}`;
 }
@@ -52,12 +65,15 @@ function formatImpact(transaction: Transaction, language: 'en' | 'bn'): string {
 export function TransactionReadOnlyDetails({
   transaction,
   fromQuery,
+  onChanged,
 }: TransactionReadOnlyDetailsProps) {
   const { language, displayMode } = useLanguagePreference();
   const { t } = useTranslation();
   const backHref = getBackListUrl(fromQuery);
   const canPrint =
     transaction.transactionType === 'SALE' || transaction.transactionType === 'PAYMENT';
+  const [showVoidModal, setShowVoidModal] = useState(false);
+  const isCorrectable = transaction.isCurrent && transaction.status === 'ACTIVE';
 
   return (
     <div className="space-y-6" data-testid="transaction-detail-content">
@@ -68,6 +84,23 @@ export function TransactionReadOnlyDetails({
           </Link>
         </Button>
         <div className="ml-auto flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href={buildHistoryUrl(transaction.id)}>
+              <TranslatedText translationKey="transaction.history.view" as="span" compact />
+            </Link>
+          </Button>
+          {isCorrectable ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={buildCorrectUrl(transaction.id)}>
+                <TranslatedText translationKey="transaction.correct.action" as="span" compact />
+              </Link>
+            </Button>
+          ) : null}
+          {isCorrectable ? (
+            <Button variant="destructive" size="sm" onClick={() => setShowVoidModal(true)}>
+              <TranslatedText translationKey="transaction.void.action" as="span" compact />
+            </Button>
+          ) : null}
           <Button asChild variant="outline" size="sm">
             <Link href={buildCustomerDetailUrl(transaction.customerId)}>
               <TranslatedText translationKey="transaction.detail.customer" as="span" compact />
@@ -83,6 +116,53 @@ export function TransactionReadOnlyDetails({
         </div>
       </div>
 
+      {transaction.status === 'VOIDED' ? (
+        <Card className="border-rose-200 bg-rose-50">
+          <CardContent className="p-4 text-sm text-rose-900">
+            <TranslatedText translationKey="transaction.detail.voidedBanner" as="span" />
+            {transaction.voidReason ? (
+              <p className="mt-2 font-medium">{transaction.voidReason}</p>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {transaction.status === 'SUPERSEDED' ? (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="p-4 text-sm text-amber-900">
+            <TranslatedText translationKey="transaction.detail.supersededBanner" as="span" />
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {transaction.previousVersionId ? (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="p-4 text-sm">
+            <TranslatedText translationKey="transaction.detail.correctedFrom" as="span" compact />{' '}
+            <Link
+              href={buildDetailUrl(transaction.previousVersionId)}
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              COM-{transaction.previousVersionId}
+            </Link>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {transaction.nextVersionId ? (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="p-4 text-sm">
+            <TranslatedText translationKey="transaction.detail.correctedBy" as="span" compact />{' '}
+            <Link
+              href={buildDetailUrl(transaction.nextVersionId)}
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              COM-{transaction.nextVersionId}
+            </Link>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <Card>
         <CardContent className="space-y-4 p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -91,16 +171,15 @@ export function TransactionReadOnlyDetails({
                 <TranslatedText translationKey="transaction.detail.title" as="span" />
               </h1>
               <p className="text-sm text-muted-foreground">
-                <TranslatedText
-                  translationKey="transaction.detail.transactionId"
-                  as="span"
-                  compact
-                />
-                {': '}
-                {transaction.id}
+                {transaction.displayId} ·{' '}
+                <TranslatedText translationKey="transaction.detail.version" as="span" compact />{' '}
+                {transaction.versionNumber}
               </p>
             </div>
-            <TransactionTypeBadge type={transaction.transactionType} />
+            <div className="flex flex-wrap gap-2">
+              <TransactionTypeBadge type={transaction.transactionType} />
+              <TransactionStatusBadge status={transaction.status} />
+            </div>
           </div>
           <div className="flex flex-wrap items-end gap-6">
             <div>
@@ -145,8 +224,8 @@ export function TransactionReadOnlyDetails({
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
             <BilingualText
-              bn={transaction.customerNameBn}
-              en={transaction.customerNameEn}
+              bn={transaction.customerNameSnapshotBn || transaction.customerNameBn}
+              en={transaction.customerNameSnapshotEn || transaction.customerNameEn}
               language={language}
               mode={displayMode}
             />
@@ -169,6 +248,18 @@ export function TransactionReadOnlyDetails({
             language === 'bn' ? 'bn-BD' : 'en-BD',
           )}
         />
+        {transaction.editReason ? (
+          <CustomerInfoRow labelKey="transaction.correct.reason" value={transaction.editReason} />
+        ) : null}
+        {transaction.editedByName ? (
+          <CustomerInfoRow
+            labelKey="transaction.detail.editedBy"
+            value={transaction.editedByName}
+          />
+        ) : null}
+        {transaction.voidReason ? (
+          <CustomerInfoRow labelKey="transaction.void.reason" value={transaction.voidReason} />
+        ) : null}
       </CustomerDetailSection>
 
       {transaction.transactionType === 'SALE' ? (
@@ -233,6 +324,16 @@ export function TransactionReadOnlyDetails({
           )}
         </CustomerDetailSection>
       ) : null}
+
+      <TransactionVoidModal
+        transactionId={transaction.id}
+        displayId={transaction.displayId}
+        open={showVoidModal}
+        onOpenChange={setShowVoidModal}
+        onVoided={() => {
+          onChanged?.();
+        }}
+      />
     </div>
   );
 }

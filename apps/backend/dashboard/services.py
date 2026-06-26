@@ -9,7 +9,11 @@ from django.utils import timezone
 from customers.models import Customer
 from transactions.models import Transaction, TransactionType
 from transactions.money import quantize_money
-from transactions.services import aggregate_amount_by_type, calculate_global_due
+from transactions.services import (
+    aggregate_amount_by_type,
+    calculate_global_due,
+    get_current_active_transactions,
+)
 
 
 @dataclass(frozen=True)
@@ -116,7 +120,7 @@ def _build_yearly_stats(year: int) -> YearlyStats:
     sales_by_month, payments_by_month, counts_by_month = _empty_monthly_data()
 
     rows = (
-        Transaction.objects.filter(date__year=year)
+        get_current_active_transactions(Transaction.objects.filter(date__year=year))
         .annotate(month=ExtractMonth("date"))
         .values("month", "transaction_type")
         .annotate(total=Sum("total_amount"), count=Count("id"))
@@ -169,11 +173,13 @@ def _build_yearly_stats(year: int) -> YearlyStats:
         for m in range(1, 13)
     ]
 
-    year_queryset = Transaction.objects.filter(date__year=year)
+    year_queryset = get_current_active_transactions(Transaction.objects.filter(date__year=year))
     yearly_sales_total = aggregate_amount_by_type(year_queryset, TransactionType.SALE)
     yearly_payments_total = aggregate_amount_by_type(year_queryset, TransactionType.PAYMENT)
 
-    top_customers = Customer.objects.order_by("-cached_balance", "id")[:10]
+    top_customers = Customer.objects.filter(is_archived=False).order_by("-cached_balance", "id")[
+        :10
+    ]
     top_customers_by_due = [
         TopCustomerByDue(
             customer_id=c.id,
@@ -185,7 +191,8 @@ def _build_yearly_stats(year: int) -> YearlyStats:
     ]
 
     distinct_years = list(
-        Transaction.objects.annotate(y=ExtractYear("date"))
+        get_current_active_transactions(Transaction.objects.all())
+        .annotate(y=ExtractYear("date"))
         .values_list("y", flat=True)
         .distinct()
         .order_by("y")
@@ -211,9 +218,11 @@ def get_dashboard_data(year: int | None = None) -> DashboardData:
     today = timezone.localdate()
     selected_year = year if year is not None else today.year
 
-    current_month_queryset = Transaction.objects.filter(
-        date__year=today.year,
-        date__month=today.month,
+    current_month_queryset = get_current_active_transactions(
+        Transaction.objects.filter(
+            date__year=today.year,
+            date__month=today.month,
+        )
     )
     current_month_sales = aggregate_amount_by_type(current_month_queryset, TransactionType.SALE)
     current_month_payments = aggregate_amount_by_type(
@@ -226,18 +235,22 @@ def get_dashboard_data(year: int | None = None) -> DashboardData:
         current_month_sales=current_month_sales,
         current_month_payments=current_month_payments,
         current_month_net_due_change=current_month_net_due_change,
-        total_customers=Customer.objects.count(),
-        total_transactions=Transaction.objects.count(),
+        total_customers=Customer.objects.filter(is_archived=False).count(),
+        total_transactions=get_current_active_transactions(Transaction.objects.all()).count(),
     )
 
-    recent_tx_qs = Transaction.objects.select_related("customer").order_by("-updated_at")[:10]
+    recent_tx_qs = (
+        get_current_active_transactions(Transaction.objects.all())
+        .select_related("customer")
+        .order_by("-updated_at")[:10]
+    )
     recent_transactions = [
         RecentTransaction(
             id=tx.id,
             display_id=f"COM-{tx.id}",
             customer_id=tx.customer_id,
-            customer_name_bn=tx.customer.full_name_bn,
-            customer_name_en=tx.customer.full_name_en,
+            customer_name_bn=tx.customer_name_bn or tx.customer.full_name_bn,
+            customer_name_en=tx.customer_name_en or tx.customer.full_name_en,
             transaction_type=tx.transaction_type,
             date=tx.date.isoformat(),
             total_amount=tx.total_amount,
@@ -246,7 +259,7 @@ def get_dashboard_data(year: int | None = None) -> DashboardData:
         for tx in recent_tx_qs
     ]
 
-    recent_cust_qs = Customer.objects.order_by("-updated_at")[:10]
+    recent_cust_qs = Customer.objects.filter(is_archived=False).order_by("-updated_at")[:10]
     recent_customers = [
         RecentCustomer(
             id=c.id,

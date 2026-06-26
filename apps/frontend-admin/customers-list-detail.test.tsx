@@ -24,9 +24,10 @@ import {
 } from './src/i18n/transaction-translations';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
 import { adminUser, server } from './vitest.setup';
+import { withVersionFields } from './src/transactions/transaction-msw-handlers';
 
 const sampleTransactions: Transaction[] = [
-  {
+  withVersionFields({
     id: 1,
     customerId: sampleCustomer.id,
     customerNameBn: sampleCustomer.fullNameBn,
@@ -37,13 +38,13 @@ const sampleTransactions: Transaction[] = [
     totalAmount: '12000.00',
     note: '',
     paymentMethod: '',
-    balanceImpact: '12000.00',
+    balanceImpact: '+12000.00',
     items: [],
     createdByName: null,
     createdAt: '2026-06-25T10:00:00Z',
     updatedAt: '2026-06-25T10:00:00Z',
-  },
-  {
+  }),
+  withVersionFields({
     id: 2,
     customerId: sampleCustomer.id,
     customerNameBn: sampleCustomer.fullNameBn,
@@ -59,8 +60,8 @@ const sampleTransactions: Transaction[] = [
     createdByName: null,
     createdAt: '2026-06-24T10:00:00Z',
     updatedAt: '2026-06-24T10:00:00Z',
-  },
-  {
+  }),
+  withVersionFields({
     id: 3,
     customerId: sampleCustomer.id,
     customerNameBn: sampleCustomer.fullNameBn,
@@ -71,12 +72,12 @@ const sampleTransactions: Transaction[] = [
     totalAmount: '100.00',
     note: 'halkhata 2026',
     paymentMethod: '',
-    balanceImpact: '100.00',
+    balanceImpact: '+100.00',
     items: [],
     createdByName: null,
     createdAt: '2026-06-20T10:00:00Z',
     updatedAt: '2026-06-20T10:00:00Z',
-  },
+  }),
 ];
 
 const pushMock = vi.fn();
@@ -227,15 +228,15 @@ describe('CustomerDetailPage', () => {
     expect(content).toHaveTextContent(sampleCustomer.fatherNameEn);
   });
 
-  it('shows delete confirmation modal before delete', async () => {
+  it('shows archive confirmation modal before archive', async () => {
     const user = userEvent.setup();
     renderWithAuth(<CustomerDetailPage />);
     const content = await screen.findByTestId('customer-detail-content');
 
-    const deleteButtons = within(content).getAllByRole('button', {
-      name: customerTranslationsEn['customer.actions.delete'],
+    const archiveButtons = within(content).getAllByRole('button', {
+      name: customerTranslationsEn['customer.actions.archive'],
     });
-    await user.click(deleteButtons[0]!);
+    await user.click(archiveButtons[0]!);
 
     expect(await screen.findByTestId('confirm-dialog-confirm')).toBeInTheDocument();
   });

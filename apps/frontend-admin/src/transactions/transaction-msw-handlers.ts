@@ -35,6 +35,14 @@ export const sampleSaleConfirmation = {
     },
   ],
   currentBalance: '15000.00',
+  status: 'ACTIVE' as const,
+  isCurrent: true,
+  versionNumber: 1,
+  latestVersionId: 25,
+  isHistorical: false,
+  previousVersionId: null,
+  editReason: '',
+  voidReason: '',
 };
 
 export const samplePaymentConfirmation = {
@@ -53,6 +61,14 @@ export const samplePaymentConfirmation = {
   customerPhone: '01712345678',
   items: [],
   currentBalance: '10000.00',
+  status: 'ACTIVE' as const,
+  isCurrent: true,
+  versionNumber: 1,
+  latestVersionId: 26,
+  isHistorical: false,
+  previousVersionId: null,
+  editReason: '',
+  voidReason: '',
 };
 
 const baseTimestamps = {
@@ -60,7 +76,60 @@ const baseTimestamps = {
   updatedAt: '2026-06-25T10:00:00Z',
 };
 
-export const sampleSaleTransaction = {
+export function withVersionFields<T extends { id: number }>(
+  transaction: T,
+  overrides: Partial<T> = {},
+): T & {
+  displayId: string;
+  status: 'ACTIVE';
+  isCurrent: boolean;
+  versionNumber: number;
+  rootTransactionId: number;
+  previousVersionId: null;
+  editedFromId: null;
+  nextVersionId: null;
+  latestVersionId: number;
+  editReason: string;
+  editedByName: null;
+  editedAt: null;
+  voidReason: string;
+  voidedByName: null;
+  voidedAt: null;
+  customerNameSnapshotBn: string;
+  customerNameSnapshotEn: string;
+  customerAddressSnapshotBn: string;
+  customerAddressSnapshotEn: string;
+  customerPhoneSnapshot: string;
+} {
+  return {
+    ...transaction,
+    displayId: `COM-${transaction.id}`,
+    status: 'ACTIVE',
+    isCurrent: true,
+    versionNumber: 1,
+    rootTransactionId: transaction.id,
+    previousVersionId: null,
+    editedFromId: null,
+    nextVersionId: null,
+    latestVersionId: transaction.id,
+    editReason: '',
+    editedByName: null,
+    editedAt: null,
+    voidReason: '',
+    voidedByName: null,
+    voidedAt: null,
+    customerNameSnapshotBn:
+      'customerNameBn' in transaction ? String(transaction.customerNameBn) : '',
+    customerNameSnapshotEn:
+      'customerNameEn' in transaction ? String(transaction.customerNameEn) : '',
+    customerAddressSnapshotBn: 'ঢাকা',
+    customerAddressSnapshotEn: 'Dhaka',
+    customerPhoneSnapshot: '01712345678',
+    ...overrides,
+  };
+}
+
+export const sampleSaleTransaction = withVersionFields({
   id: sampleSaleConfirmation.id,
   customerId: sampleSaleConfirmation.customerId,
   customerNameBn: sampleSaleConfirmation.customerNameBn,
@@ -75,9 +144,9 @@ export const sampleSaleTransaction = {
   items: sampleSaleConfirmation.items,
   createdByName: 'admin',
   ...baseTimestamps,
-};
+});
 
-export const samplePaymentTransaction = {
+export const samplePaymentTransaction = withVersionFields({
   id: samplePaymentConfirmation.id,
   customerId: samplePaymentConfirmation.customerId,
   customerNameBn: samplePaymentConfirmation.customerNameBn,
@@ -92,9 +161,9 @@ export const samplePaymentTransaction = {
   items: [],
   createdByName: 'admin',
   ...baseTimestamps,
-};
+});
 
-export const sampleInitialTransaction = {
+export const sampleInitialTransaction = withVersionFields({
   id: 99,
   customerId: 1,
   customerNameBn: 'রহিম',
@@ -109,7 +178,7 @@ export const sampleInitialTransaction = {
   items: [],
   createdByName: 'admin',
   ...baseTimestamps,
-};
+});
 
 export const transactionMswHandlers = [
   http.get('*/api/admin/transactions/:id/', ({ params }) => {

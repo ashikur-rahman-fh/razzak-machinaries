@@ -14,15 +14,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
+import { ArchiveConfirmationModal } from '@/customers/components/ArchiveConfirmationModal';
 import { CustomerDetailSkeleton } from '@/customers/components/CustomerDetailSkeleton';
 import { CustomerBalanceSummary } from '@/transactions/components/CustomerBalanceSummary';
 import { CustomerTransactionsPanel } from '@/transactions/components/CustomerTransactionsPanel';
 import { CustomerReadOnlyDetails } from '@/customers/components/CustomerReadOnlyDetails';
-import { DeleteConfirmationModal } from '@/customers/components/DeleteConfirmationModal';
 import { FEEDBACK_DISMISS_MS } from '@/customers/constants';
-import { getCustomerDeleteErrorMessage } from '@/customers/errors';
+import { getCustomerArchiveErrorMessage } from '@/customers/errors';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/customers/hooks';
-import { getBackListUrl, parseListState } from '@/customers/routes';
+import { parseListState } from '@/customers/routes';
 import { formatCustomerPhone } from '@/customers/utils';
 
 export function CustomerDetailPage() {
@@ -36,12 +36,11 @@ export function CustomerDetailPage() {
   const customerId = Number(params.id);
   const fromQuery = searchParams.get('from');
   const success = searchParams.get('success');
-  const backHref = getBackListUrl(fromQuery);
   const listState = fromQuery ? parseListState(new URLSearchParams(fromQuery)) : undefined;
 
-  const [showDelete, setShowDelete] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showArchive, setShowArchive] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [archiveError, setArchiveError] = useState<string | null>(null);
   const [dismissedRedirectSuccess, setDismissedRedirectSuccess] = useState(false);
   const showRedirectSuccess =
     (success === 'updated' || success === 'transactionCreated') && !dismissedRedirectSuccess;
@@ -68,17 +67,18 @@ export function CustomerDetailPage() {
   const customer = getAsyncData(customerState);
   const isInitialLoad = isAsyncInitialLoad(customerState);
 
-  async function handleDelete() {
-    if (!customer || isDeleting) return;
-    setIsDeleting(true);
-    setDeleteError(null);
+  async function handleArchive(archiveReason: string) {
+    if (!customer || isArchiving) return;
+    setIsArchiving(true);
+    setArchiveError(null);
     try {
-      await adminCustomersApi.deleteCustomer(customer.id);
-      router.push(`${backHref}${backHref.includes('?') ? '&' : '?'}success=deleted`);
+      await adminCustomersApi.archiveCustomer(customer.id, { archiveReason });
+      await reloadCustomer();
+      setShowArchive(false);
     } catch (err) {
-      setDeleteError(getCustomerDeleteErrorMessage(err, language));
+      setArchiveError(getCustomerArchiveErrorMessage(err, language));
     } finally {
-      setIsDeleting(false);
+      setIsArchiving(false);
     }
   }
 
@@ -153,25 +153,25 @@ export function CustomerDetailPage() {
               customer={customer}
               listState={listState}
               fromQuery={fromQuery}
-              onDelete={() => {
-                setDeleteError(null);
-                setShowDelete(true);
+              onArchive={() => {
+                setArchiveError(null);
+                setShowArchive(true);
               }}
             />
-            <DeleteConfirmationModal
-              open={showDelete}
+            <ArchiveConfirmationModal
+              open={showArchive}
               onOpenChange={(open) => {
-                if (!open && !isDeleting) {
-                  setShowDelete(false);
-                  setDeleteError(null);
+                if (!open && !isArchiving) {
+                  setShowArchive(false);
+                  setArchiveError(null);
                 }
               }}
               customerNameBn={customer.fullNameBn}
               customerNameEn={customer.fullNameEn}
               phone={formatCustomerPhone(customer)}
-              onConfirm={handleDelete}
-              isLoading={isDeleting}
-              errorMessage={deleteError}
+              onConfirm={handleArchive}
+              isLoading={isArchiving}
+              errorMessage={archiveError}
             />
           </>
         ) : null}

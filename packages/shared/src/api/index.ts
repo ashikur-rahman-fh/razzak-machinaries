@@ -1,4 +1,5 @@
 export { adminDashboardApi } from './admin-dashboard';
+export { adminEditHistoryApi } from './admin-edit-history';
 export { adminAuthApi, ensureAdminCsrf } from './admin-auth';
 export { adminCustomersApi } from './admin-customers';
 export { adminGeoApi } from './admin-geo';
@@ -41,7 +42,17 @@ export type {
   AdminLogoutResponse,
   AdminUser,
 } from '../types/admin-auth';
-export type { Customer, CustomerListParams, CustomerWrite } from '../types/customer';
+export type {
+  Customer,
+  CustomerArchiveResponse,
+  CustomerArchiveWrite,
+  CustomerHistory,
+  CustomerListParams,
+  CustomerVersion,
+  CustomerVersionResponse,
+  CustomerVersionWrite,
+  CustomerWrite,
+} from '../types/customer';
 export type {
   DashboardData,
   DashboardParams,
@@ -55,14 +66,27 @@ export type {
   TopCustomerByDue,
 } from '../types/dashboard';
 export type {
+  EditHistoryEntityType,
+  EditHistoryEvent,
+  EditHistoryEventType,
+  EditHistoryListParams,
+  PaginatedEditHistory,
+} from '../types/edit-history';
+export type {
   CustomerBalance,
   PaymentMethod,
   Transaction,
   TransactionConfirmation,
+  TransactionCorrectionResponse,
+  TransactionCorrectionWrite,
+  TransactionHistory,
   TransactionItem,
   TransactionItemWrite,
   TransactionListParams,
+  TransactionStatus,
   TransactionType,
+  TransactionVoidResponse,
+  TransactionVoidWrite,
   TransactionWrite,
 } from '../types/transaction';
 export type {

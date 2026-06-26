@@ -1,5 +1,7 @@
 import type { TransactionListParams, TransactionType } from '@razzak-machinaries/shared/api';
 
+import { resolveBackHref } from '@/edit-history/routes';
+
 const BASE_PATH = '/transactions';
 
 export type TransactionListState = {
@@ -88,6 +90,10 @@ export function buildDetailUrl(id: number, listState?: Partial<TransactionListSt
 }
 
 export function getBackListUrl(fromQuery?: string | null): string {
+  const editHistoryBack = resolveBackHref(fromQuery);
+  if (editHistoryBack) {
+    return editHistoryBack;
+  }
   if (fromQuery) {
     return `${BASE_PATH}?${fromQuery}`;
   }
@@ -97,6 +103,18 @@ export function getBackListUrl(fromQuery?: string | null): string {
 export function buildConfirmationUrl(id: number, options?: { from?: 'detail' }): string {
   const path = `/transactions/${id}/confirmation`;
   return options?.from === 'detail' ? `${path}?from=detail` : path;
+}
+
+export function buildCorrectUrl(id: number): string {
+  return `${BASE_PATH}/${id}/correct`;
+}
+
+export function buildHistoryUrl(id: number): string {
+  return `${BASE_PATH}/${id}/history`;
+}
+
+export function buildCustomerHistoryUrl(customerId: number): string {
+  return `/customers/${customerId}/history`;
 }
 
 export function toListParams(state: TransactionListState): TransactionListParams {
