@@ -1,6 +1,6 @@
 'use client';
 
-import { adminTransactionsApi } from '@razzak-machinaries/shared/api';
+import { adminTransactionsApi, type Transaction } from '@razzak-machinaries/shared/api';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import { formatBdt } from '@razzak-machinaries/shared/utils/currency';
 import {
@@ -12,14 +12,17 @@ import {
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useMemo } from 'react';
 
 import { AdminAppShell } from '@/components/AdminAppShell';
+import { FieldChangeList } from '@/components/FieldChangeList';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/transactions/hooks';
 import { buildDetailUrl } from '@/transactions/routes';
 import { TransactionDetailSkeleton } from '@/transactions/components/TransactionDetailSkeleton';
 import { TransactionStatusBadge } from '@/transactions/components/TransactionStatusBadge';
+import { findTransactionById, getTransactionVersionChanges } from '@/transactions/version-diff';
 
 export function TransactionHistoryPage() {
   const params = useParams<{ id: string }>();
@@ -35,6 +38,11 @@ export function TransactionHistoryPage() {
 
   const history = getAsyncData(state);
   const isInitialLoad = isAsyncInitialLoad(state);
+
+  const versionsById = useMemo(() => {
+    if (!history) return new Map<number, Transaction>();
+    return new Map(history.versions.map((version) => [version.id, version]));
+  }, [history]);
 
   return (
     <RequireAdminAuth>
@@ -92,64 +100,96 @@ export function TransactionHistoryPage() {
             />
           ) : null}
 
-          {history?.versions.map((version) => (
-            <Card key={version.id}>
-              <CardContent className="space-y-3 p-6">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p className="text-lg font-semibold">
+          {history?.versions.map((version) => {
+            const previousVersion =
+              version.previousVersionId != null
+                ? (findTransactionById(history.versions, version.previousVersionId) ??
+                  versionsById.get(version.previousVersionId))
+                : undefined;
+            const changes =
+              previousVersion != null ? getTransactionVersionChanges(previousVersion, version) : [];
+
+            return (
+              <Card key={version.id}>
+                <CardContent className="space-y-3 p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-lg font-semibold">
+                        <TranslatedText
+                          translationKey="transaction.history.version"
+                          as="span"
+                          compact
+                        />{' '}
+                        {version.versionNumber} — {version.displayId}
+                      </p>
+                      <p className="text-sm text-muted-foreground">{version.date}</p>
+                    </div>
+                    <TransactionStatusBadge status={version.status} />
+                  </div>
+                  <p className="text-xl font-semibold">
+                    {formatBdt(version.totalAmount, language)}
+                  </p>
+                  {version.previousVersionId ? (
+                    <p className="text-sm">
                       <TranslatedText
-                        translationKey="transaction.history.version"
+                        translationKey="transaction.detail.correctedFrom"
                         as="span"
                         compact
                       />{' '}
-                      {version.versionNumber} — {version.displayId}
+                      <Link
+                        href={buildDetailUrl(version.previousVersionId)}
+                        className="font-medium text-primary underline-offset-4 hover:underline"
+                      >
+                        COM-{version.previousVersionId}
+                      </Link>
                     </p>
-                    <p className="text-sm text-muted-foreground">{version.date}</p>
-                  </div>
-                  <TransactionStatusBadge status={version.status} />
-                </div>
-                <p className="text-xl font-semibold">{formatBdt(version.totalAmount, language)}</p>
-                {version.previousVersionId ? (
-                  <p className="text-sm">
+                  ) : null}
+                  {version.editReason ? (
+                    <p className="text-sm text-muted-foreground">
+                      <TranslatedText
+                        translationKey="transaction.correct.reason"
+                        as="span"
+                        compact
+                      />
+                      : {version.editReason}
+                    </p>
+                  ) : null}
+                  {version.voidReason ? (
+                    <p className="text-sm text-muted-foreground">
+                      <TranslatedText translationKey="transaction.void.reason" as="span" compact />:{' '}
+                      {version.voidReason}
+                    </p>
+                  ) : null}
+                  {previousVersion ? (
+                    <div className="space-y-2 rounded-lg border p-4">
+                      <p className="text-sm font-medium">
+                        <TranslatedText
+                          translationKey="transaction.history.changes"
+                          as="span"
+                          compact
+                        />
+                      </p>
+                      <FieldChangeList
+                        changes={changes}
+                        emptyMessageKey="transaction.history.noChanges"
+                        viewMode="unified"
+                      />
+                    </div>
+                  ) : null}
+                  <Link
+                    href={buildDetailUrl(version.id)}
+                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                  >
                     <TranslatedText
-                      translationKey="transaction.detail.correctedFrom"
+                      translationKey="transaction.history.viewVersion"
                       as="span"
                       compact
-                    />{' '}
-                    <Link
-                      href={buildDetailUrl(version.previousVersionId)}
-                      className="font-medium text-primary underline-offset-4 hover:underline"
-                    >
-                      COM-{version.previousVersionId}
-                    </Link>
-                  </p>
-                ) : null}
-                {version.editReason ? (
-                  <p className="text-sm text-muted-foreground">
-                    <TranslatedText translationKey="transaction.correct.reason" as="span" compact />
-                    : {version.editReason}
-                  </p>
-                ) : null}
-                {version.voidReason ? (
-                  <p className="text-sm text-muted-foreground">
-                    <TranslatedText translationKey="transaction.void.reason" as="span" compact />:{' '}
-                    {version.voidReason}
-                  </p>
-                ) : null}
-                <Link
-                  href={buildDetailUrl(version.id)}
-                  className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                >
-                  <TranslatedText
-                    translationKey="transaction.history.viewVersion"
-                    as="span"
-                    compact
-                  />
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+                    />
+                  </Link>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </AdminAppShell>
     </RequireAdminAuth>

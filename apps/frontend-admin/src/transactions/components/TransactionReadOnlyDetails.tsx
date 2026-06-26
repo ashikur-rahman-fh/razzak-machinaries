@@ -22,6 +22,7 @@ import { useState } from 'react';
 import { CustomerDetailSection } from '@/customers/components/CustomerDetailSection';
 import { CustomerInfoRow } from '@/customers/components/CustomerInfoRow';
 import { buildDetailUrl as buildCustomerDetailUrl } from '@/customers/routes';
+import { FieldChangeList } from '@/components/FieldChangeList';
 
 import { PAYMENT_METHODS } from '../constants';
 import {
@@ -34,11 +35,13 @@ import {
 import { TransactionStatusBadge } from './TransactionStatusBadge';
 import { TransactionTypeBadge } from './TransactionTypeBadge';
 import { TransactionVoidModal } from './TransactionVoidModal';
+import { getTransactionVersionChanges } from '../version-diff';
 
 const EMPTY_CELL_VALUE = '—';
 
 type TransactionReadOnlyDetailsProps = {
   transaction: Transaction;
+  previousTransaction?: Transaction | null;
   fromQuery?: string | null;
   onChanged?: () => void;
 };
@@ -64,6 +67,7 @@ function formatImpact(transaction: Transaction, language: 'en' | 'bn'): string {
 
 export function TransactionReadOnlyDetails({
   transaction,
+  previousTransaction,
   fromQuery,
   onChanged,
 }: TransactionReadOnlyDetailsProps) {
@@ -74,6 +78,10 @@ export function TransactionReadOnlyDetails({
     transaction.transactionType === 'SALE' || transaction.transactionType === 'PAYMENT';
   const [showVoidModal, setShowVoidModal] = useState(false);
   const isCorrectable = transaction.isCurrent && transaction.status === 'ACTIVE';
+  const changes =
+    previousTransaction != null
+      ? getTransactionVersionChanges(previousTransaction, transaction)
+      : [];
 
   return (
     <div className="space-y-6" data-testid="transaction-detail-content">
@@ -137,14 +145,34 @@ export function TransactionReadOnlyDetails({
 
       {transaction.previousVersionId ? (
         <Card className="border-amber-200 bg-amber-50">
-          <CardContent className="p-4 text-sm">
-            <TranslatedText translationKey="transaction.detail.correctedFrom" as="span" compact />{' '}
-            <Link
-              href={buildDetailUrl(transaction.previousVersionId)}
-              className="font-semibold text-primary underline-offset-4 hover:underline"
-            >
-              COM-{transaction.previousVersionId}
-            </Link>
+          <CardContent className="space-y-3 p-4 text-sm">
+            <p>
+              <TranslatedText translationKey="transaction.detail.correctedFrom" as="span" compact />{' '}
+              <Link
+                href={buildDetailUrl(transaction.previousVersionId)}
+                className="font-semibold text-primary underline-offset-4 hover:underline"
+              >
+                COM-{transaction.previousVersionId}
+              </Link>
+            </p>
+            {previousTransaction ? (
+              <>
+                <p className="font-medium text-amber-900">
+                  <TranslatedText
+                    translationKey="transaction.history.changesFromPrevious"
+                    as="span"
+                    compact
+                  />
+                </p>
+                <FieldChangeList
+                  changes={changes}
+                  emptyMessageKey="transaction.history.noChanges"
+                  viewMode="split"
+                  beforeTitleKey="transaction.history.diff.before"
+                  afterTitleKey="transaction.history.diff.after"
+                />
+              </>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}

@@ -128,6 +128,12 @@ export const transactionTranslationsEn = {
   'transaction.history.empty': 'No versions found.',
   'transaction.history.version': 'Version',
   'transaction.history.viewVersion': 'View this version',
+  'transaction.history.changes': 'Changes',
+  'transaction.history.changesFromPrevious': 'Changes from previous version',
+  'transaction.history.noChanges': 'No field changes from the previous version.',
+  'transaction.history.changes.items': 'Line items',
+  'transaction.history.diff.before': 'Before',
+  'transaction.history.diff.after': 'After',
 } as const;
 
 export const transactionTranslationsBn = {
@@ -258,4 +264,10 @@ export const transactionTranslationsBn = {
   'transaction.history.empty': 'কোনো সংস্করণ পাওয়া যায়নি।',
   'transaction.history.version': 'সংস্করণ',
   'transaction.history.viewVersion': 'এই সংস্করণ দেখুন',
+  'transaction.history.changes': 'পরিবর্তন',
+  'transaction.history.changesFromPrevious': 'পূর্ববর্তী সংস্করণ থেকে পরিবর্তন',
+  'transaction.history.noChanges': 'পূর্ববর্তী সংস্করণ থেকে কোনো ক্ষেত্র পরিবর্তন হয়নি।',
+  'transaction.history.changes.items': 'লাইন আইটেম',
+  'transaction.history.diff.before': 'আগে',
+  'transaction.history.diff.after': 'পরে',
 } as const;

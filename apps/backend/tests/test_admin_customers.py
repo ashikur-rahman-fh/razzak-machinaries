@@ -210,6 +210,38 @@ def test_create_customer_version(superuser_client):
     assert versions.first().is_current is False
 
 
+def test_customer_history_returns_all_versions(superuser_client):
+    customer = _create_customer()
+    _auth_post_json(
+        superuser_client,
+        f"{CUSTOMERS_URL}{customer.id}/create-version/",
+        {
+            "fullNameBn": customer.full_name_bn,
+            "fullNameEn": "Ali Updated",
+            "addressBn": customer.address_bn,
+            "addressEn": "Updated address",
+            "phoneBn": customer.phone_bn,
+            "phoneEn": customer.phone_en,
+            "fatherNameBn": customer.father_name_bn,
+            "fatherNameEn": customer.father_name_en,
+            "memoPageNumberBn": customer.memo_page_number_bn,
+            "memoPageNumberEn": customer.memo_page_number_en,
+            "changeReason": "Corrected spelling",
+        },
+    )
+
+    response = _auth_get(superuser_client, f"{CUSTOMERS_URL}{customer.id}/history/")
+    assert response.status_code == 200
+    assert response.data["customerId"] == customer.id
+    assert len(response.data["versions"]) == 2
+    assert response.data["versions"][0]["versionNumber"] == 1
+    assert response.data["versions"][1]["versionNumber"] == 2
+    assert response.data["versions"][1]["isCurrent"] is True
+    assert response.data["versions"][1]["previousVersionId"] == response.data["versions"][0]["id"]
+    assert response.data["versions"][1]["fullNameEn"] == "Ali Updated"
+    assert response.data["versions"][1]["changeReason"] == "Corrected spelling"
+
+
 def test_customer_requires_auth(api_client):
     response = api_client.get(CUSTOMERS_URL)
     assert_error_envelope(response, status_code=401, code="UNAUTHORIZED")

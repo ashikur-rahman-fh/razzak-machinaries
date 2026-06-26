@@ -50,10 +50,15 @@ export function parseListState(searchParams: URLSearchParams): EditHistoryListSt
 export function buildEntityDetailUrl(
   entityType: 'transaction' | 'customer',
   entityId: number,
+  eventType?: EditHistoryEventType,
 ): string {
-  const base =
-    entityType === 'transaction' ? `/transactions/${entityId}` : `/customers/${entityId}`;
-  return `${base}?from=${EDIT_HISTORY_FROM}`;
+  if (entityType === 'transaction') {
+    return `/transactions/${entityId}?from=${EDIT_HISTORY_FROM}`;
+  }
+  if (eventType === 'CUSTOMER_EDITED') {
+    return `/customers/${entityId}/history?from=${EDIT_HISTORY_FROM}`;
+  }
+  return `/customers/${entityId}?from=${EDIT_HISTORY_FROM}`;
 }
 
 export function resolveBackHref(fromQuery?: string | null): string | null {

@@ -83,6 +83,11 @@ describe('EditHistoryPage', () => {
     expect(archiveRow).not.toBeNull();
     const customerLink = within(archiveRow as HTMLElement).getByRole('link', { name: /View/i });
     expect(customerLink).toHaveAttribute('href', '/customers/99?from=edit-history');
+
+    const editRow = screen.getByText('Updated address').closest('tr');
+    expect(editRow).not.toBeNull();
+    const customerHistoryLink = within(editRow as HTMLElement).getByRole('link', { name: /View/i });
+    expect(customerHistoryLink).toHaveAttribute('href', '/customers/42/history?from=edit-history');
   });
 
   it('shows event type filter control', async () => {

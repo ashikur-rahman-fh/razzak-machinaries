@@ -77,6 +77,10 @@ export function buildCustomerHistoryUrl(customerId: number): string {
   return `${BASE_PATH}/${customerId}/history`;
 }
 
+export function buildCustomerVersionDetailUrl(customerId: number, versionId: number): string {
+  return `${BASE_PATH}/${customerId}/history/${versionId}`;
+}
+
 export function getBackListUrl(fromQuery?: string | null): string {
   const editHistoryBack = resolveBackHref(fromQuery);
   if (editHistoryBack) {

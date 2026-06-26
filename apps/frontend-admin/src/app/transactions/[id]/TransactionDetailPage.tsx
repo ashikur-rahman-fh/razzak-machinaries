@@ -22,10 +22,17 @@ export function TransactionDetailPage() {
 
   const { state, reload } = useAsyncData(async () => {
     if (!isValidId) throw new Error('Invalid transaction id');
-    return adminTransactionsApi.getTransaction(transactionId);
+    const transaction = await adminTransactionsApi.getTransaction(transactionId);
+    const previousTransaction =
+      transaction.previousVersionId != null
+        ? await adminTransactionsApi.getTransaction(transaction.previousVersionId)
+        : null;
+    return { transaction, previousTransaction };
   }, [transactionId, isValidId]);
 
-  const transaction = getAsyncData(state);
+  const data = getAsyncData(state);
+  const transaction = data?.transaction;
+  const previousTransaction = data?.previousTransaction ?? null;
   const isInitialLoad = isAsyncInitialLoad(state);
 
   return (
@@ -86,6 +93,7 @@ export function TransactionDetailPage() {
         {transaction ? (
           <TransactionReadOnlyDetails
             transaction={transaction}
+            previousTransaction={previousTransaction}
             fromQuery={fromQuery}
             onChanged={() => void reload()}
           />

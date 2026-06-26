@@ -95,7 +95,9 @@ export function EditHistoryTable({ events }: EditHistoryTableProps) {
             </TableCell>
             <TableCell className="text-right">
               <Button asChild variant="outline" size="sm">
-                <Link href={buildEntityDetailUrl(event.entityType, event.entityId)}>
+                <Link
+                  href={buildEntityDetailUrl(event.entityType, event.entityId, event.eventType)}
+                >
                   <TranslatedText translationKey="editHistory.view" as="span" compact />
                 </Link>
               </Button>
