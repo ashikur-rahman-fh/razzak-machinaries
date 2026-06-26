@@ -38,10 +38,12 @@ from geo.exceptions import (
     GEO_ID_CONFLICT_MESSAGE,
 )
 from transactions.exceptions import (
+    CONFIRMATION_NOT_AVAILABLE_MESSAGE,
     INVALID_SALE_ITEM_QUANTITY_MESSAGE,
     INVALID_SALE_ITEM_UNIT_PRICE_MESSAGE,
     INVALID_SALE_ITEMS_MESSAGE,
     INVALID_TRANSACTION_AMOUNT_MESSAGE,
+    ConfirmationNotAvailable,
     InvalidSaleItemQuantity,
     InvalidSaleItems,
     InvalidSaleItemUnitPrice,
@@ -68,6 +70,7 @@ SAFE_MESSAGES = {
     InvalidSaleItems.default_code: INVALID_SALE_ITEMS_MESSAGE,
     InvalidSaleItemQuantity.default_code: INVALID_SALE_ITEM_QUANTITY_MESSAGE,
     InvalidSaleItemUnitPrice.default_code: INVALID_SALE_ITEM_UNIT_PRICE_MESSAGE,
+    ConfirmationNotAvailable.default_code: CONFIRMATION_NOT_AVAILABLE_MESSAGE,
 }
 
 

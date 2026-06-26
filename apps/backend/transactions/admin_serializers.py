@@ -161,6 +161,24 @@ class TransactionReadSerializer(serializers.ModelSerializer):
         return obj.created_by.get_username()
 
 
+class TransactionConfirmationSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    displayId = serializers.CharField()
+    transactionType = serializers.CharField()
+    date = serializers.DateField()
+    totalAmount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    note = serializers.CharField()
+    paymentMethod = serializers.CharField()
+    customerId = serializers.IntegerField()
+    customerNameBn = serializers.CharField()
+    customerNameEn = serializers.CharField()
+    customerAddressBn = serializers.CharField()
+    customerAddressEn = serializers.CharField()
+    customerPhone = serializers.CharField()
+    items = TransactionItemReadSerializer(many=True)
+    currentBalance = serializers.DecimalField(max_digits=14, decimal_places=2)
+
+
 class CustomerBalanceSerializer(serializers.Serializer):
     customerId = serializers.IntegerField()
     currentBalance = serializers.DecimalField(max_digits=14, decimal_places=2)

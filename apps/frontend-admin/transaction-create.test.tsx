@@ -192,7 +192,7 @@ describe('TransactionCreatePageShell', () => {
     ).toHaveLength(1);
   });
 
-  it('redirects to customer detail after successful payment', async () => {
+  it('redirects to confirmation page after successful payment', async () => {
     const user = userEvent.setup();
     renderWithAuth(<TransactionCreatePageShell />);
     await screen.findByRole('heading', {
@@ -209,7 +209,7 @@ describe('TransactionCreatePageShell', () => {
     );
 
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith('/customers/1?success=transactionCreated');
+      expect(pushMock).toHaveBeenCalledWith('/transactions/10/confirmation');
     });
   });
 });

@@ -19,9 +19,10 @@ import {
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { getAsyncData, useAsyncData } from '../hooks';
-import { buildListUrl } from '../routes';
+import { buildDetailUrl, buildListUrl } from '../routes';
 import { TransactionTypeBadge } from './TransactionTypeBadge';
 
 const EMPTY_CELL_VALUE = '—';
@@ -64,6 +65,7 @@ function TableSkeletonRows() {
 }
 
 export function CustomerTransactionsPanel({ customerId }: CustomerTransactionsPanelProps) {
+  const router = useRouter();
   const { language } = useLanguagePreference();
   const { state, reload } = useAsyncData(
     () =>
@@ -163,24 +165,42 @@ export function CustomerTransactionsPanel({ customerId }: CustomerTransactionsPa
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.results.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell>
-                    <TransactionTypeBadge type={transaction.transactionType} />
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap text-muted-foreground">
-                    {transaction.date}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {transaction.note || EMPTY_CELL_VALUE}
-                  </TableCell>
-                  <TableCell
-                    className={`text-right ${amountClassName(transaction.transactionType)}`}
+              {data.results.map((transaction) => {
+                const detailHref = buildDetailUrl(transaction.id);
+
+                return (
+                  <TableRow
+                    key={transaction.id}
+                    data-testid={`customer-transaction-row-${transaction.id}`}
+                    className="cursor-pointer"
+                    onClick={() => router.push(detailHref)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        router.push(detailHref);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="link"
+                    aria-label={`${transaction.date}, ${transaction.transactionType}`}
                   >
-                    {formatImpact(transaction, language)}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <TableCell>
+                      <TransactionTypeBadge type={transaction.transactionType} />
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-muted-foreground">
+                      {transaction.date}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {transaction.note || EMPTY_CELL_VALUE}
+                    </TableCell>
+                    <TableCell
+                      className={`text-right ${amountClassName(transaction.transactionType)}`}
+                    >
+                      {formatImpact(transaction, language)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         ) : null}

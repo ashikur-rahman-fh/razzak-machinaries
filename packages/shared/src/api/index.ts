@@ -45,6 +45,7 @@ export type {
   CustomerBalance,
   PaymentMethod,
   Transaction,
+  TransactionConfirmation,
   TransactionItem,
   TransactionItemWrite,
   TransactionListParams,

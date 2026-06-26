@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState, type FormEvent } from 'react';
 
 import { getTransactionCreateErrorMessage } from '../errors';
+import { buildConfirmationUrl } from '../routes';
 import { InitialBalanceFields } from './InitialBalanceFields';
 import { PaymentFields } from './PaymentFields';
 import { SaleItemsEditor } from './SaleItemsEditor';
@@ -78,9 +79,15 @@ export function TransactionCreateForm({
     setIsSubmitting(true);
     setServerError(null);
     try {
-      await adminTransactionsApi.createTransaction(buildTransactionWritePayload(values));
+      const created = await adminTransactionsApi.createTransaction(
+        buildTransactionWritePayload(values),
+      );
       const customerId = values.customerId!;
-      router.push(`/customers/${customerId}?success=transactionCreated`);
+      if (created.transactionType === 'SALE' || created.transactionType === 'PAYMENT') {
+        router.push(buildConfirmationUrl(created.id));
+      } else {
+        router.push(`/customers/${customerId}?success=transactionCreated`);
+      }
     } catch (error) {
       setServerError(getTransactionCreateErrorMessage(error, language));
     } finally {

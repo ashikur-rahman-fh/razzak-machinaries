@@ -81,6 +81,24 @@ export function buildCustomerCreateUrl(
     : `/customers/${customerId}/transactions/new`;
 }
 
+export function buildDetailUrl(id: number, listState?: Partial<TransactionListState>): string {
+  const listQuery = listState ? buildListUrl(listState).split('?')[1] : undefined;
+  const path = `${BASE_PATH}/${id}`;
+  return listQuery ? `${path}?from=${encodeURIComponent(listQuery)}` : path;
+}
+
+export function getBackListUrl(fromQuery?: string | null): string {
+  if (fromQuery) {
+    return `${BASE_PATH}?${fromQuery}`;
+  }
+  return BASE_PATH;
+}
+
+export function buildConfirmationUrl(id: number, options?: { from?: 'detail' }): string {
+  const path = `/transactions/${id}/confirmation`;
+  return options?.from === 'detail' ? `${path}?from=detail` : path;
+}
+
 export function toListParams(state: TransactionListState): TransactionListParams {
   return {
     page: state.page,

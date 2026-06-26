@@ -257,11 +257,15 @@ export function TransactionsListPage() {
             {data && data.results.length > 0 ? (
               <div className="relative">
                 {isLargeScreen ? (
-                  <TransactionTable transactions={data.results} />
+                  <TransactionTable transactions={data.results} listState={effectiveState} />
                 ) : (
                   <div className="space-y-3">
                     {data.results.map((transaction) => (
-                      <TransactionMobileCard key={transaction.id} transaction={transaction} />
+                      <TransactionMobileCard
+                        key={transaction.id}
+                        transaction={transaction}
+                        listState={effectiveState}
+                      />
                     ))}
                   </div>
                 )}

@@ -37,6 +37,7 @@ export const API_ROUTES = {
   adminTransactions: {
     list: '/api/admin/transactions/',
     detail: (id: number) => `/api/admin/transactions/${id}/`,
+    confirmation: (id: number) => `/api/admin/transactions/${id}/confirmation/`,
   },
   adminTranslations: '/api/admin/translations/',
 } as const;

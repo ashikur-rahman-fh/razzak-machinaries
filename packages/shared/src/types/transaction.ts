@@ -67,6 +67,24 @@ export type CustomerBalance = {
   cachedBalance: string;
 };
 
+export type TransactionConfirmation = {
+  id: number;
+  displayId: string;
+  transactionType: TransactionType;
+  date: string;
+  totalAmount: string;
+  note: string;
+  paymentMethod: string;
+  customerId: number;
+  customerNameBn: string;
+  customerNameEn: string;
+  customerAddressBn: string;
+  customerAddressEn: string;
+  customerPhone: string;
+  items: TransactionItem[];
+  currentBalance: string;
+};
+
 export type Paginated<T> = {
   count: number;
   next: string | null;

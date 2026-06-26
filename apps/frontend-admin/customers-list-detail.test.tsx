@@ -257,20 +257,22 @@ describe('CustomerDetailPage', () => {
     expect(within(table).getByText('Note')).toBeInTheDocument();
     expect(within(table).getByText('Amount')).toBeInTheDocument();
 
-    const rows = within(table).getAllByRole('row');
-    expect(rows).toHaveLength(4);
+    expect(within(table).getAllByRole('row')).toHaveLength(1);
 
-    const saleCells = within(rows[1]!).getAllByRole('cell');
+    const dataRows = within(table).getAllByRole('link');
+    expect(dataRows).toHaveLength(3);
+
+    const saleCells = within(dataRows[0]!).getAllByRole('cell');
     expect(saleCells[0]).toHaveTextContent(transactionTranslationsEn['transaction.type.sale']);
     expect(saleCells[1]).toHaveTextContent('2026-06-25');
     expect(saleCells[2]).toHaveTextContent('—');
     expect(saleCells[3]).toHaveTextContent('+');
 
-    const paymentCells = within(rows[2]!).getAllByRole('cell');
+    const paymentCells = within(dataRows[1]!).getAllByRole('cell');
     expect(paymentCells[1]).toHaveTextContent('2026-06-24');
     expect(paymentCells[3]).toHaveTextContent('-');
 
-    const initialCells = within(rows[3]!).getAllByRole('cell');
+    const initialCells = within(dataRows[2]!).getAllByRole('cell');
     expect(initialCells[1]).toHaveTextContent('2026-06-20');
     expect(initialCells[2]).toHaveTextContent('halkhata 2026');
     expect(initialCells[3]).toHaveTextContent('+');

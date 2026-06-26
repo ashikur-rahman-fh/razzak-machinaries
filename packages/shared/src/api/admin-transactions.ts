@@ -3,6 +3,7 @@ import type {
   CustomerBalance,
   Paginated,
   Transaction,
+  TransactionConfirmation,
   TransactionListParams,
   TransactionWrite,
 } from '../types/transaction';
@@ -42,6 +43,12 @@ export const adminTransactionsApi = {
 
   getTransaction(id: number): Promise<Transaction> {
     return backendAdminApi.get<Transaction>(API_ROUTES.adminTransactions.detail(id));
+  },
+
+  getTransactionConfirmation(id: number): Promise<TransactionConfirmation> {
+    return backendAdminApi.get<TransactionConfirmation>(
+      API_ROUTES.adminTransactions.confirmation(id),
+    );
   },
 
   async createTransaction(body: TransactionWrite): Promise<Transaction> {

@@ -25,7 +25,14 @@ class InvalidSaleItemUnitPrice(APIException):
     default_detail = "Sale item unit price must be zero or greater."
 
 
+class ConfirmationNotAvailable(APIException):
+    status_code = 404
+    default_code = "CONFIRMATION_NOT_AVAILABLE"
+    default_detail = "Initial balance transactions do not have a printable confirmation."
+
+
 INVALID_TRANSACTION_AMOUNT_MESSAGE = InvalidTransactionAmount.default_detail
 INVALID_SALE_ITEMS_MESSAGE = InvalidSaleItems.default_detail
 INVALID_SALE_ITEM_QUANTITY_MESSAGE = InvalidSaleItemQuantity.default_detail
 INVALID_SALE_ITEM_UNIT_PRICE_MESSAGE = InvalidSaleItemUnitPrice.default_detail
+CONFIRMATION_NOT_AVAILABLE_MESSAGE = ConfirmationNotAvailable.default_detail

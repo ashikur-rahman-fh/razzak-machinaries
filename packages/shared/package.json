@@ -21,7 +21,9 @@
     "./components/ErrorState": "./src/ui/components/error-state/index.ts",
     "./types/api": "./src/types/api.ts",
     "./constants/routes": "./src/constants/routes.ts",
+    "./constants/store": "./src/constants/store.ts",
     "./utils/currency": "./src/utils/currency.ts",
+    "./utils/bangla-amount": "./src/utils/bangla-amount.ts",
     "./i18n": "./src/i18n/index.ts",
     "./security/headers": "./src/security/headers.mjs"
   },
@@ -74,6 +76,7 @@
     "lucide-react": "^1.16.0",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.15",
+    "react-bangla-number-converter": "^1.0.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0",
     "tailwindcss-animate": "^1.0.7"

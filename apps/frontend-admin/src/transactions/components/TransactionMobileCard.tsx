@@ -5,26 +5,45 @@ import { formatBdt } from '@razzak-machinaries/shared/utils/currency';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import { BilingualText, Card, CardContent } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { buildDetailUrl } from '@/customers/routes';
+import { buildDetailUrl as buildCustomerDetailUrl } from '@/customers/routes';
+import { buildDetailUrl, type TransactionListState } from '../routes';
 import { TransactionTypeBadge } from './TransactionTypeBadge';
 
 type TransactionMobileCardProps = {
   transaction: Transaction;
+  listState?: Partial<TransactionListState>;
 };
 
-export function TransactionMobileCard({ transaction }: TransactionMobileCardProps) {
+export function TransactionMobileCard({ transaction, listState }: TransactionMobileCardProps) {
+  const router = useRouter();
   const { language, displayMode } = useLanguagePreference();
   const prefix = transaction.transactionType === 'PAYMENT' ? '-' : '+';
+  const detailHref = buildDetailUrl(transaction.id, listState);
 
   return (
-    <Card>
+    <Card
+      data-testid={`transaction-card-${transaction.id}`}
+      className="cursor-pointer"
+      onClick={() => router.push(detailHref)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          router.push(detailHref);
+        }
+      }}
+      tabIndex={0}
+      role="link"
+      aria-label={`${transaction.customerNameEn}, ${transaction.date}`}
+    >
       <CardContent className="space-y-3 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <Link
-              href={buildDetailUrl(transaction.customerId)}
+              href={buildCustomerDetailUrl(transaction.customerId)}
               className="font-medium text-primary underline-offset-4 hover:underline"
+              onClick={(event) => event.stopPropagation()}
             >
               <BilingualText
                 bn={transaction.customerNameBn}

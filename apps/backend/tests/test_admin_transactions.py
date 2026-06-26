@@ -276,3 +276,55 @@ def test_transaction_detail(superuser_client, customer):
     response = _auth_get(superuser_client, f"{TRANSACTIONS_URL}{tx_id}/")
     assert response.status_code == 200
     assert response.data["id"] == tx_id
+
+
+def test_sale_confirmation_endpoint(superuser_client, customer):
+    _auth_post_json(superuser_client, TRANSACTIONS_URL, _initial_payload(customer.id, "500.00"))
+    create_response = _auth_post_json(
+        superuser_client, TRANSACTIONS_URL, _sale_payload(customer.id)
+    )
+    tx_id = create_response.data["id"]
+
+    response = _auth_get(superuser_client, f"{TRANSACTIONS_URL}{tx_id}/confirmation/")
+    assert response.status_code == 200
+    assert response.data["displayId"] == f"COM-{tx_id}"
+    assert response.data["transactionType"] == "SALE"
+    assert response.data["totalAmount"] == "2250.50"
+    assert len(response.data["items"]) == 2
+    assert response.data["customerNameBn"] == customer.full_name_bn
+    assert response.data["currentBalance"] == "2750.50"
+
+
+def test_payment_confirmation_endpoint(superuser_client, customer):
+    _auth_post_json(superuser_client, TRANSACTIONS_URL, _initial_payload(customer.id, "1000.00"))
+    create_response = _auth_post_json(
+        superuser_client, TRANSACTIONS_URL, _payment_payload(customer.id, "400.00")
+    )
+    tx_id = create_response.data["id"]
+
+    response = _auth_get(superuser_client, f"{TRANSACTIONS_URL}{tx_id}/confirmation/")
+    assert response.status_code == 200
+    assert response.data["transactionType"] == "PAYMENT"
+    assert response.data["paymentMethod"] == "cash"
+    assert response.data["totalAmount"] == "400.00"
+    assert response.data["items"] == []
+    assert response.data["currentBalance"] == "600.00"
+
+
+def test_initial_confirmation_not_available(superuser_client, customer):
+    create_response = _auth_post_json(
+        superuser_client, TRANSACTIONS_URL, _initial_payload(customer.id)
+    )
+    tx_id = create_response.data["id"]
+
+    response = _auth_get(superuser_client, f"{TRANSACTIONS_URL}{tx_id}/confirmation/")
+    assert response.status_code == 404
+    assert_error_envelope(response, status_code=404, code="CONFIRMATION_NOT_AVAILABLE")
+
+
+def test_confirmation_requires_auth(api_client, superuser_client, customer):
+    sale_response = _auth_post_json(superuser_client, TRANSACTIONS_URL, _sale_payload(customer.id))
+    tx_id = sale_response.data["id"]
+
+    response = api_client.get(f"{TRANSACTIONS_URL}{tx_id}/confirmation/")
+    assert response.status_code in (401, 403)
