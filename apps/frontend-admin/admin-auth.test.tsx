@@ -499,6 +499,17 @@ describe('ChangePasswordPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows logged-in admin badge in navbar', async () => {
+    server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)));
+    renderWithAuth(<ChangePasswordPage />);
+    await screen.findByTestId('admin-change-password-page');
+
+    const badge = await screen.findByTestId('admin-user-badge');
+    expect(badge).toHaveTextContent('Admin U.');
+    expect(badge).toHaveTextContent('AU');
+    expect(badge).toHaveAttribute('href', '/profile');
+  });
+
   it('shows both languages on change password when display mode is both', async () => {
     const user = userEvent.setup();
     renderWithAuth(<ChangePasswordPage />, { language: 'en', displayMode: 'both' });

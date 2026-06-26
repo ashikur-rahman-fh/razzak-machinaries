@@ -19,6 +19,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 
+import { useAdminAuth } from '@/auth/AdminAuthProvider';
+import { AdminUserBadge } from '@/components/AdminUserBadge';
+
 export type AdminActiveRoute =
   | 'dashboard'
   | 'customers'
@@ -126,12 +129,15 @@ function SidebarNav({
 function SidebarFooter({
   onLogout,
   isLoggingOut,
+  onNavigate,
 }: {
   onLogout?: () => void;
   isLoggingOut?: boolean;
+  onNavigate?: () => void;
 }) {
   const { t } = useTranslation();
   const { language, displayMode, setPreference } = useLanguagePreference();
+  const { user } = useAdminAuth();
 
   return (
     <div className="mt-auto flex flex-col gap-3 border-t border-border pt-4">
@@ -148,6 +154,14 @@ function SidebarFooter({
           selectLanguage: t('language.selectLanguage'),
         }}
       />
+      {user && onLogout ? (
+        <AdminUserBadge
+          firstName={user.firstName}
+          lastName={user.lastName}
+          username={user.username}
+          onNavigate={onNavigate}
+        />
+      ) : null}
       {onLogout ? (
         <Button
           type="button"
@@ -222,7 +236,11 @@ export function AdminMobileNav({ activeRoute, onLogout, isLoggingOut = false }: 
           </SheetHeader>
           <div className="flex flex-1 flex-col px-4 py-4">
             <SidebarNav activeRoute={activeRoute} onNavigate={() => setMenuOpen(false)} />
-            <SidebarFooter onLogout={onLogout} isLoggingOut={isLoggingOut} />
+            <SidebarFooter
+              onLogout={onLogout}
+              isLoggingOut={isLoggingOut}
+              onNavigate={() => setMenuOpen(false)}
+            />
           </div>
         </SheetContent>
       </Sheet>

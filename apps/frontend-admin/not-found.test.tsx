@@ -4,8 +4,9 @@ import {
   LanguageProvider,
 } from '@razzak-machinaries/shared/i18n';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
 import NotFound from './src/app/not-found';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
 import {
@@ -14,6 +15,12 @@ import {
 } from './src/i18n/dashboard-translations';
 import { geoTranslationsBn, geoTranslationsEn } from './src/i18n/geo-translations';
 import { customerTranslationsBn, customerTranslationsEn } from './src/i18n/customer-translations';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  usePathname: () => '/not-found',
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 function renderNotFound() {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, 'en');
@@ -35,7 +42,9 @@ function renderNotFound() {
         },
       }}
     >
-      <NotFound />
+      <AdminAuthProvider>
+        <NotFound />
+      </AdminAuthProvider>
     </LanguageProvider>,
   );
 }

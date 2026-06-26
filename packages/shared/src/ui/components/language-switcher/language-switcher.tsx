@@ -62,7 +62,7 @@ export function LanguageSwitcher({
       role="group"
       aria-label={labels.selectLanguage}
       className={cn(
-        'inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5',
+        'flex w-full items-center rounded-md border border-border bg-muted/40 p-0.5',
         className,
       )}
     >
@@ -74,7 +74,7 @@ export function LanguageSwitcher({
           lang={option.id === 'en' ? 'en' : option.id === 'bn' ? 'bn' : undefined}
           onClick={option.onSelect}
           className={cn(
-            'cursor-pointer rounded-[calc(var(--radius-sm)-1px)] px-2.5 py-1 text-xs font-medium transition-colors',
+            'flex min-w-0 flex-1 cursor-pointer justify-center rounded-[calc(var(--radius-sm)-1px)] px-2 py-1 text-center text-xs font-medium transition-colors',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
             option.isActive
               ? 'bg-card text-foreground shadow-sm'
