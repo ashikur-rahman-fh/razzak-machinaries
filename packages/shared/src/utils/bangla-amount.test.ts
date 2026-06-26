@@ -8,16 +8,28 @@ import {
 } from './bangla-amount';
 
 describe('formatCurrencyBn', () => {
-  it('formats BDT with latin digits by default', () => {
+  it('formats taka with latin digits by default', () => {
     expect(formatCurrencyBn(12300)).toBe('৳12,300');
   });
 
-  it('formats BDT with Bangla digits when requested', () => {
+  it('formats taka with Bangla digits when requested', () => {
     expect(formatCurrencyBn(12300, { useBanglaDigits: true })).toBe('৳১২,৩০০');
   });
 
   it('rounds fractional amounts', () => {
     expect(formatCurrencyBn(12300.75)).toBe('৳12,301');
+  });
+
+  it('uses lakh grouping with latin digits', () => {
+    expect(formatCurrencyBn(123540)).toBe('৳1,23,540');
+  });
+
+  it('uses lakh grouping with Bangla digits', () => {
+    expect(formatCurrencyBn(123540, { useBanglaDigits: true })).toBe('৳১,২৩,৫৪০');
+  });
+
+  it('uses lakh grouping for amounts over 10 lakh', () => {
+    expect(formatCurrencyBn(1250000, { useBanglaDigits: true })).toBe('৳১২,৫০,০০০');
   });
 });
 

@@ -1,11 +1,6 @@
-const BDT_FORMATTER_EN = new Intl.NumberFormat('en-BD', {
-  style: 'currency',
-  currency: 'BDT',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+import { formatCurrencyBn } from './bangla-amount';
 
-const BDT_FORMATTER_BN = new Intl.NumberFormat('bn-BD', {
+const BDT_FORMATTER_EN = new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'BDT',
   minimumFractionDigits: 0,
@@ -26,13 +21,15 @@ export function formatInteger(value: string | number): string {
 }
 
 export function formatBdt(amount: string | number, language: 'en' | 'bn' = 'en'): string {
-  const formatter = language === 'bn' ? BDT_FORMATTER_BN : BDT_FORMATTER_EN;
-  return formatter.format(roundAmount(amount));
+  if (language === 'bn') {
+    return formatCurrencyBn(amount, { useBanglaDigits: true });
+  }
+  return BDT_FORMATTER_EN.format(roundAmount(amount));
 }
 
 export function formatBdtPlain(amount: string | number): string {
   const rounded = roundAmount(amount);
-  return `৳${rounded.toLocaleString('en-BD', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  return `৳${rounded.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 export function multiplyMoneyStrings(unitPrice: string, quantity: string): string {

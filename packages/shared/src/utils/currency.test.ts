@@ -14,12 +14,20 @@ describe('formatBdt', () => {
     expect(formatBdt(12300, 'en')).toBe('BDT\u00a012,300');
   });
 
-  it('formats BDT without decimal places in Bangla locale', () => {
-    expect(formatBdt(12300, 'bn')).toMatch(/12,300|১২,৩০০/);
+  it('formats taka with Bangla digits in Bangla locale', () => {
+    expect(formatBdt(12300, 'bn')).toBe('৳১২,৩০০');
   });
 
   it('rounds fractional amounts', () => {
     expect(formatBdt('99.99', 'en')).toBe('BDT\u00a0100');
+  });
+
+  it('uses lakh grouping in English', () => {
+    expect(formatBdt(123540, 'en')).toBe('BDT\u00a01,23,540');
+  });
+
+  it('uses lakh grouping in Bangla', () => {
+    expect(formatBdt(123540, 'bn')).toBe('৳১,২৩,৫৪০');
   });
 });
 

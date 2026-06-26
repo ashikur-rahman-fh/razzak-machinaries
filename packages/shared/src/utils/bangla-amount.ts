@@ -25,6 +25,14 @@ export type FormatCurrencyBnOptions = {
   useBanglaDigits?: boolean;
 };
 
+function formatGroupedAmount(amount: number, useBanglaDigits: boolean): string {
+  const locale = useBanglaDigits ? 'bn-BD' : 'en-IN';
+  return amount.toLocaleString(locale, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
 export function formatCurrencyBn(
   amount: string | number,
   options: FormatCurrencyBnOptions = {},
@@ -32,12 +40,8 @@ export function formatCurrencyBn(
   const parsed =
     typeof amount === 'number' ? amount : Number.parseFloat(toLatinDigits(String(amount)));
   const safeAmount = Number.isFinite(parsed) ? Math.round(parsed) : 0;
-  const formatted = safeAmount.toLocaleString('en-BD', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-  const withSymbol = `৳${formatted}`;
-  return options.useBanglaDigits ? toBanglaDigits(withSymbol) : withSymbol;
+  const formatted = formatGroupedAmount(safeAmount, options.useBanglaDigits ?? false);
+  return `৳${formatted}`;
 }
 
 export function convertNumberToBanglaWords(amount: string | number): string {

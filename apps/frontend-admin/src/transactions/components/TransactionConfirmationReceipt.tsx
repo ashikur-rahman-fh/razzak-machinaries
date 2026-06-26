@@ -5,10 +5,9 @@ import { STORE_CONFIG } from '@razzak-machinaries/shared/constants/store';
 import { useTranslation } from '@razzak-machinaries/shared/i18n';
 import {
   formatAmountInBanglaWords,
-  formatCurrencyBn,
   toBanglaDigits,
 } from '@razzak-machinaries/shared/utils/bangla-amount';
-import { formatInteger } from '@razzak-machinaries/shared/utils/currency';
+import { formatBdt, formatInteger } from '@razzak-machinaries/shared/utils/currency';
 
 import { PAYMENT_METHODS } from '../constants';
 
@@ -108,13 +107,13 @@ export function TransactionConfirmationReceipt({
                     </td>
                     <td className="border border-neutral-400 px-2 py-2">{item.productName}</td>
                     <td className="border border-neutral-400 px-2 py-2 text-right">
-                      {formatCurrencyBn(item.unitPrice, { useBanglaDigits: true })}
+                      {formatBdt(item.unitPrice, 'bn')}
                     </td>
                     <td className="border border-neutral-400 px-2 py-2 text-right">
                       {toBanglaDigits(formatInteger(item.quantity))}
                     </td>
                     <td className="border border-neutral-400 px-2 py-2 text-right">
-                      {formatCurrencyBn(item.lineTotal, { useBanglaDigits: true })}
+                      {formatBdt(item.lineTotal, 'bn')}
                     </td>
                   </tr>
                 ))}
@@ -122,15 +121,12 @@ export function TransactionConfirmationReceipt({
             </table>
           </div>
           <p className="mt-4 text-right text-base font-semibold">
-            মোট বিক্রয় মূল্য: {formatCurrencyBn(data.totalAmount, { useBanglaDigits: true })}
+            মোট বিক্রয় মূল্য: {formatBdt(data.totalAmount, 'bn')}
           </p>
         </section>
       ) : (
         <section className="mt-6 space-y-2 border border-neutral-300 p-4">
-          <ReceiptRow
-            label="পেমেন্টের পরিমাণ"
-            value={formatCurrencyBn(data.totalAmount, { useBanglaDigits: true })}
-          />
+          <ReceiptRow label="পেমেন্টের পরিমাণ" value={formatBdt(data.totalAmount, 'bn')} />
           <ReceiptRow label="পেমেন্ট পদ্ধতি" value={getPaymentMethodLabel(data.paymentMethod, t)} />
           {data.note.trim() ? <ReceiptRow label="নোট / বিবরণ" value={data.note.trim()} /> : null}
         </section>
@@ -144,9 +140,7 @@ export function TransactionConfirmationReceipt({
       {showCurrentBaki ? (
         <section className="mt-6 border-t border-dashed border-neutral-300 pt-4">
           <p className="text-sm font-medium text-neutral-700">বর্তমান মোট বাকি:</p>
-          <p className="mt-1 text-lg font-semibold">
-            {formatCurrencyBn(data.currentBalance, { useBanglaDigits: true })}
-          </p>
+          <p className="mt-1 text-lg font-semibold">{formatBdt(data.currentBalance, 'bn')}</p>
           <p className="mt-2 text-sm text-neutral-700">কথায়:</p>
           <p className="mt-1 font-medium">{formatAmountInBanglaWords(data.currentBalance)}</p>
         </section>
