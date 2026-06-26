@@ -322,9 +322,9 @@ def test_initial_confirmation_not_available(superuser_client, customer):
     assert_error_envelope(response, status_code=404, code="CONFIRMATION_NOT_AVAILABLE")
 
 
-def test_confirmation_requires_auth(api_client, superuser_client, customer):
+def test_confirmation_requires_auth(superuser_client, customer):
     sale_response = _auth_post_json(superuser_client, TRANSACTIONS_URL, _sale_payload(customer.id))
     tx_id = sale_response.data["id"]
 
-    response = api_client.get(f"{TRANSACTIONS_URL}{tx_id}/confirmation/")
-    assert response.status_code in (401, 403)
+    response = APIClient().get(f"{TRANSACTIONS_URL}{tx_id}/confirmation/")
+    assert_error_envelope(response, status_code=401, code="UNAUTHORIZED")
