@@ -1,11 +1,11 @@
-import { Button, EmptyState, PageShell, TranslatedText } from '@razzak-machinaries/shared/ui';
+import { Button, EmptyState, TranslatedText } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 
 export default function NotFound() {
   return (
-    <PageShell data-testid="admin-not-found-page" header={<AdminNavbar activeRoute="profile" />}>
+    <AdminAppShell data-testid="admin-not-found-page" activeRoute="dashboard">
       <EmptyState
         title={<TranslatedText translationKey="notFound.title" as="span" />}
         description={<TranslatedText translationKey="notFound.description" as="span" />}
@@ -13,6 +13,11 @@ export default function NotFound() {
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
             <Button asChild>
               <Link href="/">
+                <TranslatedText translationKey="nav.dashboard" as="span" compact />
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/profile">
                 <TranslatedText translationKey="notFound.backToProfile" as="span" compact />
               </Link>
             </Button>
@@ -29,6 +34,6 @@ export default function NotFound() {
           </div>
         }
       />
-    </PageShell>
+    </AdminAppShell>
   );
 }

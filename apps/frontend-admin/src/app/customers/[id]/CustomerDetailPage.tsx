@@ -5,14 +5,13 @@ import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
 import {
   EmptyState,
   ErrorState,
-  PageShell,
   SuccessAlert,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { CustomerDetailSkeleton } from '@/customers/components/CustomerDetailSkeleton';
@@ -85,15 +84,11 @@ export function CustomerDetailPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="customer-detail-page"
-        header={
-          <AdminNavbar
-            activeRoute="customers"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="customers"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         {showRedirectSuccess ? (
           <SuccessAlert
@@ -180,7 +175,7 @@ export function CustomerDetailPage() {
             />
           </>
         ) : null}
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

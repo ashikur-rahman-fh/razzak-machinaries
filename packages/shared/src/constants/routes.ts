@@ -40,4 +40,5 @@ export const API_ROUTES = {
     confirmation: (id: number) => `/api/admin/transactions/${id}/confirmation/`,
   },
   adminTranslations: '/api/admin/translations/',
+  adminDashboard: '/api/admin/dashboard/',
 } as const;

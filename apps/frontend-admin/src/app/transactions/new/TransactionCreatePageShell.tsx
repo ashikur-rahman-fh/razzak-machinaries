@@ -1,9 +1,8 @@
 'use client';
 
-import { PageShell } from '@razzak-machinaries/shared/ui';
 import { useSearchParams } from 'next/navigation';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 
@@ -18,20 +17,16 @@ export function TransactionCreatePageShell() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
-        header={
-          <AdminNavbar
-            activeRoute="transactions"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+      <AdminAppShell
+        activeRoute="transactions"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <TransactionCreatePage
           preselectedCustomerId={customerId && Number.isFinite(customerId) ? customerId : undefined}
           initialType={initialType}
         />
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

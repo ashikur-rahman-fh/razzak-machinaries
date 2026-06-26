@@ -30,5 +30,6 @@ urlpatterns = [
     path("admin/geo/", include("geo.urls")),
     path("admin/customers/", include("customers.urls")),
     path("admin/transactions/", include("transactions.urls")),
+    path("admin/dashboard/", include("dashboard.urls")),
     re_path(r"^.*$", api_not_found, name="api-not-found"),
 ]

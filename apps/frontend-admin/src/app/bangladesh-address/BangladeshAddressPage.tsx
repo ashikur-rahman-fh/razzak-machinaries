@@ -15,13 +15,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  PageShell,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { BangladeshAddressStatsCards } from '@/bangladesh-address/components/BangladeshAddressStatsCards';
@@ -154,16 +153,12 @@ export function BangladeshAddressPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="bangladesh-address-page"
         contentClassName="max-w-full"
-        header={
-          <AdminNavbar
-            activeRoute="bangladesh-address"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="bangladesh-address"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="flex w-full flex-col gap-6">
           <div className="space-y-1">
@@ -404,7 +399,7 @@ export function BangladeshAddressPage() {
             </CardContent>
           </Card>
         </div>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

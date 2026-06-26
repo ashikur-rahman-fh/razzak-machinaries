@@ -11,7 +11,6 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
-  PageShell,
   RecoverableErrorState,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
@@ -19,7 +18,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { BangladeshAddressEditForm } from '@/bangladesh-address/components/BangladeshAddressEditForm';
@@ -57,11 +56,11 @@ export function BangladeshAddressEditPage() {
   if (!isValidType) {
     return (
       <RequireAdminAuth>
-        <PageShell header={<AdminNavbar activeRoute="bangladesh-address" />}>
+        <AdminAppShell activeRoute="bangladesh-address">
           <ErrorState
             message={<TranslatedText translationKey="geo.invalidType" as="span" layout="inline" />}
           />
-        </PageShell>
+        </AdminAppShell>
       </RequireAdminAuth>
     );
   }
@@ -85,15 +84,11 @@ export function BangladeshAddressEditPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="geo-edit-page"
-        header={
-          <AdminNavbar
-            activeRoute="bangladesh-address"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="bangladesh-address"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
           <Card>
@@ -196,7 +191,7 @@ export function BangladeshAddressEditPage() {
             </CardContent>
           </Card>
         </div>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

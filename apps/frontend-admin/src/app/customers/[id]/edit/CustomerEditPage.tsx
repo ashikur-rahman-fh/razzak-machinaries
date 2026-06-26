@@ -2,11 +2,11 @@
 
 import { adminCustomersApi, isApiError } from '@razzak-machinaries/shared/api';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
-import { EmptyState, ErrorState, PageShell, TranslatedText } from '@razzak-machinaries/shared/ui';
+import { EmptyState, ErrorState, TranslatedText } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { CustomerCreateForm } from '@/customers/components/CustomerCreateForm';
@@ -58,15 +58,11 @@ export function CustomerEditPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="customer-edit-page"
-        header={
-          <AdminNavbar
-            activeRoute="customers"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="customers"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="space-y-6">
           <div className="space-y-1">
@@ -129,7 +125,7 @@ export function CustomerEditPage() {
             />
           ) : null}
         </div>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

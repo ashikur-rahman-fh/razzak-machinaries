@@ -25,6 +25,7 @@ vi.mock('next/navigation', () => ({
     replace: replaceMock,
     push: vi.fn(),
   }),
+  usePathname: () => '/profile',
 }));
 
 function setLanguagePreference(preference: LanguagePreference) {

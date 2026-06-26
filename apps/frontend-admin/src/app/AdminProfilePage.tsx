@@ -13,13 +13,11 @@ import {
   ErrorAlert,
   SuccessAlert,
   Input,
-  PageShell,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 
@@ -53,7 +51,6 @@ function StatusBadge({
 }
 
 export function AdminProfilePage() {
-  const router = useRouter();
   const { t } = useTranslation();
   const { language } = useLanguagePreference();
   const { user, logout, isLoggingOut, refreshUser } = useAdminAuth();
@@ -88,11 +85,6 @@ export function AdminProfilePage() {
     setError(null);
   }
 
-  async function handleLogout() {
-    await logout();
-    router.replace('/login');
-  }
-
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!user || isSaving) {
@@ -125,15 +117,11 @@ export function AdminProfilePage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="admin-profile-page"
-        header={
-          <AdminNavbar
-            activeRoute="profile"
-            onLogout={() => void handleLogout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="profile"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         {user ? (
           <div className="mx-auto w-full max-w-4xl space-y-6">
@@ -318,7 +306,7 @@ export function AdminProfilePage() {
             </div>
           </div>
         ) : null}
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

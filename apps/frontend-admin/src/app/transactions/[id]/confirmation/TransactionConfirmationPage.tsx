@@ -2,18 +2,12 @@
 
 import { adminTransactionsApi, isApiError } from '@razzak-machinaries/shared/api';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
-import {
-  Button,
-  EmptyState,
-  ErrorState,
-  PageShell,
-  TranslatedText,
-} from '@razzak-machinaries/shared/ui';
+import { Button, EmptyState, ErrorState, TranslatedText } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/customers/hooks';
@@ -54,16 +48,10 @@ export function TransactionConfirmationPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
-        header={
-          <div className="print:hidden">
-            <AdminNavbar
-              activeRoute="transactions"
-              onLogout={() => void logout()}
-              isLoggingOut={isLoggingOut}
-            />
-          </div>
-        }
+      <AdminAppShell
+        activeRoute="transactions"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="print:hidden mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-3">
@@ -158,7 +146,7 @@ export function TransactionConfirmationPage() {
         {data ? (
           <TransactionConfirmationReceipt data={data} showCurrentBaki={showCurrentBaki} />
         ) : null}
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

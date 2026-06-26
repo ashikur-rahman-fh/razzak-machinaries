@@ -2,13 +2,13 @@
 
 import { adminCustomersApi } from '@razzak-machinaries/shared/api';
 import { useLanguagePreference } from '@razzak-machinaries/shared/i18n';
-import { PageShell, TranslatedText } from '@razzak-machinaries/shared/ui';
+import { TranslatedText } from '@razzak-machinaries/shared/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { RequireAdminAuth } from '@/auth/guards';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 
 import { FEEDBACK_DISMISS_MS } from '@/customers/constants';
 import { CustomerCreateForm } from '@/customers/components/CustomerCreateForm';
@@ -50,14 +50,10 @@ export function CustomerCreatePage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
-        header={
-          <AdminNavbar
-            activeRoute="customers"
-            onLogout={() => void logout().then(() => router.replace('/login'))}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+      <AdminAppShell
+        activeRoute="customers"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="space-y-6" data-testid="customer-create-page">
           <header className="space-y-1">
@@ -76,7 +72,7 @@ export function CustomerCreatePage() {
             showSuccess={showSuccess}
           />
         </div>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

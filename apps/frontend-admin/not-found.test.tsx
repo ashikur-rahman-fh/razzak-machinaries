@@ -8,6 +8,10 @@ import { describe, expect, it } from 'vitest';
 
 import NotFound from './src/app/not-found';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
+import {
+  dashboardTranslationsBn,
+  dashboardTranslationsEn,
+} from './src/i18n/dashboard-translations';
 import { geoTranslationsBn, geoTranslationsEn } from './src/i18n/geo-translations';
 import { customerTranslationsBn, customerTranslationsEn } from './src/i18n/customer-translations';
 
@@ -17,8 +21,18 @@ function renderNotFound() {
   return render(
     <LanguageProvider
       catalogs={{
-        en: { ...adminTranslationsEn, ...geoTranslationsEn, ...customerTranslationsEn },
-        bn: { ...adminTranslationsBn, ...geoTranslationsBn, ...customerTranslationsBn },
+        en: {
+          ...adminTranslationsEn,
+          ...dashboardTranslationsEn,
+          ...geoTranslationsEn,
+          ...customerTranslationsEn,
+        },
+        bn: {
+          ...adminTranslationsBn,
+          ...dashboardTranslationsBn,
+          ...geoTranslationsBn,
+          ...customerTranslationsBn,
+        },
       }}
     >
       <NotFound />
@@ -35,7 +49,8 @@ describe('NotFound page', () => {
     expect(screen.getByText(adminTranslationsEn['notFound.description'])).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: adminTranslationsEn['notFound.backToProfile'] }),
-    ).toHaveAttribute('href', '/');
+    ).toHaveAttribute('href', '/profile');
+    expect(screen.getAllByRole('link', { name: 'Dashboard' }).length).toBeGreaterThan(0);
     expect(
       screen.getByRole('link', { name: adminTranslationsEn['notFound.viewCustomers'] }),
     ).toHaveAttribute('href', '/customers');

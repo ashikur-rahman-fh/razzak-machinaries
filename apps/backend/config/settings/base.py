@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "geo",
     "customers",
     "transactions",
+    "dashboard",
 ]
 
 MIDDLEWARE = [

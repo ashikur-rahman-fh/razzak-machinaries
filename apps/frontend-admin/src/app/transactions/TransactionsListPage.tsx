@@ -10,7 +10,6 @@ import {
   EmptyState,
   ErrorState,
   Input,
-  PageShell,
   PaginationControls,
   Select,
   SelectContent,
@@ -24,7 +23,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { CustomerListSkeleton } from '@/customers/components/CustomerDetailSkeleton';
@@ -129,15 +128,11 @@ export function TransactionsListPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="transactions-list-page"
-        header={
-          <AdminNavbar
-            activeRoute="transactions"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="transactions"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         {showSuccess ? (
           <SuccessAlert
@@ -291,7 +286,7 @@ export function TransactionsListPage() {
             ) : null}
           </CardContent>
         </Card>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

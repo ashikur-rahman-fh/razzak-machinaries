@@ -1,3 +1,4 @@
+export { adminDashboardApi } from './admin-dashboard';
 export { adminAuthApi, ensureAdminCsrf } from './admin-auth';
 export { adminCustomersApi } from './admin-customers';
 export { adminGeoApi } from './admin-geo';
@@ -41,6 +42,18 @@ export type {
   AdminUser,
 } from '../types/admin-auth';
 export type { Customer, CustomerListParams, CustomerWrite } from '../types/customer';
+export type {
+  DashboardData,
+  DashboardParams,
+  DashboardRecentCustomer,
+  DashboardRecentTransaction,
+  DashboardSummary,
+  DashboardYearlyStats,
+  MonthlyDueChange,
+  MonthlySalesPayments,
+  MonthlyTransactionCounts,
+  TopCustomerByDue,
+} from '../types/dashboard';
 export type {
   CustomerBalance,
   PaymentMethod,

@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  PageShell,
   PaginationControls,
   Select,
   SelectContent,
@@ -21,7 +20,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { CustomerListSkeleton } from '@/customers/components/CustomerDetailSkeleton';
@@ -145,15 +144,11 @@ export function CustomersListPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="customers-list-page"
-        header={
-          <AdminNavbar
-            activeRoute="customers"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="customers"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="flex w-full flex-col gap-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -305,7 +300,7 @@ export function CustomersListPage() {
             </CardContent>
           </Card>
         </div>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

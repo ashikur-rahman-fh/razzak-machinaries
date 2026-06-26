@@ -11,6 +11,18 @@ from transactions.validators import validate_positive_amount, validate_sale_item
 
 
 @dataclass(frozen=True)
+class LedgerAggregates:
+    total_initial: Decimal
+    total_sales: Decimal
+    total_payments: Decimal
+    transaction_count: int
+
+    @property
+    def current_balance(self) -> Decimal:
+        return quantize_money(self.total_initial + self.total_sales - self.total_payments)
+
+
+@dataclass(frozen=True)
 class BalanceSummary:
     customer_id: int
     current_balance: Decimal
@@ -21,8 +33,8 @@ class BalanceSummary:
     cached_balance: Decimal | None = None
 
 
-def calculate_customer_balance(customer_id: int) -> BalanceSummary:
-    aggregates = Transaction.objects.filter(customer_id=customer_id).aggregate(
+def _aggregate_ledger(queryset) -> LedgerAggregates:
+    aggregates = queryset.aggregate(
         total_initial=Sum(
             Case(
                 When(transaction_type=TransactionType.INITIAL, then="total_amount"),
@@ -47,10 +59,29 @@ def calculate_customer_balance(customer_id: int) -> BalanceSummary:
         transaction_count=Count("id"),
     )
 
-    total_initial = aggregates["total_initial"] or Decimal("0")
-    total_sales = aggregates["total_sales"] or Decimal("0")
-    total_payments = aggregates["total_payments"] or Decimal("0")
-    current_balance = quantize_money(total_initial + total_sales - total_payments)
+    return LedgerAggregates(
+        total_initial=quantize_money(aggregates["total_initial"] or Decimal("0")),
+        total_sales=quantize_money(aggregates["total_sales"] or Decimal("0")),
+        total_payments=quantize_money(aggregates["total_payments"] or Decimal("0")),
+        transaction_count=aggregates["transaction_count"] or 0,
+    )
+
+
+def aggregate_amount_by_type(queryset, transaction_type: str) -> Decimal:
+    result = queryset.filter(transaction_type=transaction_type).aggregate(total=Sum("total_amount"))
+    return quantize_money(result["total"] or Decimal("0"))
+
+
+def calculate_global_due() -> Decimal:
+    return _aggregate_ledger(Transaction.objects.all()).current_balance
+
+
+def calculate_customer_balance(customer_id: int) -> BalanceSummary:
+    ledger = _aggregate_ledger(Transaction.objects.filter(customer_id=customer_id))
+    total_initial = ledger.total_initial
+    total_sales = ledger.total_sales
+    total_payments = ledger.total_payments
+    current_balance = ledger.current_balance
 
     cached_balance = (
         Customer.objects.filter(pk=customer_id).values_list("cached_balance", flat=True).first()
@@ -59,10 +90,10 @@ def calculate_customer_balance(customer_id: int) -> BalanceSummary:
     return BalanceSummary(
         customer_id=customer_id,
         current_balance=current_balance,
-        total_initial=quantize_money(total_initial),
-        total_sales=quantize_money(total_sales),
-        total_payments=quantize_money(total_payments),
-        transaction_count=aggregates["transaction_count"] or 0,
+        total_initial=total_initial,
+        total_sales=total_sales,
+        total_payments=total_payments,
+        transaction_count=ledger.transaction_count,
         cached_balance=cached_balance,
     )
 

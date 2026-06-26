@@ -11,19 +11,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  PageShell,
   PasswordInput,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 
 export function ChangePasswordPage() {
-  const router = useRouter();
   const { logout, isLoggingOut } = useAdminAuth();
   const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState('');
@@ -88,22 +85,13 @@ export function ChangePasswordPage() {
     }
   }
 
-  async function handleLogout() {
-    await logout();
-    router.replace('/login');
-  }
-
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="admin-change-password-page"
-        header={
-          <AdminNavbar
-            activeRoute="change-password"
-            onLogout={() => void handleLogout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="change-password"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="mx-auto w-full max-w-md space-y-6">
           <header className="space-y-1">
@@ -205,7 +193,7 @@ export function ChangePasswordPage() {
                     )}
                   </Button>
                   <Button type="button" variant="ghost" asChild>
-                    <Link href="/">
+                    <Link href="/profile">
                       <TranslatedText translationKey="password.backToProfile" as="span" compact />
                     </Link>
                   </Button>
@@ -214,7 +202,7 @@ export function ChangePasswordPage() {
             </CardContent>
           </Card>
         </div>
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

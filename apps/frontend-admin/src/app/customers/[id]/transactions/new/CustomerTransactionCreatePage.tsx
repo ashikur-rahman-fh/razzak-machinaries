@@ -1,10 +1,9 @@
 'use client';
 
 import { adminCustomersApi } from '@razzak-machinaries/shared/api';
-import { PageShell } from '@razzak-machinaries/shared/ui';
 import { useParams, useSearchParams } from 'next/navigation';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { getAsyncData, useAsyncData } from '@/customers/hooks';
@@ -26,14 +25,10 @@ export function CustomerTransactionCreatePage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
-        header={
-          <AdminNavbar
-            activeRoute="customers"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+      <AdminAppShell
+        activeRoute="customers"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <TransactionCreateForm
           preselectedCustomerId={customerId}
@@ -41,7 +36,7 @@ export function CustomerTransactionCreatePage() {
           initialType={initialType}
           backHref={`/customers/${customerId}`}
         />
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

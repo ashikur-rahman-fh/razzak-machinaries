@@ -105,6 +105,15 @@ export {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './primitives/shadcn/alert-dialog';
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './primitives/shadcn/sheet';
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './primitives/shadcn/tabs';
 export {
   Select,

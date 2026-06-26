@@ -6,7 +6,6 @@ import {
   Button,
   EmptyState,
   ErrorState,
-  PageShell,
   RecoverableErrorState,
   SuccessAlert,
   TranslatedText,
@@ -15,7 +14,7 @@ import Link from 'next/link';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { BangladeshAddressDetailHeader } from '@/bangladesh-address/components/BangladeshAddressDetailHeader';
@@ -98,11 +97,11 @@ export function BangladeshAddressDetailPage() {
   if (!isValidType) {
     return (
       <RequireAdminAuth>
-        <PageShell header={<AdminNavbar activeRoute="bangladesh-address" />}>
+        <AdminAppShell activeRoute="bangladesh-address">
           <ErrorState
             message={<TranslatedText translationKey="geo.invalidType" as="span" layout="inline" />}
           />
-        </PageShell>
+        </AdminAppShell>
       </RequireAdminAuth>
     );
   }
@@ -137,15 +136,11 @@ export function BangladeshAddressDetailPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="geo-detail-page"
-        header={
-          <AdminNavbar
-            activeRoute="bangladesh-address"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="bangladesh-address"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         <div className="relative mx-auto flex w-full max-w-2xl flex-col gap-6">
           {showRedirectSuccess ? (
@@ -248,7 +243,7 @@ export function BangladeshAddressDetailPage() {
             errorMessage={deleteError}
           />
         ) : null}
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }

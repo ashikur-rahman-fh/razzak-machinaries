@@ -1,5 +1,5 @@
-import { AdminProfilePage } from './AdminProfilePage';
+import { DashboardPage } from '@/dashboard/DashboardPage';
 
 export default function Page() {
-  return <AdminProfilePage />;
+  return <DashboardPage />;
 }

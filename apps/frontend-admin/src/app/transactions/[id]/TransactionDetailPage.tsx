@@ -1,10 +1,10 @@
 'use client';
 
 import { adminTransactionsApi, isApiError } from '@razzak-machinaries/shared/api';
-import { EmptyState, ErrorState, PageShell, TranslatedText } from '@razzak-machinaries/shared/ui';
+import { EmptyState, ErrorState, TranslatedText } from '@razzak-machinaries/shared/ui';
 import { useParams, useSearchParams } from 'next/navigation';
 
-import { AdminNavbar } from '@/components/AdminNavbar';
+import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { RequireAdminAuth } from '@/auth/guards';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/transactions/hooks';
@@ -30,15 +30,11 @@ export function TransactionDetailPage() {
 
   return (
     <RequireAdminAuth>
-      <PageShell
+      <AdminAppShell
         data-testid="transaction-detail-page"
-        header={
-          <AdminNavbar
-            activeRoute="transactions"
-            onLogout={() => void logout()}
-            isLoggingOut={isLoggingOut}
-          />
-        }
+        activeRoute="transactions"
+        onLogout={() => void logout()}
+        isLoggingOut={isLoggingOut}
       >
         {!isValidId ? (
           <EmptyState
@@ -90,7 +86,7 @@ export function TransactionDetailPage() {
         {transaction ? (
           <TransactionReadOnlyDetails transaction={transaction} fromQuery={fromQuery} />
         ) : null}
-      </PageShell>
+      </AdminAppShell>
     </RequireAdminAuth>
   );
 }
