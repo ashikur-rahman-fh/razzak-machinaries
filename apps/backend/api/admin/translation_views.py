@@ -6,7 +6,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from api.admin.authentication import AdminSessionAuthentication
-from api.admin.permissions import IsActiveSuperuser
+from api.admin.permissions import IsActiveAdminUser
 from api.services.translation import translate
 from api.services.translation.exceptions import TranslationFailed
 
@@ -36,7 +36,7 @@ class TranslationRequestSerializer(serializers.Serializer):
 
 class AdminTranslationView(APIView):
     authentication_classes = [AdminSessionAuthentication]
-    permission_classes = [IsActiveSuperuser]
+    permission_classes = [IsActiveAdminUser]
     throttle_classes = [TranslationApiThrottle]
     parser_classes = [JSONParser]
 

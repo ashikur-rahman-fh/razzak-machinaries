@@ -28,7 +28,7 @@ import {
   sampleSaleTransaction,
   transactionMswHandlers,
 } from './src/transactions/transaction-msw-handlers';
-import { adminUser, server } from './vitest.setup';
+import { adminUser, server, staffUser } from './vitest.setup';
 
 const pushMock = vi.fn();
 let mockParams = { id: String(sampleSaleTransaction.id) };
@@ -74,10 +74,10 @@ function renderWithAuth(ui: ReactElement) {
   );
 }
 
-function setupAuthenticatedTransactionHandlers() {
+function setupAuthenticatedTransactionHandlers(user = adminUser) {
   setAdminCsrfToken('test-csrf-token');
   server.use(
-    http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)),
+    http.get('*/api/admin/auth/me/', () => HttpResponse.json(user)),
     http.get('*/api/admin/auth/csrf/', () => HttpResponse.json({ csrfToken: 'test-csrf-token' })),
     ...transactionMswHandlers,
   );
@@ -156,6 +156,24 @@ describe('TransactionDetailPage', () => {
         screen.getByText(transactionTranslationsEn['transaction.detail.notFound']),
       ).toBeInTheDocument();
     });
+  });
+
+  it('shows View History for superusers', async () => {
+    renderWithAuth(<TransactionDetailPage />);
+    await screen.findByTestId('transaction-detail-content');
+    expect(
+      screen.getByRole('link', { name: transactionTranslationsEn['transaction.history.view'] }),
+    ).toBeInTheDocument();
+  });
+
+  it('hides version context and View History for staff users', async () => {
+    setupAuthenticatedTransactionHandlers(staffUser);
+    renderWithAuth(<TransactionDetailPage />);
+    await screen.findByTestId('transaction-detail-content');
+    expect(
+      screen.queryByRole('link', { name: transactionTranslationsEn['transaction.history.view'] }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Version/i)).not.toBeInTheDocument();
   });
 });
 

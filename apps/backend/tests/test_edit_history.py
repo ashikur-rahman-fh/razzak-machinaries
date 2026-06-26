@@ -1,12 +1,18 @@
 import pytest
 from rest_framework.test import APIClient
 
-from tests.test_admin_auth import _create_superuser, _login
+from tests.test_admin_auth import (
+    ADMIN_FORBIDDEN_CODE,
+    _create_staff_user,
+    _create_superuser,
+    _login,
+)
 from tests.test_admin_customers import (
     _auth_get,
     _auth_post_json,
     _create_customer,
 )
+from tests.test_api import assert_error_envelope
 from tests.test_versioned_ledger import _initial_payload, _sale_payload
 
 pytestmark = pytest.mark.django_db
@@ -25,6 +31,13 @@ def api_client():
 def superuser_client(api_client):
     _create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
+    return api_client
+
+
+@pytest.fixture
+def staff_client(api_client):
+    _create_staff_user()
+    _login(api_client, username_or_email="staff", password="staffpass123")
     return api_client
 
 
@@ -177,3 +190,8 @@ def test_edit_history_sorted_newest_first(superuser_client):
     assert response.status_code == 200
     assert response.data["count"] == 2
     assert response.data["results"][0]["entityId"] == second_id
+
+
+def test_edit_history_forbidden_for_staff(staff_client):
+    response = _auth_get(staff_client, EDIT_HISTORY_URL)
+    assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)

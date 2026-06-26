@@ -23,7 +23,7 @@ import {
   transactionTranslationsEn,
 } from './src/i18n/transaction-translations';
 import { adminTranslationsBn, adminTranslationsEn } from './src/i18n/translations';
-import { adminUser, server } from './vitest.setup';
+import { adminUser, server, staffUser } from './vitest.setup';
 import { withVersionFields } from './src/transactions/transaction-msw-handlers';
 
 const sampleTransactions: Transaction[] = [
@@ -226,6 +226,19 @@ describe('CustomerDetailPage', () => {
     expect(content).toBeInTheDocument();
     expect(content).toHaveTextContent(sampleCustomer.fullNameBn);
     expect(content).toHaveTextContent(sampleCustomer.fatherNameEn);
+    expect(
+      screen.getByRole('link', { name: customerTranslationsEn['customer.history.view'] }),
+    ).toBeInTheDocument();
+  });
+
+  it('hides View Customer History for staff users', async () => {
+    server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(staffUser)));
+    renderWithAuth(<CustomerDetailPage />);
+    const content = await screen.findByTestId('customer-detail-content');
+    expect(content).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: customerTranslationsEn['customer.history.view'] }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows archive confirmation modal before archive', async () => {

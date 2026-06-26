@@ -4,7 +4,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from api.admin.authentication import AdminSessionAuthentication
-from api.admin.permissions import IsActiveSuperuser
+from api.admin.permissions import IsActiveAdminUser
 from dashboard.admin_serializers import DashboardSerializer
 from dashboard.services import get_dashboard_data
 
@@ -98,7 +98,7 @@ def _to_response_payload(data) -> dict:
 
 class AdminDashboardView(APIView):
     authentication_classes = [AdminSessionAuthentication]
-    permission_classes = [IsActiveSuperuser]
+    permission_classes = [IsActiveAdminUser]
     throttle_classes = [DashboardApiThrottle]
 
     def get(self, request):

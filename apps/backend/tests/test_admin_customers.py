@@ -10,6 +10,7 @@ from customers.services import create_customer_with_version
 from tests.test_admin_auth import (
     ADMIN_FORBIDDEN_CODE,
     _create_regular_user,
+    _create_staff_user,
     _create_superuser,
     _fetch_csrf,
     _login,
@@ -76,6 +77,13 @@ def api_client():
 def superuser_client(api_client):
     _create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
+    return api_client
+
+
+@pytest.fixture
+def staff_client(api_client):
+    _create_staff_user()
+    _login(api_client, username_or_email="staff", password="staffpass123")
     return api_client
 
 
@@ -242,13 +250,26 @@ def test_customer_history_returns_all_versions(superuser_client):
     assert response.data["versions"][1]["changeReason"] == "Corrected spelling"
 
 
+def test_customer_list_allowed_for_staff(staff_client):
+    _create_customer()
+    response = _auth_get(staff_client, CUSTOMERS_URL)
+    assert response.status_code == 200
+    assert response.data["count"] == 1
+
+
+def test_customer_history_forbidden_for_staff(staff_client):
+    customer = _create_customer()
+    response = _auth_get(staff_client, f"{CUSTOMERS_URL}{customer.id}/history/")
+    assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
+
+
 def test_customer_requires_auth(api_client):
     response = api_client.get(CUSTOMERS_URL)
     assert_error_envelope(response, status_code=401, code="UNAUTHORIZED")
 
 
-def test_customer_forbidden_for_non_superuser(api_client):
-    user = _create_regular_user(username="staff", password="staffpass123")
+def test_customer_forbidden_for_regular_user(api_client):
+    user = _create_regular_user(username="regular", password="regularpass123")
     api_client.force_login(user)
     token = _fetch_csrf(api_client)
     response = api_client.get(CUSTOMERS_URL, HTTP_X_CSRFTOKEN=token)

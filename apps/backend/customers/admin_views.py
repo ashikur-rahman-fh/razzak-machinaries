@@ -5,7 +5,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.viewsets import ModelViewSet
 
 from api.admin.authentication import AdminSessionAuthentication
-from api.admin.permissions import IsActiveSuperuser
+from api.admin.permissions import IsActiveAdminUser, IsActiveSuperuser
 from customers.admin_serializers import (
     CustomerAdminSerializer,
     CustomerArchiveSerializer,
@@ -35,13 +35,18 @@ class CustomerApiThrottle(ScopedRateThrottle):
 
 class AdminCustomerViewSet(ModelViewSet):
     authentication_classes = [AdminSessionAuthentication]
-    permission_classes = [IsActiveSuperuser]
+    permission_classes = [IsActiveAdminUser]
     pagination_class = CustomerPageNumberPagination
     throttle_classes = [CustomerApiThrottle]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
     serializer_class = CustomerAdminSerializer
     queryset = Customer.objects.select_related("archived_by").all()
     http_method_names = ["get", "post", "head", "options"]
+
+    def get_permissions(self):
+        if self.action == "history":
+            return [IsActiveSuperuser()]
+        return [IsActiveAdminUser()]
 
     def get_serializer_class(self):
         if self.action == "create_version":

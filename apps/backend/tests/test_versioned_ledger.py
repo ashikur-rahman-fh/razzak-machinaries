@@ -4,8 +4,14 @@ import pytest
 from rest_framework.test import APIClient
 
 from customers.models import CustomerVersion
-from tests.test_admin_auth import _create_superuser, _login
+from tests.test_admin_auth import (
+    ADMIN_FORBIDDEN_CODE,
+    _create_staff_user,
+    _create_superuser,
+    _login,
+)
 from tests.test_admin_customers import _auth_get, _auth_post_json, _create_customer
+from tests.test_api import assert_error_envelope
 from transactions.models import Transaction, TransactionItem, TransactionStatus
 from transactions.services import calculate_customer_balance
 
@@ -23,6 +29,13 @@ def api_client():
 def superuser_client(api_client):
     _create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
+    return api_client
+
+
+@pytest.fixture
+def staff_client(api_client):
+    _create_staff_user()
+    _login(api_client, username_or_email="staff", password="staffpass123")
     return api_client
 
 
@@ -312,3 +325,48 @@ def test_archived_customer_cannot_create_transaction(superuser_client, customer)
         superuser_client, TRANSACTIONS_URL, _initial_payload(customer.id, "100.00")
     )
     assert response.status_code == 400
+
+
+def test_transaction_history_forbidden_for_staff(staff_client, customer):
+    create_response = _auth_post_json(
+        staff_client, TRANSACTIONS_URL, _initial_payload(customer.id, "500.00")
+    )
+    transaction_id = create_response.data["id"]
+    response = _auth_get(staff_client, f"{TRANSACTIONS_URL}{transaction_id}/history/")
+    assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
+
+
+def test_staff_transaction_detail_scrubs_version_fields(staff_client, customer):
+    create_response = _auth_post_json(
+        staff_client, TRANSACTIONS_URL, _initial_payload(customer.id, "500.00")
+    )
+    original_id = create_response.data["id"]
+    correction_response = _auth_post_json(
+        staff_client,
+        f"{TRANSACTIONS_URL}{original_id}/create-correction/",
+        {"amount": "700.00", "editReason": "Corrected"},
+    )
+    new_id = correction_response.data["newTransaction"]["id"]
+    detail = _auth_get(staff_client, f"{TRANSACTIONS_URL}{new_id}/")
+    assert detail.status_code == 200
+    assert detail.data["id"] == new_id
+    assert "versionNumber" not in detail.data
+    assert "previousVersionId" not in detail.data
+    assert "editReason" not in detail.data
+
+
+def test_staff_retrieve_superseded_resolves_to_latest(staff_client, customer):
+    create_response = _auth_post_json(
+        staff_client, TRANSACTIONS_URL, _initial_payload(customer.id, "500.00")
+    )
+    original_id = create_response.data["id"]
+    correction_response = _auth_post_json(
+        staff_client,
+        f"{TRANSACTIONS_URL}{original_id}/create-correction/",
+        {"amount": "700.00", "editReason": "Corrected"},
+    )
+    new_id = correction_response.data["newTransaction"]["id"]
+    detail = _auth_get(staff_client, f"{TRANSACTIONS_URL}{original_id}/")
+    assert detail.status_code == 200
+    assert detail.data["id"] == new_id
+    assert detail.data["totalAmount"] == "700.00"

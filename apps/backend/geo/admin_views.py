@@ -7,7 +7,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from api.admin.authentication import AdminSessionAuthentication
-from api.admin.permissions import IsActiveSuperuser
+from api.admin.permissions import IsActiveAdminUser
 from geo.admin_serializers import (
     DistrictAdminSerializer,
     DivisionAdminSerializer,
@@ -36,7 +36,7 @@ CHILD_TYPE_BY_MODEL = {
 
 class AdminGeoViewSet(viewsets.ModelViewSet):
     authentication_classes = [AdminSessionAuthentication]
-    permission_classes = [IsActiveSuperuser]
+    permission_classes = [IsActiveAdminUser]
     pagination_class = GeoPageNumberPagination
     throttle_classes = [GeoApiThrottle]
 
@@ -116,7 +116,7 @@ def _parse_dry_run_flag(value: str | None) -> bool:
 
 class VillageImportView(APIView):
     authentication_classes = [AdminSessionAuthentication]
-    permission_classes = [IsActiveSuperuser]
+    permission_classes = [IsActiveAdminUser]
     throttle_classes = [GeoApiThrottle]
     parser_classes = [MultiPartParser, FormParser]
 

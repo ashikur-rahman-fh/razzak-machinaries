@@ -17,7 +17,7 @@ import { useMemo } from 'react';
 import { AdminAppShell } from '@/components/AdminAppShell';
 import { FieldChangeList } from '@/components/FieldChangeList';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
-import { RequireAdminAuth } from '@/auth/guards';
+import { RequireAdminAuth, RequireSuperuser } from '@/auth/guards';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/transactions/hooks';
 import { buildDetailUrl } from '@/transactions/routes';
 import { TransactionDetailSkeleton } from '@/transactions/components/TransactionDetailSkeleton';
@@ -46,152 +46,160 @@ export function TransactionHistoryPage() {
 
   return (
     <RequireAdminAuth>
-      <AdminAppShell
-        data-testid="transaction-history-page"
-        activeRoute="transactions"
-        onLogout={() => void logout()}
-        isLoggingOut={isLoggingOut}
-      >
-        <div className="space-y-6">
-          <div className="space-y-1">
-            <Link
-              href={buildDetailUrl(transactionId)}
-              className="text-sm text-primary underline-offset-4 hover:underline"
-            >
-              <TranslatedText translationKey="transaction.history.back" as="span" compact />
-            </Link>
-            <h1 className="text-2xl font-semibold">
-              <TranslatedText translationKey="transaction.history.title" as="span" />
-            </h1>
-          </div>
+      <RequireSuperuser>
+        <AdminAppShell
+          data-testid="transaction-history-page"
+          activeRoute="transactions"
+          onLogout={() => void logout()}
+          isLoggingOut={isLoggingOut}
+        >
+          <div className="space-y-6">
+            <div className="space-y-1">
+              <Link
+                href={buildDetailUrl(transactionId)}
+                className="text-sm text-primary underline-offset-4 hover:underline"
+              >
+                <TranslatedText translationKey="transaction.history.back" as="span" compact />
+              </Link>
+              <h1 className="text-2xl font-semibold">
+                <TranslatedText translationKey="transaction.history.title" as="span" />
+              </h1>
+            </div>
 
-          {isInitialLoad ? <TransactionDetailSkeleton /> : null}
+            {isInitialLoad ? <TransactionDetailSkeleton /> : null}
 
-          {!isInitialLoad && state.status === 'error' ? (
-            <div className="space-y-3">
-              <ErrorState
-                message={
+            {!isInitialLoad && state.status === 'error' ? (
+              <div className="space-y-3">
+                <ErrorState
+                  message={
+                    <TranslatedText
+                      translationKey="transaction.history.loadError"
+                      as="span"
+                      layout="inline"
+                    />
+                  }
+                />
+                <button
+                  type="button"
+                  className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                  onClick={() => void reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            ) : null}
+
+            {history && history.versions.length === 0 ? (
+              <EmptyState
+                title={
                   <TranslatedText
-                    translationKey="transaction.history.loadError"
+                    translationKey="transaction.history.empty"
                     as="span"
                     layout="inline"
                   />
                 }
               />
-              <button
-                type="button"
-                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                onClick={() => void reload()}
-              >
-                Retry
-              </button>
-            </div>
-          ) : null}
+            ) : null}
 
-          {history && history.versions.length === 0 ? (
-            <EmptyState
-              title={
-                <TranslatedText
-                  translationKey="transaction.history.empty"
-                  as="span"
-                  layout="inline"
-                />
-              }
-            />
-          ) : null}
+            {history?.versions.map((version) => {
+              const previousVersion =
+                version.previousVersionId != null
+                  ? (findTransactionById(history.versions, version.previousVersionId) ??
+                    versionsById.get(version.previousVersionId))
+                  : undefined;
+              const changes =
+                previousVersion != null
+                  ? getTransactionVersionChanges(previousVersion, version)
+                  : [];
 
-          {history?.versions.map((version) => {
-            const previousVersion =
-              version.previousVersionId != null
-                ? (findTransactionById(history.versions, version.previousVersionId) ??
-                  versionsById.get(version.previousVersionId))
-                : undefined;
-            const changes =
-              previousVersion != null ? getTransactionVersionChanges(previousVersion, version) : [];
-
-            return (
-              <Card key={version.id}>
-                <CardContent className="space-y-3 p-6">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="text-lg font-semibold">
+              return (
+                <Card key={version.id}>
+                  <CardContent className="space-y-3 p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="text-lg font-semibold">
+                          <TranslatedText
+                            translationKey="transaction.history.version"
+                            as="span"
+                            compact
+                          />{' '}
+                          {version.versionNumber} — {version.displayId}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{version.date}</p>
+                      </div>
+                      <TransactionStatusBadge status={version.status} />
+                    </div>
+                    <p className="text-xl font-semibold">
+                      {formatBdt(version.totalAmount, language)}
+                    </p>
+                    {version.previousVersionId ? (
+                      <p className="text-sm">
                         <TranslatedText
-                          translationKey="transaction.history.version"
+                          translationKey="transaction.detail.correctedFrom"
                           as="span"
                           compact
                         />{' '}
-                        {version.versionNumber} — {version.displayId}
+                        <Link
+                          href={buildDetailUrl(version.previousVersionId)}
+                          className="font-medium text-primary underline-offset-4 hover:underline"
+                        >
+                          COM-{version.previousVersionId}
+                        </Link>
                       </p>
-                      <p className="text-sm text-muted-foreground">{version.date}</p>
-                    </div>
-                    <TransactionStatusBadge status={version.status} />
-                  </div>
-                  <p className="text-xl font-semibold">
-                    {formatBdt(version.totalAmount, language)}
-                  </p>
-                  {version.previousVersionId ? (
-                    <p className="text-sm">
-                      <TranslatedText
-                        translationKey="transaction.detail.correctedFrom"
-                        as="span"
-                        compact
-                      />{' '}
-                      <Link
-                        href={buildDetailUrl(version.previousVersionId)}
-                        className="font-medium text-primary underline-offset-4 hover:underline"
-                      >
-                        COM-{version.previousVersionId}
-                      </Link>
-                    </p>
-                  ) : null}
-                  {version.editReason ? (
-                    <p className="text-sm text-muted-foreground">
-                      <TranslatedText
-                        translationKey="transaction.correct.reason"
-                        as="span"
-                        compact
-                      />
-                      : {version.editReason}
-                    </p>
-                  ) : null}
-                  {version.voidReason ? (
-                    <p className="text-sm text-muted-foreground">
-                      <TranslatedText translationKey="transaction.void.reason" as="span" compact />:{' '}
-                      {version.voidReason}
-                    </p>
-                  ) : null}
-                  {previousVersion ? (
-                    <div className="space-y-2 rounded-lg border p-4">
-                      <p className="text-sm font-medium">
+                    ) : null}
+                    {version.editReason ? (
+                      <p className="text-sm text-muted-foreground">
                         <TranslatedText
-                          translationKey="transaction.history.changes"
+                          translationKey="transaction.correct.reason"
                           as="span"
                           compact
                         />
+                        : {version.editReason}
                       </p>
-                      <FieldChangeList
-                        changes={changes}
-                        emptyMessageKey="transaction.history.noChanges"
-                        viewMode="unified"
+                    ) : null}
+                    {version.voidReason ? (
+                      <p className="text-sm text-muted-foreground">
+                        <TranslatedText
+                          translationKey="transaction.void.reason"
+                          as="span"
+                          compact
+                        />
+                        : {version.voidReason}
+                      </p>
+                    ) : null}
+                    {previousVersion ? (
+                      <div className="space-y-2 rounded-lg border p-4">
+                        <p className="text-sm font-medium">
+                          <TranslatedText
+                            translationKey="transaction.history.changes"
+                            as="span"
+                            compact
+                          />
+                        </p>
+                        <FieldChangeList
+                          changes={changes}
+                          emptyMessageKey="transaction.history.noChanges"
+                          viewMode="unified"
+                        />
+                      </div>
+                    ) : null}
+                    <Link
+                      href={buildDetailUrl(version.id)}
+                      className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      <TranslatedText
+                        translationKey="transaction.history.viewVersion"
+                        as="span"
+                        compact
                       />
-                    </div>
-                  ) : null}
-                  <Link
-                    href={buildDetailUrl(version.id)}
-                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                  >
-                    <TranslatedText
-                      translationKey="transaction.history.viewVersion"
-                      as="span"
-                      compact
-                    />
-                  </Link>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </AdminAppShell>
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </AdminAppShell>
+      </RequireSuperuser>
     </RequireAdminAuth>
   );
 }

@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
-import { RequireAdminAuth } from '@/auth/guards';
+import { RequireAdminAuth, RequireSuperuser } from '@/auth/guards';
 import { CustomerListSkeleton } from '@/customers/components/CustomerDetailSkeleton';
 import {
   getAsyncData,
@@ -90,102 +90,116 @@ export function EditHistoryPage() {
 
   return (
     <RequireAdminAuth>
-      <AdminAppShell
-        data-testid="edit-history-page"
-        activeRoute="edit-history"
-        onLogout={() => void logout()}
-        isLoggingOut={isLoggingOut}
-      >
-        <Card>
-          <CardHeader className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              <TranslatedText translationKey="editHistory.title" as="span" layout="inline" />
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              <TranslatedText translationKey="editHistory.description" as="span" layout="inline" />
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-3 md:grid-cols-2">
-              <Input
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder={t('editHistory.search')}
-                aria-label={t('editHistory.search')}
-              />
-              <Select
-                value={listState.eventType || 'all'}
-                onValueChange={(value) =>
-                  navigate({
-                    eventType: value === 'all' ? '' : (value as EditHistoryEventType),
-                    page: 1,
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('editHistory.filter.all')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_TYPE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {t(option.labelKey)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {isInitialLoad ? <CustomerListSkeleton /> : null}
-
-            {!isInitialLoad && state.status === 'error' ? (
-              <div className="space-y-3">
-                <ErrorState
-                  message={
-                    <TranslatedText translationKey="editHistory.error" as="span" layout="inline" />
-                  }
+      <RequireSuperuser>
+        <AdminAppShell
+          data-testid="edit-history-page"
+          activeRoute="edit-history"
+          onLogout={() => void logout()}
+          isLoggingOut={isLoggingOut}
+        >
+          <Card>
+            <CardHeader className="space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                <TranslatedText translationKey="editHistory.title" as="span" layout="inline" />
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                <TranslatedText
+                  translationKey="editHistory.description"
+                  as="span"
+                  layout="inline"
                 />
-                <button
-                  type="button"
-                  className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                  onClick={() => void reload()}
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-3 md:grid-cols-2">
+                <Input
+                  value={searchInput}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  placeholder={t('editHistory.search')}
+                  aria-label={t('editHistory.search')}
+                />
+                <Select
+                  value={listState.eventType || 'all'}
+                  onValueChange={(value) =>
+                    navigate({
+                      eventType: value === 'all' ? '' : (value as EditHistoryEventType),
+                      page: 1,
+                    })
+                  }
                 >
-                  <TranslatedText translationKey="editHistory.retry" as="span" compact />
-                </button>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('editHistory.filter.all')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_TYPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {t(option.labelKey)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            ) : null}
 
-            {!isInitialLoad && state.status === 'success' && data ? (
-              <>
-                <EditHistoryTable events={data.results} />
-                {data.count > effectiveState.pageSize ? (
-                  <PaginationControls
-                    page={effectiveState.page}
-                    pageSize={effectiveState.pageSize}
-                    totalCount={data.count}
-                    onPageChange={(page) => navigate({ page })}
-                    summaryLabel={
-                      <span>
-                        {effectiveState.page} /{' '}
-                        {Math.max(1, Math.ceil(data.count / effectiveState.pageSize))}
-                      </span>
-                    }
-                    previousLabel={
+              {isInitialLoad ? <CustomerListSkeleton /> : null}
+
+              {!isInitialLoad && state.status === 'error' ? (
+                <div className="space-y-3">
+                  <ErrorState
+                    message={
                       <TranslatedText
-                        translationKey="customer.pagination.previous"
+                        translationKey="editHistory.error"
                         as="span"
-                        compact
+                        layout="inline"
                       />
                     }
-                    nextLabel={
-                      <TranslatedText translationKey="customer.pagination.next" as="span" compact />
-                    }
                   />
-                ) : null}
-              </>
-            ) : null}
-          </CardContent>
-        </Card>
-      </AdminAppShell>
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    onClick={() => void reload()}
+                  >
+                    <TranslatedText translationKey="editHistory.retry" as="span" compact />
+                  </button>
+                </div>
+              ) : null}
+
+              {!isInitialLoad && state.status === 'success' && data ? (
+                <>
+                  <EditHistoryTable events={data.results} />
+                  {data.count > effectiveState.pageSize ? (
+                    <PaginationControls
+                      page={effectiveState.page}
+                      pageSize={effectiveState.pageSize}
+                      totalCount={data.count}
+                      onPageChange={(page) => navigate({ page })}
+                      summaryLabel={
+                        <span>
+                          {effectiveState.page} /{' '}
+                          {Math.max(1, Math.ceil(data.count / effectiveState.pageSize))}
+                        </span>
+                      }
+                      previousLabel={
+                        <TranslatedText
+                          translationKey="customer.pagination.previous"
+                          as="span"
+                          compact
+                        />
+                      }
+                      nextLabel={
+                        <TranslatedText
+                          translationKey="customer.pagination.next"
+                          as="span"
+                          compact
+                        />
+                      }
+                    />
+                  ) : null}
+                </>
+              ) : null}
+            </CardContent>
+          </Card>
+        </AdminAppShell>
+      </RequireSuperuser>
     </RequireAdminAuth>
   );
 }

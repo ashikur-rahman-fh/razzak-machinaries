@@ -108,9 +108,12 @@ export const transactionTranslationsEn = {
   'transaction.correct.action': 'Correct Transaction',
   'transaction.correct.title': 'Correct Transaction',
   'transaction.correct.subtitle': 'This will create a new version',
+  'transaction.correct.subtitleStaff': 'Save corrected transaction',
   'transaction.correct.warningTitle': 'Important',
   'transaction.correct.warning':
     'Editing will create a new transaction version. The old version will remain in history and will not be used in baki calculation.',
+  'transaction.correct.warningStaff':
+    'This saves corrected values for this transaction. The previous values will no longer be used in baki calculation.',
   'transaction.correct.reason': 'Reason for change',
   'transaction.correct.submit': 'Create Correction',
   'transaction.correct.saving': 'Creating correction…',
@@ -244,9 +247,12 @@ export const transactionTranslationsBn = {
   'transaction.correct.action': 'লেনদেন সংশোধন করুন',
   'transaction.correct.title': 'লেনদেন সংশোধন করুন',
   'transaction.correct.subtitle': 'এটি একটি নতুন সংস্করণ তৈরি করবে',
+  'transaction.correct.subtitleStaff': 'সংশোধিত লেনদেন সংরক্ষণ করুন',
   'transaction.correct.warningTitle': 'গুরুত্বপূর্ণ',
   'transaction.correct.warning':
     'সংশোধন করলে একটি নতুন লেনদেন সংস্করণ তৈরি হবে। পুরোনো সংস্করণ ইতিহাসে থাকবে এবং বাকি হিসাবে গণনা হবে না।',
+  'transaction.correct.warningStaff':
+    'এটি এই লেনদেনের সংশোধিত মান সংরক্ষণ করবে। আগের মান আর বাকি হিসাবে ব্যবহার হবে না।',
   'transaction.correct.reason': 'পরিবর্তনের কারণ',
   'transaction.correct.submit': 'সংশোধন তৈরি করুন',
   'transaction.correct.saving': 'সংশোধন তৈরি হচ্ছে…',

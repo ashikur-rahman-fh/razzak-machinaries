@@ -363,3 +363,14 @@ def get_transaction_history(transaction_id: int) -> list[Transaction]:
         .prefetch_related("items")
         .order_by("version_number", "id")
     )
+
+
+def resolve_transaction_for_staff_view(transaction_obj: Transaction) -> Transaction:
+    """Return the latest version in a transaction chain for staff read access."""
+    root_id = transaction_obj.root_transaction_id or transaction_obj.pk
+    latest = (
+        Transaction.objects.filter(root_transaction_id=root_id)
+        .order_by("-version_number", "-id")
+        .first()
+    )
+    return latest if latest is not None else transaction_obj

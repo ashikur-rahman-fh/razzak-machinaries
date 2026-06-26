@@ -28,6 +28,12 @@ export const adminUser = {
   isSuperuser: true,
 };
 
+export const staffUser = {
+  ...adminUser,
+  isSuperuser: false,
+  isStaff: true,
+};
+
 export const server = setupServer(
   http.get('*/api/hello/', () => HttpResponse.json({ message: 'Hello from Django backend' })),
   http.get('*/api/admin/auth/csrf/', () => HttpResponse.json({ csrfToken: 'test-csrf-token' })),

@@ -2,19 +2,24 @@
 
 import { adminTransactionsApi, isApiError } from '@razzak-machinaries/shared/api';
 import { EmptyState, ErrorState, TranslatedText } from '@razzak-machinaries/shared/ui';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { AdminAppShell } from '@/components/AdminAppShell';
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
+import { canAccessEditHistory } from '@/auth/permissions';
 import { RequireAdminAuth } from '@/auth/guards';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/transactions/hooks';
 import { TransactionDetailSkeleton } from '@/transactions/components/TransactionDetailSkeleton';
 import { TransactionReadOnlyDetails } from '@/transactions/components/TransactionReadOnlyDetails';
+import { buildDetailUrl } from '@/transactions/routes';
 
 export function TransactionDetailPage() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-  const { logout, isLoggingOut } = useAdminAuth();
+  const router = useRouter();
+  const { user, logout, isLoggingOut } = useAdminAuth();
+  const showVersionContext = canAccessEditHistory(user);
 
   const transactionId = Number(params.id);
   const fromQuery = searchParams.get('from');
@@ -24,16 +29,25 @@ export function TransactionDetailPage() {
     if (!isValidId) throw new Error('Invalid transaction id');
     const transaction = await adminTransactionsApi.getTransaction(transactionId);
     const previousTransaction =
-      transaction.previousVersionId != null
+      showVersionContext && transaction.previousVersionId != null
         ? await adminTransactionsApi.getTransaction(transaction.previousVersionId)
         : null;
     return { transaction, previousTransaction };
-  }, [transactionId, isValidId]);
+  }, [transactionId, isValidId, showVersionContext]);
 
   const data = getAsyncData(state);
   const transaction = data?.transaction;
   const previousTransaction = data?.previousTransaction ?? null;
   const isInitialLoad = isAsyncInitialLoad(state);
+
+  useEffect(() => {
+    if (!transaction || transaction.id === transactionId) {
+      return;
+    }
+    const path = buildDetailUrl(transaction.id);
+    const href = fromQuery ? `${path}?from=${encodeURIComponent(fromQuery)}` : path;
+    router.replace(href);
+  }, [transaction, transactionId, fromQuery, router]);
 
   return (
     <RequireAdminAuth>

@@ -89,12 +89,12 @@ export function buildDetailUrl(id: number, listState?: Partial<TransactionListSt
   return listQuery ? `${path}?from=${encodeURIComponent(listQuery)}` : path;
 }
 
-export function getBackListUrl(fromQuery?: string | null): string {
+export function getBackListUrl(fromQuery?: string | null, canAccessEditHistory = false): string {
   const editHistoryBack = resolveBackHref(fromQuery);
-  if (editHistoryBack) {
+  if (editHistoryBack && canAccessEditHistory) {
     return editHistoryBack;
   }
-  if (fromQuery) {
+  if (fromQuery && fromQuery !== 'edit-history') {
     return `${BASE_PATH}?${fromQuery}`;
   }
   return BASE_PATH;

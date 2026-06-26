@@ -21,6 +21,7 @@ import { useState, type ReactNode } from 'react';
 
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { AdminUserBadge } from '@/components/AdminUserBadge';
+import { canAccessEditHistory } from '@/auth/permissions';
 
 export type AdminActiveRoute =
   | 'dashboard'
@@ -99,10 +100,15 @@ function SidebarNav({
   activeRoute: AdminActiveRoute;
   onNavigate?: () => void;
 }) {
+  const { user } = useAdminAuth();
+  const visibleNavItems = NAV_ITEMS.filter(
+    (item) => item.key !== 'edit-history' || canAccessEditHistory(user),
+  );
+
   return (
     <nav aria-label="Admin navigation">
       <ul className="flex flex-col gap-1">
-        {NAV_ITEMS.map((item) => {
+        {visibleNavItems.map((item) => {
           const active = isNavActive(item, activeRoute);
           return (
             <li key={item.key}>

@@ -5,7 +5,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.viewsets import ModelViewSet
 
 from api.admin.authentication import AdminSessionAuthentication
-from api.admin.permissions import IsActiveSuperuser
+from api.admin.permissions import IsActiveAdminUser, IsActiveSuperuser, is_superuser_admin
 from transactions.admin_serializers import (
     TransactionConfirmationSerializer,
     TransactionCorrectionWriteSerializer,
@@ -18,7 +18,11 @@ from transactions.exceptions import ConfirmationNotAvailable
 from transactions.filters import apply_transaction_filters, apply_transaction_ordering
 from transactions.models import Transaction, TransactionStatus, TransactionType
 from transactions.pagination import TransactionPageNumberPagination
-from transactions.services import calculate_customer_balance, get_transaction_history
+from transactions.services import (
+    calculate_customer_balance,
+    get_transaction_history,
+    resolve_transaction_for_staff_view,
+)
 
 
 class TransactionApiThrottle(ScopedRateThrottle):
@@ -38,12 +42,17 @@ def _transaction_queryset():
 
 class AdminTransactionViewSet(ModelViewSet):
     authentication_classes = [AdminSessionAuthentication]
-    permission_classes = [IsActiveSuperuser]
+    permission_classes = [IsActiveAdminUser]
     pagination_class = TransactionPageNumberPagination
     throttle_classes = [TransactionApiThrottle]
     parser_classes = [JSONParser]
     queryset = _transaction_queryset()
     http_method_names = ["get", "post", "head", "options"]
+
+    def get_permissions(self):
+        if self.action == "history":
+            return [IsActiveSuperuser()]
+        return [IsActiveAdminUser()]
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -61,6 +70,8 @@ class AdminTransactionViewSet(ModelViewSet):
         params = self.request.query_params
         customer_id = params.get("customerId")
         include_history = params.get("includeHistory", "").lower() in {"1", "true", "yes"}
+        if not is_superuser_admin(self.request.user):
+            include_history = False
         return apply_transaction_ordering(
             apply_transaction_filters(
                 queryset,
@@ -87,6 +98,14 @@ class AdminTransactionViewSet(ModelViewSet):
         )
         headers = self.get_success_headers(read_serializer.data)
         return Response(read_serializer.data, status=201, headers=headers)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not is_superuser_admin(request.user):
+            instance = resolve_transaction_for_staff_view(instance)
+            instance = _transaction_queryset().get(pk=instance.pk)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["post"], url_path="create-correction")
     def create_correction(self, request, pk=None):
@@ -150,6 +169,9 @@ class AdminTransactionViewSet(ModelViewSet):
     @action(detail=True, methods=["get"], url_path="confirmation")
     def confirmation(self, request, pk=None):
         transaction_obj = self.get_object()
+        if not is_superuser_admin(request.user):
+            transaction_obj = resolve_transaction_for_staff_view(transaction_obj)
+            transaction_obj = _transaction_queryset().get(pk=transaction_obj.pk)
         if transaction_obj.transaction_type == TransactionType.INITIAL:
             raise ConfirmationNotAvailable()
 

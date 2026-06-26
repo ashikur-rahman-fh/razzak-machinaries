@@ -39,6 +39,17 @@ def _create_regular_user(username="user", password="userpass123", **kwargs):
     return User.objects.create_user(username=username, password=password, **defaults)
 
 
+def _create_staff_user(username="staff", password="staffpass123", **kwargs):
+    defaults = {
+        "email": f"{username}@example.com",
+        "is_staff": True,
+        "is_superuser": False,
+        "is_active": True,
+    }
+    defaults.update(kwargs)
+    return User.objects.create_user(username=username, password=password, **defaults)
+
+
 def _fetch_csrf(client: APIClient) -> str:
     response = client.get(CSRF_URL)
     assert response.status_code == 200
@@ -150,16 +161,12 @@ def test_login_regular_user(api_client):
 
 
 def test_login_staff_non_superuser(api_client):
-    User.objects.create_user(
-        username="staff",
-        password="staffpass123",
-        email="staff@example.com",
-        is_staff=True,
-        is_superuser=False,
-        is_active=True,
-    )
+    _create_staff_user()
     response = _login(api_client, username_or_email="staff", password="staffpass123")
-    assert_error_envelope(response, status_code=401, code=INVALID_CREDENTIALS_CODE)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["isStaff"] is True
+    assert body["isSuperuser"] is False
 
 
 def test_me_returns_current_superuser(api_client):
@@ -184,16 +191,11 @@ def test_me_authenticated_non_superuser(api_client):
 
 
 def test_me_authenticated_staff_non_superuser(api_client):
-    user = User.objects.create_user(
-        username="staff",
-        password="staffpass123",
-        is_staff=True,
-        is_superuser=False,
-        is_active=True,
-    )
+    user = _create_staff_user()
     api_client.force_login(user)
     response = api_client.get(ME_URL)
-    assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
+    assert response.status_code == 200
+    _assert_safe_user_payload(response.json(), user)
 
 
 def test_logout_authenticated(api_client):

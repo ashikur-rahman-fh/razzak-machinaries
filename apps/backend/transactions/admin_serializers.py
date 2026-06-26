@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from api.admin.permissions import is_superuser_admin
 from customers.models import Customer
 from transactions.exceptions import CorrectionNotAllowed, VoidNotAllowed
 from transactions.filters import get_balance_impact
@@ -16,6 +17,20 @@ from transactions.services import (
     create_transaction,
     create_transaction_correction,
     void_transaction,
+)
+
+STAFF_HIDDEN_TRANSACTION_FIELDS = frozenset(
+    {
+        "versionNumber",
+        "rootTransactionId",
+        "previousVersionId",
+        "editedFromId",
+        "nextVersionId",
+        "latestVersionId",
+        "editReason",
+        "editedByName",
+        "editedAt",
+    }
 )
 
 
@@ -356,6 +371,15 @@ class TransactionReadSerializer(serializers.ModelSerializer):
         if obj.voided_by is None:
             return None
         return obj.voided_by.get_username()
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        if user is not None and not is_superuser_admin(user):
+            for field in STAFF_HIDDEN_TRANSACTION_FIELDS:
+                data.pop(field, None)
+        return data
 
 
 class TransactionHistorySerializer(serializers.Serializer):

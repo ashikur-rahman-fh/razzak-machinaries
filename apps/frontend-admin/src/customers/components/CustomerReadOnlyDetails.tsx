@@ -4,6 +4,8 @@ import type { Customer } from '@razzak-machinaries/shared/api';
 import { Button, Card, CardContent, TranslatedText } from '@razzak-machinaries/shared/ui';
 import Link from 'next/link';
 
+import { useCanAccessEditHistory } from '@/auth/permissions';
+
 import {
   buildCustomerHistoryUrl,
   buildEditUrl,
@@ -28,7 +30,8 @@ export function CustomerReadOnlyDetails({
   fromQuery,
   onArchive,
 }: CustomerReadOnlyDetailsProps) {
-  const backHref = getBackListUrl(fromQuery);
+  const canAccessHistory = useCanAccessEditHistory();
+  const backHref = getBackListUrl(fromQuery, canAccessHistory);
   const editHref = buildEditUrl(customer.id, listState);
 
   return (
@@ -40,11 +43,13 @@ export function CustomerReadOnlyDetails({
           </Link>
         </Button>
         <div className="ml-auto flex flex-wrap gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href={buildCustomerHistoryUrl(customer.id)}>
-              <TranslatedText translationKey="customer.history.view" as="span" compact />
-            </Link>
-          </Button>
+          {canAccessHistory ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={buildCustomerHistoryUrl(customer.id)}>
+                <TranslatedText translationKey="customer.history.view" as="span" compact />
+              </Link>
+            </Button>
+          ) : null}
           {!customer.isArchived ? (
             <>
               <Button asChild variant="outline" size="sm">

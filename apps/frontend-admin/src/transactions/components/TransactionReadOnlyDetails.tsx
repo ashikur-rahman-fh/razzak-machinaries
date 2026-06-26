@@ -19,6 +19,7 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { useCanAccessEditHistory } from '@/auth/permissions';
 import { CustomerDetailSection } from '@/customers/components/CustomerDetailSection';
 import { CustomerInfoRow } from '@/customers/components/CustomerInfoRow';
 import { buildDetailUrl as buildCustomerDetailUrl } from '@/customers/routes';
@@ -73,7 +74,8 @@ export function TransactionReadOnlyDetails({
 }: TransactionReadOnlyDetailsProps) {
   const { language, displayMode } = useLanguagePreference();
   const { t } = useTranslation();
-  const backHref = getBackListUrl(fromQuery);
+  const canAccessHistory = useCanAccessEditHistory();
+  const backHref = getBackListUrl(fromQuery, canAccessHistory);
   const canPrint =
     transaction.transactionType === 'SALE' || transaction.transactionType === 'PAYMENT';
   const [showVoidModal, setShowVoidModal] = useState(false);
@@ -92,11 +94,13 @@ export function TransactionReadOnlyDetails({
           </Link>
         </Button>
         <div className="ml-auto flex flex-wrap gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href={buildHistoryUrl(transaction.id)}>
-              <TranslatedText translationKey="transaction.history.view" as="span" compact />
-            </Link>
-          </Button>
+          {canAccessHistory ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={buildHistoryUrl(transaction.id)}>
+                <TranslatedText translationKey="transaction.history.view" as="span" compact />
+              </Link>
+            </Button>
+          ) : null}
           {isCorrectable ? (
             <Button asChild variant="outline" size="sm">
               <Link href={buildCorrectUrl(transaction.id)}>
@@ -135,7 +139,7 @@ export function TransactionReadOnlyDetails({
         </Card>
       ) : null}
 
-      {transaction.status === 'SUPERSEDED' ? (
+      {canAccessHistory && transaction.status === 'SUPERSEDED' ? (
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-4 text-sm text-amber-900">
             <TranslatedText translationKey="transaction.detail.supersededBanner" as="span" />
@@ -143,7 +147,7 @@ export function TransactionReadOnlyDetails({
         </Card>
       ) : null}
 
-      {transaction.previousVersionId ? (
+      {canAccessHistory && transaction.previousVersionId ? (
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="space-y-3 p-4 text-sm">
             <p>
@@ -177,7 +181,7 @@ export function TransactionReadOnlyDetails({
         </Card>
       ) : null}
 
-      {transaction.nextVersionId ? (
+      {canAccessHistory && transaction.nextVersionId ? (
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-4 text-sm">
             <TranslatedText translationKey="transaction.detail.correctedBy" as="span" compact />{' '}
@@ -198,15 +202,21 @@ export function TransactionReadOnlyDetails({
               <h1 className="text-2xl font-semibold">
                 <TranslatedText translationKey="transaction.detail.title" as="span" />
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {transaction.displayId} ·{' '}
-                <TranslatedText translationKey="transaction.detail.version" as="span" compact />{' '}
-                {transaction.versionNumber}
-              </p>
+              {canAccessHistory ? (
+                <p className="text-sm text-muted-foreground">
+                  {transaction.displayId} ·{' '}
+                  <TranslatedText translationKey="transaction.detail.version" as="span" compact />{' '}
+                  {transaction.versionNumber}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">{transaction.displayId}</p>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               <TransactionTypeBadge type={transaction.transactionType} />
-              <TransactionStatusBadge status={transaction.status} />
+              {canAccessHistory || transaction.status !== 'SUPERSEDED' ? (
+                <TransactionStatusBadge status={transaction.status} />
+              ) : null}
             </div>
           </div>
           <div className="flex flex-wrap items-end gap-6">
@@ -276,10 +286,10 @@ export function TransactionReadOnlyDetails({
             language === 'bn' ? 'bn-BD' : 'en-BD',
           )}
         />
-        {transaction.editReason ? (
+        {canAccessHistory && transaction.editReason ? (
           <CustomerInfoRow labelKey="transaction.correct.reason" value={transaction.editReason} />
         ) : null}
-        {transaction.editedByName ? (
+        {canAccessHistory && transaction.editedByName ? (
           <CustomerInfoRow
             labelKey="transaction.detail.editedBy"
             value={transaction.editedByName}

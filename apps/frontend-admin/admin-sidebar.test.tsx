@@ -15,7 +15,7 @@ import {
   editHistoryTranslationsBn,
   editHistoryTranslationsEn,
 } from './src/i18n/edit-history-translations';
-import { adminUser, server } from './vitest.setup';
+import { adminUser, server, staffUser } from './vitest.setup';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
@@ -23,10 +23,10 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-function renderMobileNav() {
+function renderMobileNav(user = adminUser) {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, 'en');
   localStorage.setItem(DISPLAY_MODE_STORAGE_KEY, 'both');
-  server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)));
+  server.use(http.get('*/api/admin/auth/me/', () => HttpResponse.json(user)));
 
   return render(
     <LanguageProvider
@@ -61,5 +61,13 @@ describe('AdminMobileNav', () => {
       'href',
       '/edit-history',
     );
+  });
+
+  it('hides Edit History for staff users', async () => {
+    const user = userEvent.setup();
+    renderMobileNav(staffUser);
+
+    await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+    expect(screen.queryByRole('link', { name: /Edit History/i })).not.toBeInTheDocument();
   });
 });

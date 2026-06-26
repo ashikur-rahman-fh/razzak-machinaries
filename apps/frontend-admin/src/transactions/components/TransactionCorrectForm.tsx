@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, type FormEvent } from 'react';
 
+import { useCanAccessEditHistory } from '@/auth/permissions';
 import { getTransactionCreateErrorMessage } from '../errors';
 import { buildDetailUrl } from '../routes';
 import { InitialBalanceFields } from './InitialBalanceFields';
@@ -39,6 +40,7 @@ type TransactionCorrectFormProps = {
 export function TransactionCorrectForm({ transaction }: TransactionCorrectFormProps) {
   const router = useRouter();
   const { language, t } = useLanguagePreference();
+  const canAccessHistory = useCanAccessEditHistory();
   const [values, setValues] = useState<TransactionFormValues>(() =>
     transactionToFormValues(transaction),
   );
@@ -88,7 +90,14 @@ export function TransactionCorrectForm({ transaction }: TransactionCorrectFormPr
         title={
           <TranslatedText translationKey="transaction.correct.warningTitle" as="span" compact />
         }
-        description={<TranslatedText translationKey="transaction.correct.warning" as="span" />}
+        description={
+          <TranslatedText
+            translationKey={
+              canAccessHistory ? 'transaction.correct.warning' : 'transaction.correct.warningStaff'
+            }
+            as="span"
+          />
+        }
       />
 
       <Card>
@@ -98,7 +107,15 @@ export function TransactionCorrectForm({ transaction }: TransactionCorrectFormPr
           </h2>
           <p className="text-sm text-muted-foreground">
             {transaction.displayId} ·{' '}
-            <TranslatedText translationKey="transaction.correct.subtitle" as="span" compact />
+            <TranslatedText
+              translationKey={
+                canAccessHistory
+                  ? 'transaction.correct.subtitle'
+                  : 'transaction.correct.subtitleStaff'
+              }
+              as="span"
+              compact
+            />
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
