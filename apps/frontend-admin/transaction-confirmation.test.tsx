@@ -93,6 +93,8 @@ describe('TransactionConfirmationPage', () => {
     expect(screen.getByText('লেনদেনের রসিদ')).toBeInTheDocument();
     expect(screen.getByText('COM-25')).toBeInTheDocument();
     expect(screen.getByText('ট্রাক্টর পার্টস')).toBeInTheDocument();
+    expect(screen.getAllByText('১')).toHaveLength(2);
+    expect(screen.getAllByText('২')).toHaveLength(2);
     expect(screen.getByText('বারো হাজার তিন শত টাকা মাত্র')).toBeInTheDocument();
   });
 

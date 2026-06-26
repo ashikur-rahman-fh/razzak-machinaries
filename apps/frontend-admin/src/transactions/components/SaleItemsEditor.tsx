@@ -101,8 +101,8 @@ export function SaleItemsEditor({ items, onChange, fieldErrors }: SaleItemsEdito
                     id={`unit-price-${item.id}`}
                     type="number"
                     min="0"
-                    step="0.01"
-                    inputMode="decimal"
+                    step="1"
+                    inputMode="numeric"
                     value={item.unitPrice}
                     onChange={(event) => updateItem(item.id, { unitPrice: event.target.value })}
                     aria-invalid={Boolean(fieldErrors[`items.${index}.unitPrice`])}
@@ -115,9 +115,9 @@ export function SaleItemsEditor({ items, onChange, fieldErrors }: SaleItemsEdito
                   <Input
                     id={`quantity-${item.id}`}
                     type="number"
-                    min="0"
-                    step="0.01"
-                    inputMode="decimal"
+                    min="1"
+                    step="1"
+                    inputMode="numeric"
                     value={item.quantity}
                     onChange={(event) => updateItem(item.id, { quantity: event.target.value })}
                     aria-invalid={Boolean(fieldErrors[`items.${index}.quantity`])}

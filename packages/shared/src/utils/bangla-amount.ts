@@ -31,10 +31,10 @@ export function formatCurrencyBn(
 ): string {
   const parsed =
     typeof amount === 'number' ? amount : Number.parseFloat(toLatinDigits(String(amount)));
-  const safeAmount = Number.isFinite(parsed) ? parsed : 0;
+  const safeAmount = Number.isFinite(parsed) ? Math.round(parsed) : 0;
   const formatted = safeAmount.toLocaleString('en-BD', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   });
   const withSymbol = `৳${formatted}`;
   return options.useBanglaDigits ? toBanglaDigits(withSymbol) : withSymbol;

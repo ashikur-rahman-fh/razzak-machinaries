@@ -9,11 +9,15 @@ import {
 
 describe('formatCurrencyBn', () => {
   it('formats BDT with latin digits by default', () => {
-    expect(formatCurrencyBn(12300)).toBe('৳12,300.00');
+    expect(formatCurrencyBn(12300)).toBe('৳12,300');
   });
 
   it('formats BDT with Bangla digits when requested', () => {
-    expect(formatCurrencyBn(12300, { useBanglaDigits: true })).toBe('৳১২,৩০০.০০');
+    expect(formatCurrencyBn(12300, { useBanglaDigits: true })).toBe('৳১২,৩০০');
+  });
+
+  it('rounds fractional amounts', () => {
+    expect(formatCurrencyBn(12300.75)).toBe('৳12,301');
   });
 });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import type { Transaction } from '@razzak-machinaries/shared/api';
-import { formatBdt } from '@razzak-machinaries/shared/utils/currency';
+import { formatBdt, formatInteger } from '@razzak-machinaries/shared/utils/currency';
 import { useLanguagePreference, useTranslation } from '@razzak-machinaries/shared/i18n';
 import {
   BilingualText,
@@ -207,7 +207,7 @@ export function TransactionReadOnlyDetails({
                       <TableCell className="text-right">
                         {formatBdt(item.unitPrice, language)}
                       </TableCell>
-                      <TableCell className="text-right">{item.quantity}</TableCell>
+                      <TableCell className="text-right">{formatInteger(item.quantity)}</TableCell>
                       <TableCell className="text-right">
                         {formatBdt(item.lineTotal, language)}
                       </TableCell>

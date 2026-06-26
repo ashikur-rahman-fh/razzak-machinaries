@@ -5,6 +5,19 @@ import type {
 } from '@razzak-machinaries/shared/api';
 import { multiplyMoneyStrings, sumMoneyStrings } from '@razzak-machinaries/shared/utils/currency';
 
+export function isWholeNumber(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return false;
+  }
+  const parsed = Number.parseFloat(trimmed);
+  return Number.isFinite(parsed) && parsed >= 0 && Number.isInteger(parsed);
+}
+
+function normalizeInteger(value: string): string {
+  return String(Math.round(Number.parseFloat(value)));
+}
+
 export type SaleItemFormValues = {
   id: string;
   productName: string;
@@ -78,17 +91,17 @@ export function validateTransactionForm(
         errors[`items.${index}.productName`] = 'transaction.create.validation.productName';
       }
       const unitPrice = Number.parseFloat(item.unitPrice);
-      if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      if (!Number.isFinite(unitPrice) || unitPrice < 0 || !Number.isInteger(unitPrice)) {
         errors[`items.${index}.unitPrice`] = 'transaction.create.validation.unitPrice';
       }
       const quantity = Number.parseFloat(item.quantity);
-      if (!Number.isFinite(quantity) || quantity <= 0) {
+      if (!Number.isFinite(quantity) || quantity < 1 || !Number.isInteger(quantity)) {
         errors[`items.${index}.quantity`] = 'transaction.create.validation.quantity';
       }
     });
   } else {
     const amount = Number.parseFloat(values.amount);
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isInteger(amount)) {
       errors.amount = 'transaction.create.validation.amount';
     }
   }
@@ -109,8 +122,8 @@ export function buildTransactionWritePayload(values: TransactionFormValues): Tra
       ...base,
       items: values.items.map((item) => ({
         productName: item.productName.trim(),
-        unitPrice: Number.parseFloat(item.unitPrice).toFixed(2),
-        quantity: Number.parseFloat(item.quantity).toString(),
+        unitPrice: normalizeInteger(item.unitPrice),
+        quantity: normalizeInteger(item.quantity),
       })),
     };
   }
@@ -118,14 +131,14 @@ export function buildTransactionWritePayload(values: TransactionFormValues): Tra
   if (values.transactionType === 'PAYMENT') {
     return {
       ...base,
-      amount: Number.parseFloat(values.amount).toFixed(2),
+      amount: normalizeInteger(values.amount),
       paymentMethod: values.paymentMethod || 'cash',
     };
   }
 
   return {
     ...base,
-    amount: Number.parseFloat(values.amount).toFixed(2),
+    amount: normalizeInteger(values.amount),
   };
 }
 

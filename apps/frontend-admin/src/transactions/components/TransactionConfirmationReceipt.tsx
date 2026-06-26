@@ -6,7 +6,9 @@ import { useTranslation } from '@razzak-machinaries/shared/i18n';
 import {
   formatAmountInBanglaWords,
   formatCurrencyBn,
+  toBanglaDigits,
 } from '@razzak-machinaries/shared/utils/bangla-amount';
+import { formatInteger } from '@razzak-machinaries/shared/utils/currency';
 
 import { PAYMENT_METHODS } from '../constants';
 
@@ -101,13 +103,15 @@ export function TransactionConfirmationReceipt({
               <tbody>
                 {data.items.map((item, index) => (
                   <tr key={item.id}>
-                    <td className="border border-neutral-400 px-2 py-2">{index + 1}</td>
+                    <td className="border border-neutral-400 px-2 py-2">
+                      {toBanglaDigits(index + 1)}
+                    </td>
                     <td className="border border-neutral-400 px-2 py-2">{item.productName}</td>
                     <td className="border border-neutral-400 px-2 py-2 text-right">
                       {formatCurrencyBn(item.unitPrice, { useBanglaDigits: true })}
                     </td>
                     <td className="border border-neutral-400 px-2 py-2 text-right">
-                      {item.quantity}
+                      {toBanglaDigits(formatInteger(item.quantity))}
                     </td>
                     <td className="border border-neutral-400 px-2 py-2 text-right">
                       {formatCurrencyBn(item.lineTotal, { useBanglaDigits: true })}

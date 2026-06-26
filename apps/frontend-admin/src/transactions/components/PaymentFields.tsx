@@ -41,11 +41,11 @@ export function PaymentFields({
           id="transaction-payment-amount"
           type="number"
           min="0"
-          step="0.01"
-          inputMode="decimal"
+          step="1"
+          inputMode="numeric"
           value={amount}
           onChange={(event) => onAmountChange(event.target.value)}
-          placeholder="0.00"
+          placeholder="0"
           aria-invalid={Boolean(amountError)}
         />
         {amountError ? (
