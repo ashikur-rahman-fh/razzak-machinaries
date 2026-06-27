@@ -15,6 +15,7 @@ import {
   editHistoryTranslationsBn,
   editHistoryTranslationsEn,
 } from './src/i18n/edit-history-translations';
+import { halkhataTranslationsBn, halkhataTranslationsEn } from './src/i18n/halkhata-translations';
 import { staffTranslationsBn, staffTranslationsEn } from './src/i18n/staff-translations';
 import { adminUser, server, staffUser } from './vitest.setup';
 
@@ -32,8 +33,18 @@ function renderMobileNav(user = adminUser) {
   return render(
     <LanguageProvider
       catalogs={{
-        en: { ...adminTranslationsEn, ...editHistoryTranslationsEn, ...staffTranslationsEn },
-        bn: { ...adminTranslationsBn, ...editHistoryTranslationsBn, ...staffTranslationsBn },
+        en: {
+          ...adminTranslationsEn,
+          ...editHistoryTranslationsEn,
+          ...staffTranslationsEn,
+          ...halkhataTranslationsEn,
+        },
+        bn: {
+          ...adminTranslationsBn,
+          ...editHistoryTranslationsBn,
+          ...staffTranslationsBn,
+          ...halkhataTranslationsBn,
+        },
       }}
     >
       <AdminAuthProvider>
@@ -70,6 +81,14 @@ describe('AdminMobileNav', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
     expect(screen.queryByRole('link', { name: /Edit History/i })).not.toBeInTheDocument();
+  });
+
+  it('includes the Halkhata navigation item', async () => {
+    const user = userEvent.setup();
+    renderMobileNav();
+
+    await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+    expect(screen.getByRole('link', { name: /Halkhata/i })).toHaveAttribute('href', '/halkhata');
   });
 
   it('includes Staff users navigation for superusers', async () => {

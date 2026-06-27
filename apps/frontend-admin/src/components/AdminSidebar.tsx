@@ -27,6 +27,7 @@ export type AdminActiveRoute =
   | 'dashboard'
   | 'customers'
   | 'transactions'
+  | 'halkhata'
   | 'edit-history'
   | 'staff-users'
   | 'bangladesh-address'
@@ -51,6 +52,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', href: '/', translationKey: 'nav.dashboard' },
   { key: 'customers', href: '/customers', translationKey: 'nav.customers' },
   { key: 'transactions', href: '/transactions', translationKey: 'nav.transactions' },
+  { key: 'halkhata', href: '/halkhata', translationKey: 'nav.halkhata' },
   { key: 'edit-history', href: '/edit-history', translationKey: 'nav.editHistory' },
   { key: 'staff-users', href: '/staff-users', translationKey: 'nav.staffUsers' },
   {

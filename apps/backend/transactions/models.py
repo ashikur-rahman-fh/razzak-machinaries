@@ -99,6 +99,13 @@ class Transaction(models.Model):
         blank=True,
         related_name="created_transactions",
     )
+    halkhata = models.ForeignKey(
+        "halkhata.Halkhata",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="transactions",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -110,6 +117,7 @@ class Transaction(models.Model):
             models.Index(fields=["transaction_type", "date"]),
             models.Index(fields=["customer", "is_current", "status"]),
             models.Index(fields=["root_transaction", "version_number"]),
+            models.Index(fields=["halkhata", "is_current", "status"]),
         ]
         constraints = [
             models.UniqueConstraint(

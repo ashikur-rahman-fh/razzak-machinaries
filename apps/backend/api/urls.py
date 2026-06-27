@@ -33,6 +33,7 @@ urlpatterns = [
     path("admin/transactions/", include("transactions.urls")),
     path("admin/dashboard/", include("dashboard.urls")),
     path("admin/follow-ups/", include("follow_ups.urls")),
+    path("admin/halkhatas/", include("halkhata.urls")),
     path("admin/edit-history/", include("edit_history.urls")),
     re_path(r"^.*$", api_not_found, name="api-not-found"),
 ]

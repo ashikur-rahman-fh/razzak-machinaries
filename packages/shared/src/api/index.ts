@@ -1,3 +1,4 @@
+export { adminHalkhataApi } from './admin-halkhata';
 export { adminStaffUsersApi } from './admin-staff-users';
 export { adminFollowUpsApi } from './admin-follow-ups';
 export { adminDashboardApi } from './admin-dashboard';
@@ -38,6 +39,17 @@ export type {
 } from './core/types';
 export { getHello } from './hello';
 export { getDistricts, getDivisions, getUnions, getUpazilas, getVillages } from './geo';
+export type {
+  Halkhata,
+  HalkhataListParams,
+  HalkhataPaymentWrite,
+  HalkhataStats,
+  HalkhataStatus,
+  HalkhataTransaction,
+  HalkhataTransactionListParams,
+  HalkhataUpdate,
+  HalkhataWrite,
+} from '../types/halkhata';
 export type {
   CustomerFollowUp,
   CustomerFollowUpCompleteWrite,

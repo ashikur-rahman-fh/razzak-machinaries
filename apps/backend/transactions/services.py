@@ -265,8 +265,18 @@ def create_transaction(
     amount: Decimal | None = None,
     items: list[dict] | None = None,
     created_by=None,
+    halkhata=None,
 ) -> Transaction:
     _ensure_customer_can_transact(customer)
+
+    if halkhata is not None:
+        from halkhata.exceptions import HalkhataClosed, HalkhataInvalidPayment
+        from halkhata.models import HalkhataStatus
+
+        if halkhata.status != HalkhataStatus.ACTIVE:
+            raise HalkhataClosed()
+        if transaction_type != TransactionType.PAYMENT:
+            raise HalkhataInvalidPayment()
 
     note = (note or "").strip()
     payment_method = (payment_method or "").strip()
@@ -292,6 +302,7 @@ def create_transaction(
         is_current=True,
         version_number=1,
         created_by=created_by,
+        halkhata=halkhata,
         **snapshot_customer_fields(customer),
     )
     _finalize_root_transaction(transaction_obj)
@@ -372,6 +383,7 @@ def create_transaction_correction(
         edited_by=edited_by,
         edited_at=timezone.now(),
         created_by=edited_by or source.created_by,
+        halkhata=source.halkhata,
         **snapshot_customer_fields(customer),
     )
     _create_transaction_items(new_transaction, built_items)

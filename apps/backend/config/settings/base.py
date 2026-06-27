@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "dashboard",
     "edit_history",
     "follow_ups",
+    "halkhata",
 ]
 
 MIDDLEWARE = [

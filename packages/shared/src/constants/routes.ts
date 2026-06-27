@@ -59,6 +59,13 @@ export const API_ROUTES = {
     complete: (id: number) => `/api/admin/follow-ups/${id}/complete/`,
     cancel: (id: number) => `/api/admin/follow-ups/${id}/cancel/`,
   },
+  adminHalkhatas: {
+    list: '/api/admin/halkhatas/',
+    detail: (id: number) => `/api/admin/halkhatas/${id}/`,
+    stats: (id: number) => `/api/admin/halkhatas/${id}/stats/`,
+    transactions: (id: number) => `/api/admin/halkhatas/${id}/transactions/`,
+    payments: (id: number) => `/api/admin/halkhatas/${id}/payments/`,
+  },
   adminStaffUsers: {
     list: '/api/admin/staff-users/',
     detail: (id: number) => `/api/admin/staff-users/${id}/`,
