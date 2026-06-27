@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "transactions",
     "dashboard",
     "edit_history",
+    "follow_ups",
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Dhaka"
 USE_I18N = True
 USE_TZ = True
 

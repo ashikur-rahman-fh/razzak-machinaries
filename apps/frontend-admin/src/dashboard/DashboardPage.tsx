@@ -11,6 +11,7 @@ import { RequireAdminAuth } from '@/auth/guards';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/customers/hooks';
 
 import { DashboardCharts } from './components/DashboardCharts';
+import { DashboardFollowUps } from '@/follow-ups/components/DashboardFollowUps';
 import { DashboardKpiCards } from './components/DashboardKpiCards';
 import { DashboardSkeleton } from './components/DashboardSkeleton';
 import { RecentCustomersTable } from './components/RecentCustomersTable';
@@ -84,6 +85,8 @@ export function DashboardPage() {
                 yearlyStats={data.yearlyStats}
                 isLoading={state.status === 'loading'}
               />
+
+              <DashboardFollowUps />
 
               <DashboardCharts
                 yearlyStats={data.yearlyStats}

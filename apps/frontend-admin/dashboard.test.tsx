@@ -26,12 +26,14 @@ import { http, HttpResponse } from 'msw';
 
 import { DashboardPage } from './src/dashboard/DashboardPage';
 import { dashboardMswHandlers } from './src/dashboard/dashboard-msw-handlers';
+import { followUpMswHandlers } from './src/follow-ups/follow-up-msw-handlers';
 import { AdminAuthProvider } from './src/auth/AdminAuthProvider';
 import { customerTranslationsBn, customerTranslationsEn } from './src/i18n/customer-translations';
 import {
   dashboardTranslationsBn,
   dashboardTranslationsEn,
 } from './src/i18n/dashboard-translations';
+import { followUpTranslationsBn, followUpTranslationsEn } from './src/i18n/follow-up-translations';
 import { geoTranslationsBn, geoTranslationsEn } from './src/i18n/geo-translations';
 import {
   transactionTranslationsBn,
@@ -60,6 +62,7 @@ function renderDashboard() {
           ...geoTranslationsEn,
           ...customerTranslationsEn,
           ...transactionTranslationsEn,
+          ...followUpTranslationsEn,
         },
         bn: {
           ...adminTranslationsBn,
@@ -67,6 +70,7 @@ function renderDashboard() {
           ...geoTranslationsBn,
           ...customerTranslationsBn,
           ...transactionTranslationsBn,
+          ...followUpTranslationsBn,
         },
       }}
     >
@@ -82,6 +86,7 @@ describe('DashboardPage', () => {
     server.use(
       http.get('*/api/admin/auth/me/', () => HttpResponse.json(adminUser)),
       ...dashboardMswHandlers(),
+      ...followUpMswHandlers(),
     );
   });
 
@@ -116,6 +121,14 @@ describe('DashboardPage', () => {
     const yearSelect = await screen.findByTestId('dashboard-year-select');
     expect(yearSelect).toBeInTheDocument();
     expect(yearSelect).toHaveTextContent('2026');
+  });
+
+  it('renders follow-ups section', async () => {
+    renderDashboard();
+    expect(await screen.findByTestId('dashboard-follow-ups')).toBeInTheDocument();
+    expect(
+      screen.getByText(followUpTranslationsEn['dashboard.followUps.title']),
+    ).toBeInTheDocument();
   });
 
   it('shows error state with retry', async () => {

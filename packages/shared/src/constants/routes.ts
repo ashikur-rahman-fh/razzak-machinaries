@@ -36,6 +36,7 @@ export const API_ROUTES = {
     createVersion: (id: number) => `/api/admin/customers/${id}/create-version/`,
     archive: (id: number) => `/api/admin/customers/${id}/archive/`,
     history: (id: number) => `/api/admin/customers/${id}/history/`,
+    followUps: (id: number) => `/api/admin/customers/${id}/follow-ups/`,
   },
   adminTransactions: {
     list: '/api/admin/transactions/',
@@ -46,9 +47,17 @@ export const API_ROUTES = {
     history: (id: number) => `/api/admin/transactions/${id}/history/`,
   },
   adminTranslations: '/api/admin/translations/',
-  adminDashboard: '/api/admin/dashboard/',
+  adminDashboard: {
+    root: '/api/admin/dashboard/',
+    followUps: '/api/admin/dashboard/follow-ups/',
+  },
   adminEditHistory: {
     list: '/api/admin/edit-history/',
+  },
+  adminFollowUps: {
+    detail: (id: number) => `/api/admin/follow-ups/${id}/`,
+    complete: (id: number) => `/api/admin/follow-ups/${id}/complete/`,
+    cancel: (id: number) => `/api/admin/follow-ups/${id}/cancel/`,
   },
   adminStaffUsers: {
     list: '/api/admin/staff-users/',

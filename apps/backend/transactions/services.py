@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.db import transaction as db_transaction
 from django.db.models import Case, Count, DecimalField, Sum, Value, When
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from customers.models import Customer
@@ -105,6 +106,59 @@ def aggregate_amount_by_type(queryset, transaction_type: str) -> Decimal:
 
 def calculate_global_due() -> Decimal:
     return _aggregate_ledger(Transaction.objects.all()).current_balance
+
+
+def calculate_customer_balances_bulk(customer_ids: list[int]) -> dict[int, Decimal]:
+    if not customer_ids:
+        return {}
+
+    zero = Value(Decimal("0"), output_field=DecimalField(max_digits=14, decimal_places=2))
+    rows = (
+        get_current_active_transactions(Transaction.objects.filter(customer_id__in=customer_ids))
+        .values("customer_id")
+        .annotate(
+            total_initial=Coalesce(
+                Sum(
+                    Case(
+                        When(transaction_type=TransactionType.INITIAL, then="total_amount"),
+                        default=zero,
+                        output_field=DecimalField(max_digits=14, decimal_places=2),
+                    )
+                ),
+                zero,
+            ),
+            total_sales=Coalesce(
+                Sum(
+                    Case(
+                        When(transaction_type=TransactionType.SALE, then="total_amount"),
+                        default=zero,
+                        output_field=DecimalField(max_digits=14, decimal_places=2),
+                    )
+                ),
+                zero,
+            ),
+            total_payments=Coalesce(
+                Sum(
+                    Case(
+                        When(transaction_type=TransactionType.PAYMENT, then="total_amount"),
+                        default=zero,
+                        output_field=DecimalField(max_digits=14, decimal_places=2),
+                    )
+                ),
+                zero,
+            ),
+        )
+    )
+
+    balances: dict[int, Decimal] = {customer_id: Decimal("0") for customer_id in customer_ids}
+    for row in rows:
+        customer_id = row["customer_id"]
+        balances[customer_id] = quantize_money(
+            (row["total_initial"] or Decimal("0"))
+            + (row["total_sales"] or Decimal("0"))
+            - (row["total_payments"] or Decimal("0"))
+        )
+    return balances
 
 
 def calculate_customer_balance(customer_id: int) -> BalanceSummary:

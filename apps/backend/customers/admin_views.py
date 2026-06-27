@@ -22,6 +22,12 @@ from customers.models import Customer
 from customers.pagination import CustomerPageNumberPagination
 from customers.search_ranking import normalize_search_text
 from customers.services import get_customer_version_history
+from follow_ups.admin_serializers import (
+    CustomerFollowUpReadSerializer,
+    CustomerFollowUpsResponseSerializer,
+    CustomerFollowUpWriteSerializer,
+)
+from follow_ups.services import get_customer_follow_ups
 from transactions.admin_serializers import CustomerBalanceSerializer, TransactionReadSerializer
 from transactions.filters import apply_transaction_filters, apply_transaction_ordering
 from transactions.models import Transaction
@@ -160,6 +166,29 @@ class AdminCustomerViewSet(ModelViewSet):
                 "message": "Customer archived successfully.",
             }
         )
+
+    @action(detail=True, methods=["get", "post"], url_path="follow-ups")
+    def follow_ups(self, request, pk=None):
+        customer = self.get_object()
+
+        if request.method == "GET":
+            result = get_customer_follow_ups(customer.pk)
+            serializer = CustomerFollowUpsResponseSerializer(
+                {
+                    "active": result.active,
+                    "history": result.history,
+                }
+            )
+            return Response(serializer.data)
+
+        serializer = CustomerFollowUpWriteSerializer(
+            data=request.data,
+            context={"request": request, "customer": customer},
+        )
+        serializer.is_valid(raise_exception=True)
+        follow_up = serializer.save()
+        read_serializer = CustomerFollowUpReadSerializer(follow_up)
+        return Response(read_serializer.data, status=201)
 
     @action(detail=True, methods=["get"], url_path="history")
     def history(self, request, pk=None):

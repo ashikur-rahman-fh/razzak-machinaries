@@ -24,6 +24,7 @@ import { getCustomerArchiveErrorMessage } from '@/customers/errors';
 import { getAsyncData, isAsyncInitialLoad, useAsyncData } from '@/customers/hooks';
 import { parseListState } from '@/customers/routes';
 import { formatCustomerPhone } from '@/customers/utils';
+import { CustomerFollowUpPanel } from '@/follow-ups/components/CustomerFollowUpPanel';
 
 export function CustomerDetailPage() {
   const params = useParams<{ id: string }>();
@@ -147,6 +148,7 @@ export function CustomerDetailPage() {
           <>
             <div className="mb-6 space-y-6">
               <CustomerBalanceSummary customerId={customer.id} />
+              <CustomerFollowUpPanel customerId={customer.id} isArchived={customer.isArchived} />
               <CustomerTransactionsPanel customerId={customer.id} />
             </div>
             <CustomerReadOnlyDetails

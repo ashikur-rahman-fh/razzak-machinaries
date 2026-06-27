@@ -11,7 +11,7 @@ function toQueryParams(params?: DashboardParams): Record<string, number> | undef
 
 export const adminDashboardApi = {
   getDashboard(params?: DashboardParams): Promise<DashboardData> {
-    return backendAdminApi.get<DashboardData>(API_ROUTES.adminDashboard, {
+    return backendAdminApi.get<DashboardData>(API_ROUTES.adminDashboard.root, {
       params: toQueryParams(params),
     });
   },
