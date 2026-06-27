@@ -55,6 +55,14 @@ export function buildDetailUrl(id: number): string {
   return `/halkhata/${id}`;
 }
 
+export function buildInvitationsUrl(halkhataId: number): string {
+  return `/halkhata/${halkhataId}/invitations`;
+}
+
+export function buildInvitationPrintUrl(halkhataId: number, generationId: number): string {
+  return `/halkhata/${halkhataId}/invitations/print/${generationId}`;
+}
+
 export function buildDetailTransactionsUrl(
   id: number,
   state: Partial<HalkhataTransactionListState>,

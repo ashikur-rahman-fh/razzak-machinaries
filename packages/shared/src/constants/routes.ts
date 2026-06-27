@@ -65,6 +65,11 @@ export const API_ROUTES = {
     stats: (id: number) => `/api/admin/halkhatas/${id}/stats/`,
     transactions: (id: number) => `/api/admin/halkhatas/${id}/transactions/`,
     payments: (id: number) => `/api/admin/halkhatas/${id}/payments/`,
+    invitations: (id: number) => `/api/admin/halkhatas/${id}/invitations/`,
+    invitationCustomers: (id: number) => `/api/admin/halkhatas/${id}/invitations/customers/`,
+    invitationGenerations: (id: number) => `/api/admin/halkhatas/${id}/invitations/generations/`,
+    invitationGenerationDetail: (id: number, generationId: number) =>
+      `/api/admin/halkhatas/${id}/invitations/generations/${generationId}/`,
   },
   adminStaffUsers: {
     list: '/api/admin/staff-users/',

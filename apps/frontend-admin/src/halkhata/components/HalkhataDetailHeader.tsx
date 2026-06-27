@@ -10,9 +10,11 @@ import {
   Textarea,
   TranslatedText,
 } from '@razzak-machinaries/shared/ui';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { HALKHATA_STATUS_LABEL_KEYS } from '../constants';
+import { buildInvitationsUrl } from '../routes';
 
 type HalkhataDetailHeaderProps = {
   halkhata: Halkhata;
@@ -89,6 +91,11 @@ export function HalkhataDetailHeader({
           ) : (
             <TranslatedText translationKey="halkhata.detail.close" as="span" compact />
           )}
+        </Button>
+        <Button type="button" variant="outline" asChild>
+          <Link href={buildInvitationsUrl(halkhata.id)}>
+            <TranslatedText translationKey="halkhata.invitations.open" as="span" compact />
+          </Link>
         </Button>
       </div>
 

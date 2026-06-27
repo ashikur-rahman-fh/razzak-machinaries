@@ -1,0 +1,82 @@
+import type {
+  HalkhataInvitationGenerationDetail,
+  HalkhataInvitationPageContext,
+  InvitationCustomer,
+} from '@razzak-machinaries/shared/api';
+
+export const sampleInvitationPageContext: HalkhataInvitationPageContext = {
+  halkhataId: 1,
+  halkhataTitle: 'Summer Collection 2026',
+  halkhataDate: '2026-06-27',
+  halkhataStatus: 'active',
+  totalActiveCustomers: 2,
+  totalDueCustomers: 1,
+  canGenerate: true,
+  generationCount: 1,
+  latestGenerationId: 10,
+};
+
+export const sampleInvitationCustomers: InvitationCustomer[] = [
+  {
+    id: 42,
+    fullNameBn: 'রহিম',
+    fullNameEn: 'Rahim',
+    addressBn: 'গ্রাম: চরপাড়া',
+    addressEn: 'Charpara village',
+    phoneBn: '০১৭১১১১১১১১১',
+    phoneEn: '01711111111',
+    phone: '+8801711111111',
+    fatherNameBn: 'করিম',
+    fatherNameEn: 'Karim',
+    memoPageNumberBn: '১২',
+    memoPageNumberEn: '12',
+    mediatorNameBn: 'রফিক',
+    mediatorNameEn: 'Rafiq',
+    cachedBalance: '1500.00',
+  },
+  {
+    id: 43,
+    fullNameBn: 'করিম',
+    fullNameEn: 'Karim',
+    addressBn: 'আত্রাই',
+    addressEn: 'Atrai',
+    phoneBn: '০১৭২২২২২২২২২',
+    phoneEn: '01722222222',
+    phone: '+8801722222222',
+    fatherNameBn: 'আলী',
+    fatherNameEn: 'Ali',
+    memoPageNumberBn: '৫',
+    memoPageNumberEn: '5',
+    mediatorNameBn: '',
+    mediatorNameEn: '',
+    cachedBalance: '0.00',
+  },
+];
+
+export const sampleInvitationGeneration: HalkhataInvitationGenerationDetail = {
+  id: 10,
+  generatedByName: 'admin',
+  generatedAt: '2026-06-20T10:00:00Z',
+  customerSelectionMode: 'manual',
+  customerCount: 1,
+  selectedCustomerIds: [42],
+  status: 'generated',
+  notes: '',
+  createdAt: '2026-06-20T10:00:00Z',
+  updatedAt: '2026-06-20T10:00:00Z',
+  halkhataId: 1,
+  halkhataTitle: 'Summer Collection 2026',
+  halkhataDate: '2026-06-27',
+  recipients: [
+    {
+      customerId: 42,
+      customerNameSnapshot: 'রহিম',
+      phoneSnapshot: '০১৭১১১১১১১১১',
+      addressSnapshot: 'গ্রাম: চরপাড়া',
+      fatherNameSnapshot: 'করিম',
+      dueAmountSnapshot: '1500.00',
+      memoPageNumberSnapshot: '১২',
+      sortOrder: 0,
+    },
+  ],
+};

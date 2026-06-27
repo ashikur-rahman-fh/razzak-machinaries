@@ -5,8 +5,14 @@ import {
   sampleHalkhataStats,
   sampleHalkhataTransactions,
 } from './halkhata-fixtures';
+import {
+  sampleInvitationCustomers,
+  sampleInvitationGeneration,
+  sampleInvitationPageContext,
+} from './invitation-fixtures';
 
 let nextHalkhataId = 3;
+let nextInvitationGenerationId = 11;
 
 const listHalkhatas = [
   { ...sampleHalkhata, id: 1, title: 'Summer Collection 2026', status: 'active' as const },
@@ -87,5 +93,73 @@ export function halkhataMswHandlers(options?: { status?: 'active' | 'closed' }) 
         { status: 201 },
       );
     }),
+    http.get('*/api/admin/halkhatas/:id/invitations/', ({ params }) =>
+      HttpResponse.json({
+        ...sampleInvitationPageContext,
+        halkhataId: Number(params.id),
+        canGenerate: status === 'active',
+      }),
+    ),
+    http.get('*/api/admin/halkhatas/:id/invitations/customers/', () =>
+      HttpResponse.json({
+        count: sampleInvitationCustomers.length,
+        next: null,
+        previous: null,
+        results: sampleInvitationCustomers,
+      }),
+    ),
+    http.get('*/api/admin/halkhatas/:id/invitations/generations/', () =>
+      HttpResponse.json({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [
+          {
+            id: sampleInvitationGeneration.id,
+            generatedByName: sampleInvitationGeneration.generatedByName,
+            generatedAt: sampleInvitationGeneration.generatedAt,
+            customerSelectionMode: sampleInvitationGeneration.customerSelectionMode,
+            customerCount: sampleInvitationGeneration.customerCount,
+            selectedCustomerIds: sampleInvitationGeneration.selectedCustomerIds,
+            status: sampleInvitationGeneration.status,
+            notes: sampleInvitationGeneration.notes,
+            createdAt: sampleInvitationGeneration.createdAt,
+            updatedAt: sampleInvitationGeneration.updatedAt,
+          },
+        ],
+      }),
+    ),
+    http.post('*/api/admin/halkhatas/:id/invitations/generations/', async ({ request, params }) => {
+      const body = (await request.json()) as {
+        selectionMode: string;
+        customerIds?: number[];
+      };
+      const generationId = nextInvitationGenerationId++;
+      const recipients =
+        body.selectionMode === 'manual' && body.customerIds?.length
+          ? sampleInvitationGeneration.recipients.filter((recipient) =>
+              body.customerIds?.includes(recipient.customerId),
+            )
+          : sampleInvitationGeneration.recipients;
+
+      return HttpResponse.json(
+        {
+          ...sampleInvitationGeneration,
+          id: generationId,
+          halkhataId: Number(params.id),
+          customerCount: recipients.length,
+          selectedCustomerIds: recipients.map((recipient) => recipient.customerId),
+          recipients,
+        },
+        { status: 201 },
+      );
+    }),
+    http.get('*/api/admin/halkhatas/:id/invitations/generations/:generationId/', ({ params }) =>
+      HttpResponse.json({
+        ...sampleInvitationGeneration,
+        id: Number(params.generationId),
+        halkhataId: Number(params.id),
+      }),
+    ),
   ];
 }
