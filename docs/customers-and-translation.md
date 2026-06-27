@@ -24,7 +24,7 @@ Admins create customers at **`/customers/new`** in the admin app with **Bangla-f
 | `PATCH` | `/api/admin/customers/{id}/` | Update customer |
 | `DELETE` | `/api/admin/customers/{id}/` | Delete customer |
 
-All admin endpoints require an active Django **superuser** session and CSRF token on unsafe methods.
+All admin endpoints require an active Django **staff or superuser** session. Unsafe methods (`POST`, `PATCH`, `PUT`, `DELETE`) also require a valid CSRF token; the shared admin client refreshes it via `ensureAdminCsrf()` before each write (including translation).
 
 ### Translation request
 

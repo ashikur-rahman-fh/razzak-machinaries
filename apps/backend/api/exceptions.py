@@ -15,6 +15,8 @@ from rest_framework.views import exception_handler
 from api.admin.constants import (
     ADMIN_FORBIDDEN_CODE,
     ADMIN_FORBIDDEN_MESSAGE,
+    CSRF_FAILED_CODE,
+    CSRF_FAILED_MESSAGE,
     INVALID_CREDENTIALS_CODE,
     INVALID_CREDENTIALS_MESSAGE,
     INVALID_CURRENT_PASSWORD_CODE,
@@ -78,6 +80,7 @@ SAFE_MESSAGES = {
     "API_ERROR": "Something went wrong. Please try again.",
     INVALID_CREDENTIALS_CODE: INVALID_CREDENTIALS_MESSAGE,
     ADMIN_FORBIDDEN_CODE: ADMIN_FORBIDDEN_MESSAGE,
+    CSRF_FAILED_CODE: CSRF_FAILED_MESSAGE,
     "UNAUTHORIZED": "You need to sign in to continue.",
     INVALID_CURRENT_PASSWORD_CODE: INVALID_CURRENT_PASSWORD_MESSAGE,
     WEAK_PASSWORD_CODE: WEAK_PASSWORD_MESSAGE,
@@ -112,11 +115,20 @@ def _error_payload(code: str, message: str, details=None) -> dict:
     }
 
 
+def _is_csrf_permission_denied(exc: APIException) -> bool:
+    if not isinstance(exc, PermissionDenied):
+        return False
+    detail = exc.detail
+    return isinstance(detail, str) and "CSRF Failed" in detail
+
+
 def _code_and_message(exc: APIException, status_code: int) -> tuple[str, str]:
     if isinstance(exc, (AdminUnauthenticated, NotAuthenticated)):
         return "UNAUTHORIZED", SAFE_MESSAGES["UNAUTHORIZED"]
     if isinstance(exc, (InvalidAdminCredentials, AuthenticationFailed)):
         return INVALID_CREDENTIALS_CODE, INVALID_CREDENTIALS_MESSAGE
+    if _is_csrf_permission_denied(exc):
+        return CSRF_FAILED_CODE, CSRF_FAILED_MESSAGE
     if isinstance(exc, (AdminForbidden, PermissionDenied)):
         return ADMIN_FORBIDDEN_CODE, ADMIN_FORBIDDEN_MESSAGE
     if isinstance(exc, NotFound):

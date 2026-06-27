@@ -4,8 +4,8 @@ import pytest
 from django.core.cache import cache
 from rest_framework.test import APIClient
 
-from api.admin.constants import ADMIN_FORBIDDEN_CODE
-from tests.factories import create_regular_user, create_superuser
+from api.admin.constants import ADMIN_FORBIDDEN_CODE, CSRF_FAILED_CODE
+from tests.factories import create_regular_user, create_staff_user, create_superuser
 from tests.test_admin_auth import _fetch_csrf, _login
 from tests.test_api import assert_error_envelope
 
@@ -31,6 +31,13 @@ def api_client():
 def superuser_client(api_client):
     create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
+    return api_client
+
+
+@pytest.fixture
+def staff_client(api_client):
+    create_staff_user()
+    _login(api_client, username_or_email="staff", password="staffpass123")
     return api_client
 
 
@@ -106,7 +113,7 @@ def test_translate_requires_auth(api_client):
     assert response.status_code == 401
 
 
-def test_translate_forbidden_for_non_superuser(api_client):
+def test_translate_forbidden_for_non_admin_user(api_client):
     user = create_regular_user(username="staff", password="staffpass123")
     api_client.force_login(user)
     token = _fetch_csrf(api_client)
@@ -117,6 +124,38 @@ def test_translate_forbidden_for_non_superuser(api_client):
         HTTP_X_CSRFTOKEN=token,
     )
     assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
+
+
+@patch("api.services.translation.providers.azure.urllib.request.urlopen")
+def test_translate_success_for_staff_user(mock_urlopen, staff_client):
+    mock_response = MagicMock()
+    mock_response.read.return_value = _azure_success_body("Hello")
+    mock_response.__enter__.return_value = mock_response
+    mock_urlopen.return_value = mock_response
+
+    response = _auth_post_json(
+        staff_client,
+        TRANSLATIONS_URL,
+        {"text": "হ্যালো", "source": "bn", "target": "en"},
+    )
+
+    assert response.status_code == 200
+    assert response.data == {"translatedText": "Hello", "provider": "azure"}
+
+
+def test_translate_rejects_wrong_csrf_token(csrf_client):
+    create_superuser()
+    _login(csrf_client, username_or_email="admin", password="adminpass123", with_csrf=True)
+
+    response = csrf_client.post(
+        TRANSLATIONS_URL,
+        {"text": "test", "source": "bn", "target": "en"},
+        format="json",
+        HTTP_X_CSRFTOKEN="invalid-csrf-token",
+    )
+
+    assert_error_envelope(response, status_code=403, code=CSRF_FAILED_CODE)
+    assert "CSRF Failed" in response.json()["error"]["details"]["detail"]
 
 
 def test_translate_rejects_empty_text(superuser_client):

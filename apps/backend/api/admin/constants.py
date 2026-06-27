@@ -1,8 +1,10 @@
 INVALID_CREDENTIALS_MESSAGE = "Invalid login details. Please check your credentials and try again."
 ADMIN_FORBIDDEN_MESSAGE = "You do not have permission to access the admin area."
+CSRF_FAILED_MESSAGE = "Your session expired. Please refresh the page and try again."
 
 INVALID_CREDENTIALS_CODE = "INVALID_CREDENTIALS"
 ADMIN_FORBIDDEN_CODE = "ADMIN_FORBIDDEN"
+CSRF_FAILED_CODE = "CSRF_FAILED"
 INVALID_CURRENT_PASSWORD_CODE = "INVALID_CURRENT_PASSWORD"
 WEAK_PASSWORD_CODE = "WEAK_PASSWORD"
 
