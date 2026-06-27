@@ -10,6 +10,7 @@ from api.admin.constants import (
     INVALID_CREDENTIALS_MESSAGE,
     SAFE_USER_RESPONSE_KEYS,
 )
+from tests.factories import create_regular_user, create_staff_user, create_superuser
 from tests.test_api import assert_error_envelope
 
 User = get_user_model()
@@ -20,34 +21,6 @@ LOGIN_URL = "/api/admin/auth/login/"
 LOGOUT_URL = "/api/admin/auth/logout/"
 ME_URL = "/api/admin/auth/me/"
 CSRF_URL = "/api/admin/auth/csrf/"
-
-
-def _create_superuser(username="admin", password="adminpass123", **kwargs):
-    defaults = {
-        "email": f"{username}@example.com",
-        "is_superuser": True,
-        "is_staff": True,
-        "is_active": True,
-    }
-    defaults.update(kwargs)
-    return User.objects.create_user(username=username, password=password, **defaults)
-
-
-def _create_regular_user(username="user", password="userpass123", **kwargs):
-    defaults = {"email": f"{username}@example.com", "is_active": True}
-    defaults.update(kwargs)
-    return User.objects.create_user(username=username, password=password, **defaults)
-
-
-def _create_staff_user(username="staff", password="staffpass123", **kwargs):
-    defaults = {
-        "email": f"{username}@example.com",
-        "is_staff": True,
-        "is_superuser": False,
-        "is_active": True,
-    }
-    defaults.update(kwargs)
-    return User.objects.create_user(username=username, password=password, **defaults)
 
 
 def _fetch_csrf(client: APIClient) -> str:
@@ -93,6 +66,7 @@ def _assert_safe_user_payload(body: dict, user: User):
     assert body["email"] == (user.email or "")
     assert body["isStaff"] is user.is_staff
     assert body["isSuperuser"] is user.is_superuser
+    assert body["mustChangePassword"] is False
     assert isinstance(body["name"], str)
     assert body["name"]
     for key in FORBIDDEN_USER_RESPONSE_KEYS:
@@ -108,14 +82,14 @@ def test_csrf_endpoint_returns_token(api_client):
 
 
 def test_login_success_active_superuser(api_client):
-    user = _create_superuser()
+    user = create_superuser()
     response = _login(api_client, username_or_email="admin", password="adminpass123")
     assert response.status_code == 200
     _assert_safe_user_payload(response.json(), user)
 
 
 def test_login_success_with_email(api_client):
-    user = _create_superuser(email="super@example.com")
+    user = create_superuser(email="super@example.com")
     response = _login(
         api_client,
         username_or_email="super@example.com",
@@ -126,7 +100,7 @@ def test_login_success_with_email(api_client):
 
 
 def test_login_invalid_credentials(api_client):
-    _create_superuser()
+    create_superuser()
     response = _login(api_client, username_or_email="admin", password="wrong")
     assert_error_envelope(response, status_code=401, code=INVALID_CREDENTIALS_CODE)
     assert response.json()["error"]["message"] == INVALID_CREDENTIALS_MESSAGE
@@ -149,19 +123,19 @@ def test_login_missing_password(api_client):
 
 
 def test_login_inactive_superuser(api_client):
-    _create_superuser(is_active=False)
+    create_superuser(is_active=False)
     response = _login(api_client, username_or_email="admin", password="adminpass123")
     assert_error_envelope(response, status_code=401, code=INVALID_CREDENTIALS_CODE)
 
 
 def test_login_regular_user(api_client):
-    _create_regular_user()
+    create_regular_user()
     response = _login(api_client, username_or_email="user", password="userpass123")
     assert_error_envelope(response, status_code=401, code=INVALID_CREDENTIALS_CODE)
 
 
 def test_login_staff_non_superuser(api_client):
-    _create_staff_user()
+    create_staff_user()
     response = _login(api_client, username_or_email="staff", password="staffpass123")
     assert response.status_code == 200
     body = response.json()
@@ -170,7 +144,7 @@ def test_login_staff_non_superuser(api_client):
 
 
 def test_me_returns_current_superuser(api_client):
-    user = _create_superuser()
+    user = create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     response = _authenticated_get(api_client, ME_URL)
     assert response.status_code == 200
@@ -183,7 +157,7 @@ def test_me_unauthenticated(api_client):
 
 
 def test_me_authenticated_non_superuser(api_client):
-    user = _create_regular_user()
+    user = create_regular_user()
     api_client.force_login(user)
     response = api_client.get(ME_URL)
     assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
@@ -191,7 +165,7 @@ def test_me_authenticated_non_superuser(api_client):
 
 
 def test_me_authenticated_staff_non_superuser(api_client):
-    user = _create_staff_user()
+    user = create_staff_user()
     api_client.force_login(user)
     response = api_client.get(ME_URL)
     assert response.status_code == 200
@@ -199,7 +173,7 @@ def test_me_authenticated_staff_non_superuser(api_client):
 
 
 def test_logout_authenticated(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     response = _authenticated_post(api_client, LOGOUT_URL)
     assert response.status_code == 200
@@ -214,7 +188,7 @@ def test_logout_already_logged_out(api_client):
 
 
 def test_login_never_returns_password_hash(api_client):
-    _create_superuser()
+    create_superuser()
     response = _login(api_client, username_or_email="admin", password="adminpass123")
     body = response.json()
     assert "password" not in body
@@ -223,7 +197,7 @@ def test_login_never_returns_password_hash(api_client):
 
 
 def test_login_with_csrf_enforced(csrf_client):
-    _create_superuser()
+    create_superuser()
     token = _fetch_csrf(csrf_client)
     response = csrf_client.post(
         LOGIN_URL,
@@ -235,7 +209,7 @@ def test_login_with_csrf_enforced(csrf_client):
 
 
 def test_logout_without_csrf_fails_when_session_authenticated(csrf_client):
-    _create_superuser()
+    create_superuser()
     token = _fetch_csrf(csrf_client)
     csrf_client.post(
         LOGIN_URL,

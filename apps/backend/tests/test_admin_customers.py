@@ -5,16 +5,11 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
 from rest_framework.test import APIClient
 
+from api.admin.constants import ADMIN_FORBIDDEN_CODE
 from customers.models import Customer, CustomerVersion
 from customers.services import create_customer_with_version
-from tests.test_admin_auth import (
-    ADMIN_FORBIDDEN_CODE,
-    _create_regular_user,
-    _create_staff_user,
-    _create_superuser,
-    _fetch_csrf,
-    _login,
-)
+from tests.factories import create_regular_user, create_staff_user, create_superuser
+from tests.test_admin_auth import _fetch_csrf, _login
 from tests.test_api import assert_error_envelope
 
 pytestmark = pytest.mark.django_db
@@ -75,14 +70,14 @@ def api_client():
 
 @pytest.fixture
 def superuser_client(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     return api_client
 
 
 @pytest.fixture
 def staff_client(api_client):
-    _create_staff_user()
+    create_staff_user()
     _login(api_client, username_or_email="staff", password="staffpass123")
     return api_client
 
@@ -269,7 +264,7 @@ def test_customer_requires_auth(api_client):
 
 
 def test_customer_forbidden_for_regular_user(api_client):
-    user = _create_regular_user(username="regular", password="regularpass123")
+    user = create_regular_user(username="regular", password="regularpass123")
     api_client.force_login(user)
     token = _fetch_csrf(api_client)
     response = api_client.get(CUSTOMERS_URL, HTTP_X_CSRFTOKEN=token)

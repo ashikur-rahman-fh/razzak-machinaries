@@ -1,20 +1,10 @@
-import secrets
-import string
-
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
 from django.core.management.base import BaseCommand, CommandError
 
-User = get_user_model()
+from api.admin.password_utils import generate_legacy_temporary_password
+from api.admin.staff_profile import ensure_staff_profile
 
-# Exclude ambiguous characters for operator handoff.
-_PASSWORD_ALPHABET = (
-    string.ascii_letters.replace("O", "").replace("l", "")
-    + string.digits.replace("0", "").replace("1", "")
-    + "!@#$%^&*-_=+"
-)
-_PASSWORD_LENGTH = 20
-_MAX_GENERATION_ATTEMPTS = 50
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -50,9 +40,13 @@ class Command(BaseCommand):
                 self.stdout.write("Password reset cancelled.")
                 return
 
-        temporary_password = self._generate_valid_password(user)
+        try:
+            temporary_password = generate_legacy_temporary_password(user=user)
+        except RuntimeError as exc:
+            raise CommandError(str(exc)) from exc
         user.set_password(temporary_password)
         user.save(update_fields=["password"])
+        ensure_staff_profile(user, must_change_password=False)
 
         self.stdout.write(self.style.WARNING(f"Temporary password issued for user: {username}"))
         self.stdout.write(temporary_password)
@@ -60,13 +54,3 @@ class Command(BaseCommand):
             "This temporary password is shown only once. Share it securely and instruct "
             "the user to change it after login."
         )
-
-    def _generate_valid_password(self, user) -> str:
-        for _ in range(_MAX_GENERATION_ATTEMPTS):
-            candidate = "".join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(_PASSWORD_LENGTH))
-            try:
-                validate_password(candidate, user=user)
-            except Exception:
-                continue
-            return candidate
-        raise CommandError("Could not generate a password that passes validation.")

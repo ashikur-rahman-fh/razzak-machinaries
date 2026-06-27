@@ -9,6 +9,16 @@ WEAK_PASSWORD_CODE = "WEAK_PASSWORD"
 INVALID_CURRENT_PASSWORD_MESSAGE = "The current password is incorrect."
 WEAK_PASSWORD_MESSAGE = "Please choose a stronger password."
 
+MUST_CHANGE_PASSWORD_CODE = "MUST_CHANGE_PASSWORD"
+MUST_CHANGE_PASSWORD_MESSAGE = (
+    "You must change your temporary password before using this action. "
+    "Use the change temporary password endpoint."
+)
+TEMPORARY_PASSWORD_NOT_REQUIRED_CODE = "TEMPORARY_PASSWORD_NOT_REQUIRED"
+TEMPORARY_PASSWORD_NOT_REQUIRED_MESSAGE = (
+    "Your account does not require a temporary password change."
+)
+
 PROFILE_FORBIDDEN_WRITE_KEYS = frozenset(
     {
         "id",
@@ -40,6 +50,7 @@ SAFE_USER_RESPONSE_KEYS = frozenset(
         "email",
         "isStaff",
         "isSuperuser",
+        "mustChangePassword",
     }
 )
 

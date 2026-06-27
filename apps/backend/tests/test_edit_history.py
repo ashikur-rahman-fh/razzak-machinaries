@@ -1,12 +1,9 @@
 import pytest
 from rest_framework.test import APIClient
 
-from tests.test_admin_auth import (
-    ADMIN_FORBIDDEN_CODE,
-    _create_staff_user,
-    _create_superuser,
-    _login,
-)
+from api.admin.constants import ADMIN_FORBIDDEN_CODE
+from tests.factories import create_staff_user, create_superuser
+from tests.test_admin_auth import _login
 from tests.test_admin_customers import (
     _auth_get,
     _auth_post_json,
@@ -29,14 +26,14 @@ def api_client():
 
 @pytest.fixture
 def superuser_client(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     return api_client
 
 
 @pytest.fixture
 def staff_client(api_client):
-    _create_staff_user()
+    create_staff_user()
     _login(api_client, username_or_email="staff", password="staffpass123")
     return api_client
 

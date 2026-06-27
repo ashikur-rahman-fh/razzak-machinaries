@@ -50,4 +50,10 @@ export const API_ROUTES = {
   adminEditHistory: {
     list: '/api/admin/edit-history/',
   },
+  adminStaffUsers: {
+    list: '/api/admin/staff-users/',
+    detail: (id: number) => `/api/admin/staff-users/${id}/`,
+    generateTempPassword: '/api/admin/staff-users/generate-temp-password/',
+    resetTempPassword: (id: number) => `/api/admin/staff-users/${id}/reset-temp-password/`,
+  },
 } as const;

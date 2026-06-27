@@ -1,3 +1,4 @@
+export { adminStaffUsersApi } from './admin-staff-users';
 export { adminDashboardApi } from './admin-dashboard';
 export { adminEditHistoryApi } from './admin-edit-history';
 export { adminAuthApi, ensureAdminCsrf } from './admin-auth';
@@ -42,6 +43,15 @@ export type {
   AdminLogoutResponse,
   AdminUser,
 } from '../types/admin-auth';
+export type {
+  GenerateTemporaryPasswordResponse,
+  StaffUser,
+  StaffUserCreateRequest,
+  StaffUserCreateResponse,
+  StaffUserListParams,
+  StaffUserResetPasswordResponse,
+  StaffUserUpdateRequest,
+} from '../types/admin-staff-user';
 export type {
   Customer,
   CustomerArchiveResponse,

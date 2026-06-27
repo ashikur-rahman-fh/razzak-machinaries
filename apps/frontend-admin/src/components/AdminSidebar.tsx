@@ -21,13 +21,14 @@ import { useState, type ReactNode } from 'react';
 
 import { useAdminAuth } from '@/auth/AdminAuthProvider';
 import { AdminUserBadge } from '@/components/AdminUserBadge';
-import { canAccessEditHistory } from '@/auth/permissions';
+import { canAccessEditHistory, canManageStaffUsers } from '@/auth/permissions';
 
 export type AdminActiveRoute =
   | 'dashboard'
   | 'customers'
   | 'transactions'
   | 'edit-history'
+  | 'staff-users'
   | 'bangladesh-address'
   | 'profile'
   | 'change-password';
@@ -51,6 +52,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'customers', href: '/customers', translationKey: 'nav.customers' },
   { key: 'transactions', href: '/transactions', translationKey: 'nav.transactions' },
   { key: 'edit-history', href: '/edit-history', translationKey: 'nav.editHistory' },
+  { key: 'staff-users', href: '/staff-users', translationKey: 'nav.staffUsers' },
   {
     key: 'bangladesh-address',
     href: '/bangladesh-address',
@@ -101,9 +103,15 @@ function SidebarNav({
   onNavigate?: () => void;
 }) {
   const { user } = useAdminAuth();
-  const visibleNavItems = NAV_ITEMS.filter(
-    (item) => item.key !== 'edit-history' || canAccessEditHistory(user),
-  );
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (item.key === 'edit-history' && !canAccessEditHistory(user)) {
+      return false;
+    }
+    if (item.key === 'staff-users' && !canManageStaffUsers(user)) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <nav aria-label="Admin navigation">

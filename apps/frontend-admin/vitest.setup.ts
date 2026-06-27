@@ -26,12 +26,14 @@ export const adminUser = {
   email: 'admin@example.com',
   isStaff: true,
   isSuperuser: true,
+  mustChangePassword: false,
 };
 
 export const staffUser = {
   ...adminUser,
   isSuperuser: false,
   isStaff: true,
+  mustChangePassword: false,
 };
 
 export const server = setupServer(

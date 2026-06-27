@@ -15,6 +15,7 @@ import {
   editHistoryTranslationsBn,
   editHistoryTranslationsEn,
 } from './src/i18n/edit-history-translations';
+import { staffTranslationsBn, staffTranslationsEn } from './src/i18n/staff-translations';
 import { adminUser, server, staffUser } from './vitest.setup';
 
 vi.mock('next/navigation', () => ({
@@ -31,8 +32,8 @@ function renderMobileNav(user = adminUser) {
   return render(
     <LanguageProvider
       catalogs={{
-        en: { ...adminTranslationsEn, ...editHistoryTranslationsEn },
-        bn: { ...adminTranslationsBn, ...editHistoryTranslationsBn },
+        en: { ...adminTranslationsEn, ...editHistoryTranslationsEn, ...staffTranslationsEn },
+        bn: { ...adminTranslationsBn, ...editHistoryTranslationsBn, ...staffTranslationsBn },
       }}
     >
       <AdminAuthProvider>
@@ -69,5 +70,24 @@ describe('AdminMobileNav', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
     expect(screen.queryByRole('link', { name: /Edit History/i })).not.toBeInTheDocument();
+  });
+
+  it('includes Staff users navigation for superusers', async () => {
+    const user = userEvent.setup();
+    renderMobileNav();
+
+    await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+    expect(screen.getByRole('link', { name: /Staff users/i })).toHaveAttribute(
+      'href',
+      '/staff-users',
+    );
+  });
+
+  it('hides Staff users navigation for staff users', async () => {
+    const user = userEvent.setup();
+    renderMobileNav(staffUser);
+
+    await user.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+    expect(screen.queryByRole('link', { name: /Staff users/i })).not.toBeInTheDocument();
   });
 });

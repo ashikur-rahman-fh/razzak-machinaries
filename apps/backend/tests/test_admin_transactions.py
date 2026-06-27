@@ -4,7 +4,8 @@ from unittest.mock import patch
 import pytest
 from rest_framework.test import APIClient
 
-from tests.test_admin_auth import _create_superuser, _login
+from tests.factories import create_superuser
+from tests.test_admin_auth import _login
 from tests.test_admin_customers import _auth_get, _auth_post_json, _create_customer
 from tests.test_api import assert_error_envelope
 from transactions.models import Transaction, TransactionItem, TransactionType
@@ -22,7 +23,7 @@ def api_client():
 
 @pytest.fixture
 def superuser_client(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     return api_client
 

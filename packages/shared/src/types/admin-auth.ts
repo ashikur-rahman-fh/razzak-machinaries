@@ -7,6 +7,7 @@ export type AdminUser = {
   email: string;
   isStaff: boolean;
   isSuperuser: boolean;
+  mustChangePassword: boolean;
 };
 
 export type AdminLoginRequest = {

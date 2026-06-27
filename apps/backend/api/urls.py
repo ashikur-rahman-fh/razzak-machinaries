@@ -26,6 +26,7 @@ urlpatterns = [
     path("admin/auth/logout/", admin_logout, name="admin-auth-logout"),
     path("admin/auth/me/", admin_me, name="admin-auth-me"),
     path("admin/auth/change-password/", admin_change_password, name="admin-auth-change-password"),
+    path("admin/staff-users/", include("api.admin.staff_users.urls")),
     path("admin/translations/", AdminTranslationView.as_view(), name="admin-translations"),
     path("admin/geo/", include("geo.urls")),
     path("admin/customers/", include("customers.urls")),

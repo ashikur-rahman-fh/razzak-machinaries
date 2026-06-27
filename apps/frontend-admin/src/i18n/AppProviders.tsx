@@ -8,6 +8,7 @@ import { dashboardTranslationsBn, dashboardTranslationsEn } from './dashboard-tr
 import { editHistoryTranslationsBn, editHistoryTranslationsEn } from './edit-history-translations';
 import { geoTranslationsBn, geoTranslationsEn } from './geo-translations';
 import { transactionTranslationsBn, transactionTranslationsEn } from './transaction-translations';
+import { staffTranslationsBn, staffTranslationsEn } from './staff-translations';
 import { adminTranslationsBn, adminTranslationsEn } from './translations';
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -21,6 +22,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
           ...geoTranslationsEn,
           ...customerTranslationsEn,
           ...transactionTranslationsEn,
+          ...staffTranslationsEn,
         },
         bn: {
           ...adminTranslationsBn,
@@ -29,6 +31,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
           ...geoTranslationsBn,
           ...customerTranslationsBn,
           ...transactionTranslationsBn,
+          ...staffTranslationsBn,
         },
       }}
     >

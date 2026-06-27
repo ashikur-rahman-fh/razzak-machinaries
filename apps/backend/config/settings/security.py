@@ -43,6 +43,7 @@ DRF_THROTTLE_RATES = {
     "api": os.environ.get("DRF_THROTTLE_API", "200/hour"),
     "admin_login": os.environ.get("DRF_THROTTLE_ADMIN_LOGIN", "10/minute"),
     "admin_translation": os.environ.get("DRF_THROTTLE_ADMIN_TRANSLATION", "60/minute"),
+    "admin_staff_password": os.environ.get("DRF_THROTTLE_ADMIN_STAFF_PASSWORD", "20/minute"),
 }
 
 # django-csp (Django admin and other HTML responses; API JSON excluded)

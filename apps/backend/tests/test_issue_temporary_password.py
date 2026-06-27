@@ -37,7 +37,7 @@ def test_generated_password_is_strong_enough(monkeypatch):
         raise DjangoValidationError("too weak")
 
     monkeypatch.setattr(
-        "api.management.commands.issue_temporary_password.validate_password",
+        "api.admin.password_utils.validate_password",
         _always_reject,
     )
     with pytest.raises(CommandError, match="Could not generate"):

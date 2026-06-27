@@ -8,6 +8,10 @@ from .constants import (
     INVALID_CREDENTIALS_MESSAGE,
     INVALID_CURRENT_PASSWORD_CODE,
     INVALID_CURRENT_PASSWORD_MESSAGE,
+    MUST_CHANGE_PASSWORD_CODE,
+    MUST_CHANGE_PASSWORD_MESSAGE,
+    TEMPORARY_PASSWORD_NOT_REQUIRED_CODE,
+    TEMPORARY_PASSWORD_NOT_REQUIRED_MESSAGE,
     WEAK_PASSWORD_CODE,
     WEAK_PASSWORD_MESSAGE,
 )
@@ -41,3 +45,15 @@ class WeakPassword(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = WEAK_PASSWORD_CODE
     default_detail = WEAK_PASSWORD_MESSAGE
+
+
+class MustChangePassword(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = MUST_CHANGE_PASSWORD_CODE
+    default_detail = MUST_CHANGE_PASSWORD_MESSAGE
+
+
+class TemporaryPasswordNotRequired(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = TEMPORARY_PASSWORD_NOT_REQUIRED_CODE
+    default_detail = TEMPORARY_PASSWORD_NOT_REQUIRED_MESSAGE

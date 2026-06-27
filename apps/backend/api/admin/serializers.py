@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 from .constants import PROFILE_FORBIDDEN_WRITE_KEYS
 from .exceptions import InvalidCurrentPassword, WeakPassword
+from .staff_profile import must_change_password_for_user
 
 User = get_user_model()
 
@@ -24,6 +25,7 @@ def serialize_admin_user(user) -> dict:
         "email": user.email or "",
         "isStaff": user.is_staff,
         "isSuperuser": user.is_superuser,
+        "mustChangePassword": must_change_password_for_user(user),
     }
 
 

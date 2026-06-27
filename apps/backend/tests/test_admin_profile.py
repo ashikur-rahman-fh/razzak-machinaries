@@ -11,12 +11,11 @@ from api.admin.constants import (
     WEAK_PASSWORD_CODE,
     WEAK_PASSWORD_MESSAGE,
 )
+from tests.factories import create_regular_user, create_superuser
 from tests.test_admin_auth import (
     ME_URL,
     _assert_safe_user_payload,
     _authenticated_get,
-    _create_regular_user,
-    _create_superuser,
     _fetch_csrf,
     _login,
 )
@@ -40,7 +39,7 @@ def _authenticated_change_password(client: APIClient, data):
 
 
 def test_patch_profile_updates_safe_fields(api_client):
-    user = _create_superuser(first_name="Old", last_name="Name", email="old@example.com")
+    user = create_superuser(first_name="Old", last_name="Name", email="old@example.com")
     _login(api_client, username_or_email="admin", password="adminpass123")
 
     response = _authenticated_patch(
@@ -62,28 +61,28 @@ def test_patch_profile_unauthenticated(api_client):
 
 
 def test_patch_profile_non_superuser_forbidden(api_client):
-    user = _create_regular_user()
+    user = create_regular_user()
     api_client.force_login(user)
     response = api_client.patch(ME_URL, {"email": "x@example.com"}, format="json")
     assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
 
 
 def test_patch_profile_rejects_privileged_fields(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     response = _authenticated_patch(api_client, ME_URL, {"isStaff": False, "isSuperuser": False})
     assert_error_envelope(response, status_code=400, code="VALIDATION_ERROR")
 
 
 def test_patch_profile_invalid_email(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     response = _authenticated_patch(api_client, ME_URL, {"email": "not-an-email"})
     assert_error_envelope(response, status_code=400, code="VALIDATION_ERROR")
 
 
 def test_change_password_success(api_client):
-    _create_superuser(password="CurrentPass123!")
+    create_superuser(password="CurrentPass123!")
     _login(api_client, username_or_email="admin", password="CurrentPass123!")
 
     response = _authenticated_change_password(
@@ -107,7 +106,7 @@ def test_change_password_success(api_client):
 
 
 def test_change_password_wrong_current(api_client):
-    _create_superuser(password="CurrentPass123!")
+    create_superuser(password="CurrentPass123!")
     _login(api_client, username_or_email="admin", password="CurrentPass123!")
 
     response = _authenticated_change_password(
@@ -123,7 +122,7 @@ def test_change_password_wrong_current(api_client):
 
 
 def test_change_password_mismatch(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
 
     response = _authenticated_change_password(
@@ -138,7 +137,7 @@ def test_change_password_mismatch(api_client):
 
 
 def test_change_password_weak_password(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
 
     response = _authenticated_change_password(
@@ -167,7 +166,7 @@ def test_change_password_unauthenticated(api_client):
 
 
 def test_me_includes_first_and_last_name(api_client):
-    user = _create_superuser(first_name="Ada", last_name="Admin")
+    user = create_superuser(first_name="Ada", last_name="Admin")
     _login(api_client, username_or_email="admin", password="adminpass123")
     response = _authenticated_get(api_client, ME_URL)
     assert response.status_code == 200

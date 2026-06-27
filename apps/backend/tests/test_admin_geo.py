@@ -2,15 +2,11 @@ import pytest
 from django.core.cache import cache
 from rest_framework.test import APIClient
 
+from api.admin.constants import ADMIN_FORBIDDEN_CODE
 from geo.cache import GEO_CACHE_VERSION_KEY, build_geo_cache_key
 from geo.models import District, Division
-from tests.test_admin_auth import (
-    ADMIN_FORBIDDEN_CODE,
-    _create_regular_user,
-    _create_superuser,
-    _fetch_csrf,
-    _login,
-)
+from tests.factories import create_regular_user, create_superuser
+from tests.test_admin_auth import _fetch_csrf, _login
 from tests.test_api import assert_error_envelope
 
 pytestmark = pytest.mark.django_db
@@ -27,7 +23,7 @@ def api_client():
 
 @pytest.fixture
 def superuser_client(api_client):
-    _create_superuser()
+    create_superuser()
     _login(api_client, username_or_email="admin", password="adminpass123")
     return api_client
 
@@ -64,7 +60,7 @@ def test_admin_geo_list_unauthenticated(api_client):
 
 
 def test_admin_geo_list_forbidden_for_regular_user(api_client):
-    user = _create_regular_user()
+    user = create_regular_user()
     api_client.force_login(user)
     response = _auth_get(api_client, DIVISIONS_URL)
     assert_error_envelope(response, status_code=403, code=ADMIN_FORBIDDEN_CODE)
@@ -201,7 +197,7 @@ def test_admin_geo_write_bumps_public_cache(superuser_client):
 
 
 def test_admin_geo_post_without_csrf_fails(csrf_client):
-    _create_superuser()
+    create_superuser()
     _login(csrf_client, username_or_email="admin", password="adminpass123", with_csrf=True)
 
     response = csrf_client.post(
